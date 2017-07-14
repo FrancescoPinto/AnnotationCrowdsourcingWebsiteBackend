@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@ComponentScan({"awt.server.controller", "awt.server,service"})
+@ComponentScan({"awt.server.controller", "awt.server.security", "awt.server,service"})
 public class DemoApplication {
 	 
 	public static void main(String[] args) {
