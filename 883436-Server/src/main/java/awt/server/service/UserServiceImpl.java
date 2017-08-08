@@ -5,24 +5,23 @@
  */
 package awt.server.service;
 
-import awt.server.model.NewUserForm;
-import awt.server.model.UserInfoResponse;
-import awt.server.other.ServerResult;
-import org.springframework.stereotype.Service;
+import awt.server.model.User;
+import awt.server.respository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
  * @author Utente
  */
-@Service
-public class UserServiceImpl implements UserService {
-    @Override 
-    public  ServerResult createUser(NewUserForm newUser){
-        return ServerResult.NEW_USER_SUCCESS;
-    }
+@Component
+@Transactional
+public class UserServiceImpl implements UserService{
+     @Autowired
+    private UserRepository userRepository;
     
-    @Override
-    public UserInfoResponse getUserInfo(String apiToken){
-        return new UserInfoResponse("Dada","dada","password");
+    public void registerUser(User user){ 
+        userRepository.registerUser(user);
     }
 }

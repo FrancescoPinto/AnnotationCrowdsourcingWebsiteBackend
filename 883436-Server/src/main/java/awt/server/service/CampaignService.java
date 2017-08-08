@@ -5,17 +5,13 @@
  */
 package awt.server.service;
 
-import awt.server.model.Master;
-import awt.server.model.User;
-import awt.server.model.Worker;
-import awt.server.respository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
  *
  * @author Utente
  */
-public interface UserService {
-   public void registerUser(User user);
+@Service
+public interface CampaignService {
+    
 }
