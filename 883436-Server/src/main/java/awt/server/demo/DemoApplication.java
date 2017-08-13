@@ -20,7 +20,7 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 @SpringBootApplication
 @RestController
 @EnableAutoConfiguration
-@ComponentScan({"awt.server.service","awt.server.controller","awt.server.auth"})
+@ComponentScan({"awt.server"})
 @EntityScan("awt.server.model")
 @EnableJpaRepositories({"awt.server.repository"})
 @EnableTransactionManagement
@@ -50,12 +50,12 @@ public class DemoApplication {
             return messageSource;
         }
         
-         @Bean
+       /*  @Bean
     public HibernateTransactionManager transactionManager() {
         HibernateTransactionManager manager = new HibernateTransactionManager();
         manager.setSessionFactory(new LocalSessionFactoryBean().getObject());
         return manager;
-    }
+    }*/
 
 }       
 

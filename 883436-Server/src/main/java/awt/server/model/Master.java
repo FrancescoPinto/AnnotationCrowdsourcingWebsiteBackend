@@ -6,16 +6,26 @@ package awt.server.model;
 import awt.server.dto.RegistrationDetailsDTO;
 import java.util.List;
 import javax.persistence.Entity;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 
 /**
  * @author Utente
  */
 @Entity
+@NamedQuery(
+        name = "findMasterByUsername",
+        query = "SELECT m FROM Master m where m.username = ?1"
+)
 public class Master extends User {
 
     @OneToMany(targetEntity = Campaign.class, mappedBy = "master")
     private List<Campaign> campaigns;
+    
+    public Master(){
+        super();
+    }
+    
     
     public Master(RegistrationDetailsDTO dto){
         super(dto);

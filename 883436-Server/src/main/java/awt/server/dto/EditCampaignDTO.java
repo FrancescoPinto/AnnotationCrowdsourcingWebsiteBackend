@@ -5,6 +5,10 @@
  */
 package awt.server.dto;
 
+import javax.validation.constraints.Size;
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotEmpty;
+
 /**
  *
  * @author Utente
@@ -12,22 +16,25 @@ package awt.server.dto;
 
 //ATTENTO: INVIERAI UNA List<CampaignDTO> automaticamente convertita in array
 public class EditCampaignDTO {
-    private String id,
-                   name,
-                   status;
+   // @NotEmpty
+   // @Length(min = 1, max = 15)
+    private String name;
+   // @NotEmpty
+   // @Size(min = 3, max = 15)
+    private int    selection_replica,
+                   threshold,
+                   annotation_replica,
+                   annotation_size;
 
-    public EditCampaignDTO(String id, String name, String status) {
-        this.id = id;
+    public EditCampaignDTO(String name, int selectionReplica, int threshold, int annotationReplica, int annotationSize) {
         this.name = name;
-        this.status = status;
+        this.selection_replica = selectionReplica;
+        this.threshold = threshold;
+        this.annotation_replica = annotationReplica;
+        this.annotation_size = annotationSize;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
+    public EditCampaignDTO() {
     }
 
     public String getName() {
@@ -38,12 +45,36 @@ public class EditCampaignDTO {
         this.name = name;
     }
 
-    public String getStatus() {
-        return status;
+    public int getSelection_replica() {
+        return selection_replica;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setSelection_replica(int selection_replica) {
+        this.selection_replica = selection_replica;
+    }
+
+    public int getThreshold() {
+        return threshold;
+    }
+
+    public void setThreshold(int threshold) {
+        this.threshold = threshold;
+    }
+
+    public int getAnnotation_replica() {
+        return annotation_replica;
+    }
+
+    public void setAnnotation_replica(int annotation_replica) {
+        this.annotation_replica = annotation_replica;
+    }
+
+    public int getAnnotation_size() {
+        return annotation_size;
+    }
+
+    public void setAnnotation_size(int annotation_size) {
+        this.annotation_size = annotation_size;
     }
     
 }

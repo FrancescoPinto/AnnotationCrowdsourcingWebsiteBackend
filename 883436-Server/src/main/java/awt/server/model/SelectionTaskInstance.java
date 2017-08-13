@@ -9,12 +9,14 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 
 /**
  * @author Utente
  */
 @Entity
+
 public class SelectionTaskInstance {
 
     @Id

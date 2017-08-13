@@ -3,6 +3,7 @@
  */
 package awt.server.model;
 
+import awt.server.dto.NewCampaignDTO;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Entity;
@@ -10,6 +11,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.Max;
@@ -20,6 +22,10 @@ import javax.validation.constraints.NotNull;
  * @author Utente
  */
 @Entity
+/*@NamedQuery(
+        name = "getMasterCampagins",
+        query = "select c from Campaign c where c.master.id = ?1"
+)*/
 public class Campaign {
 
     @Id
@@ -52,7 +58,7 @@ public class Campaign {
     @NotNull
     @Min(value = 1, message = "Min 1")
     @Max(value = 10, message = "Max 10")
-    private int annotation_size;
+    private int annotationSize;
 
     @OneToOne(targetEntity = CampaignStatistics.class, mappedBy = "campaign")
     private CampaignStatistics campaignStatistics;
@@ -62,6 +68,32 @@ public class Campaign {
 
     @OneToMany(targetEntity = Image.class, mappedBy = "campaign")
     private List<Image> images;
+
+    public Campaign(Long id, String name, String status, int selectionReplica, int threshold, int annotationReplica, int annotation_size, CampaignStatistics campaignStatistics, Master master, List<Image> images) {
+        this.id = id;
+        this.name = name;
+        this.status = status;
+        this.selectionReplica = selectionReplica;
+        this.threshold = threshold;
+        this.annotationReplica = annotationReplica;
+        this.annotationSize = annotation_size;
+        this.campaignStatistics = campaignStatistics;
+        this.master = master;
+        this.images = images;
+    }
+
+    public Campaign() {
+    }
+    
+     public Campaign(NewCampaignDTO c, String status, Master m) {
+        this.name = c.getName();
+        this.status = status;
+        this.selectionReplica = c.getSelection_replica();
+        this.threshold = c.getThreshold();
+        this.annotationReplica = c.getAnnotation_replica();
+        this.annotationSize = c.getAnnotation_size();
+        this.master = m;
+    }
 
     public Long getId() {
         return id;
@@ -113,12 +145,12 @@ public class Campaign {
         this.annotationReplica = annotationReplica;
     }
 
-    public int getAnnotation_size() {
-        return this.annotation_size;
+    public int getAnnotationSize() {
+        return this.annotationSize;
     }
 
-    public void setAnnotation_size(int annotation_size) {
-        this.annotation_size = annotation_size;
+    public void setAnnotationSize(int annotationSize) {
+        this.annotationSize = annotationSize;
     }
 
     public CampaignStatistics getCampaignStatistics() {

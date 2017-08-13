@@ -12,6 +12,8 @@ import javax.persistence.Inheritance;
 import static javax.persistence.InheritanceType.SINGLE_TABLE;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 
 /**
  * @author Utente
@@ -19,6 +21,7 @@ import javax.persistence.MappedSuperclass;
 @Inheritance(strategy=SINGLE_TABLE)
 @DiscriminatorColumn(name = "Discr")
 @MappedSuperclass
+
 public abstract class Task {
 
     @Id
@@ -35,6 +38,18 @@ public abstract class Task {
     @ManyToOne(targetEntity = Campaign.class)
     private Campaign campaign;
 
+    public Task(Long id, String statusCompleted, Worker worker, Campaign campaign) {
+        this.id = id;
+        this.statusCompleted = statusCompleted;
+        this.worker = worker;
+        this.campaign = campaign;
+    }
+
+    public Task() {
+    }
+
+    
+    
     public Long getId() {
         return id;
     }

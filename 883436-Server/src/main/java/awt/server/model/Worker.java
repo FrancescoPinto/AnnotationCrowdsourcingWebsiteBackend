@@ -4,14 +4,25 @@
 package awt.server.model;
 
 import awt.server.dto.RegistrationDetailsDTO;
-import java.util.List;
 import javax.persistence.Entity;
-import javax.persistence.OneToMany;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 
 /**
  * @author Utente
  */
 @Entity
+@NamedQueries({
+    @NamedQuery(
+             name = "findWorkerByUsername",
+             query = "SELECT w FROM Worker w where w.username = ?1"
+     ),
+     @NamedQuery(
+             name = "getWorkers",
+             query = "Select w from Worker w"
+     ) 
+})
+
 public class Worker extends User {
   //@OneToMany(targetEntity = Task.class, mappedBy = "worker")
     //private List<Task> tasks;
@@ -21,6 +32,9 @@ public class Worker extends User {
        // tasks = null;
     }
 
+    public Worker(){
+        super();
+    }
    /* public List<Task> getTasks() {
         return tasks;
     }
@@ -28,5 +42,6 @@ public class Worker extends User {
     public void setTasks(List<Task> tasks) {
         this.tasks = tasks;
     }*/
+
  
 }

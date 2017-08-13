@@ -21,6 +21,9 @@ public class RegistrationDetailsDTO {
                    password,
                    type;
 
+    public RegistrationDetailsDTO() {
+    }
+
     public RegistrationDetailsDTO(String fullname, String username, String password, String type) {
         this.fullname = fullname;
         this.username = username;

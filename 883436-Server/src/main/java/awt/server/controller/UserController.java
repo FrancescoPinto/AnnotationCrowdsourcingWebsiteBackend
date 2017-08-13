@@ -3,16 +3,26 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package awt.server.demo;
+package awt.server.controller;
 
+import awt.server.dto.EditUserDetailsDTO;
+import awt.server.dto.ErrorDTO;
 import awt.server.dto.RegistrationDetailsDTO;
+import awt.server.dto.UserDetailsDTO;
+import awt.server.exceptions.ProfileNotFoundException;
+import awt.server.exceptions.UserNotLogged;
 import awt.server.model.Master;
+import awt.server.model.User;
 import awt.server.model.Worker;
+import awt.server.service.JwtService;
 import awt.server.service.UserService;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,23 +44,78 @@ public class UserController {
     @Autowired
     private UserService userService;
     
+    @Autowired
+    private JwtService jwt;
+    
     
     @RequestMapping(value = "/api/user", method = RequestMethod.POST, consumes = "application/json")
     public ResponseEntity registerUser(@Valid @RequestBody RegistrationDetailsDTO user){
         
         //try{
-            if(user.getType().equals("master")){
-                Master tempUser = new Master(user);
-                 userService.registerUser(tempUser);
-            }else{
-                Worker tempUser = new Worker(user);
-                 userService.registerUser(tempUser);
+            User temp = userService.findByUsername(user.getUsername());
+        if(temp == null){
+                
+        //}catch(ProfileNotFoundException e){
+           try{ 
+                if(user.getType().equals("master")){
+                    Master tempUser = new Master(user);
+                     userService.registerUser(tempUser);
+                }else if(user.getType().equals("worker")){
+                    Worker tempUser = new Worker(user);
+                     userService.registerUser(tempUser);
+                }
+
+                return ResponseEntity.ok().body(null);
+            }catch (Exception e){
+                return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
             }
-           
-            return ResponseEntity.ok().body(null);
+        }   
+         //  }catch(Exception e1){
+         //      throw new RuntimeException(e1);
+          // }
+       // }
+             
+        return ResponseEntity.badRequest().body("Errore");
+            
         //}catch(UserCreationException e){
          //   return ResponseEntity.badRequest().body(new ErrorDTO(e.toString()));
         //}   
+    }
+    
+     @RequestMapping(value = "/api/user/me", 
+             method = RequestMethod.GET)
+    public ResponseEntity getUserGenericInfo(@RequestHeader("Authorization") String APIToken){
+        try{
+                User authUser = getUser(APIToken);
+                return ResponseEntity.ok().body(new UserDetailsDTO(authUser));
+
+        }catch(Exception e){
+            return ResponseEntity.badRequest().body(new ErrorDTO("User not logged"));//.body(new ErrorDTO(e.toString())); 
+       }
+    }
+    
+    @RequestMapping(value = "/api/user/me", method = RequestMethod.PUT, consumes = "application/json")
+    public ResponseEntity editUserDetails(@RequestHeader("Authorization") String APIToken, @Valid @RequestBody EditUserDetailsDTO edit){
+   
+        try{
+                User authUser = getUser(APIToken);
+                userService.editUserDetails(authUser, edit.getFullname(),edit.getPassword());
+                return ResponseEntity.ok().body(null);
+        }catch(IOException | URISyntaxException e)
+        {
+             return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
+        }
+
+       
+    }
+    
+    private User getUser(String APIToken) throws UserNotLogged,IOException,URISyntaxException {
+        User temp = jwt.verify(APIToken);
+     
+        if(temp == null){
+            throw new UserNotLogged();
+        }
+        return temp;
     }
     /*
     @RequestMapping(value = "/api/auth", method = RequestMethod.POST, consumes = "application/json")

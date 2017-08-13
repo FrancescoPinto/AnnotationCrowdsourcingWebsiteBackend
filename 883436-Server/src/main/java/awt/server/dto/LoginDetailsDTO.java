@@ -13,6 +13,9 @@ public class LoginDetailsDTO {
     private String username,
                    password;
 
+    public LoginDetailsDTO() {
+    }
+
     public LoginDetailsDTO(String username, String password) {
         this.username = username;
         this.password = password;

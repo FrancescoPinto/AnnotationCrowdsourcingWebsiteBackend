@@ -4,6 +4,7 @@ package awt.server.demo;
 import awt.server.dto.ErrorDTO;
 import awt.server.exceptions.FailedToLoginException;
 import awt.server.exceptions.ProfileNotFoundException;
+import awt.server.exceptions.UserNotLogged;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -47,6 +48,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(SignatureException.class)
     public void failedToVerify() {
         System.out.println("");
+    }
+    
+    @ResponseStatus(FORBIDDEN)
+    @ExceptionHandler(UserNotLogged.class)
+    public void notLogged(){
     }
     
     @ExceptionHandler(MethodArgumentNotValidException.class)

@@ -5,6 +5,8 @@
  */
 package awt.server.dto;
 
+import awt.server.model.Campaign;
+
 /**
  *
  * @author Utente
@@ -12,21 +14,21 @@ package awt.server.dto;
 
 //ATTENTO: INVIERAI UNA List<CampaignDTO> automaticamente convertita in array
 public class CampaignDTO {
-    private String id,
-                   name,
+    private Long id;
+    private String name,
                    status;
 
-    public CampaignDTO(String id, String name, String status) {
+    public CampaignDTO(Long id, String name, String status) {
         this.id = id;
         this.name = name;
         this.status = status;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -44,6 +46,10 @@ public class CampaignDTO {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+    
+    public static CampaignDTO fromCampaignToCampaignDTO(Campaign c){
+        return new CampaignDTO(c.getId(),c.getName(),c.getStatus());
     }
     
 }

@@ -5,28 +5,30 @@
  */
 package awt.server.dto;
 
+import awt.server.model.Worker;
+
 /**
  *
  * @author Utente
  */
 public class WorkerDTO {
-    private String id,
-                   fullname;
+    private Long id;
+    private String fullname;
     private boolean selector,
                     annotator;
 
-    public WorkerDTO(String id, String fullname, boolean selector, boolean annotator) {
+    public WorkerDTO(Long id, String fullname, boolean selector, boolean annotator) {
         this.id = id;
         this.fullname = fullname;
         this.selector = selector;
         this.annotator = annotator;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

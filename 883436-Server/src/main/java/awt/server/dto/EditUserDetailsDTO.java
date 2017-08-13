@@ -5,25 +5,33 @@
  */
 package awt.server.dto;
 
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotEmpty;
+
 /**
  *
  * @author Utente
  */
 public class EditUserDetailsDTO {
-    private String username,
+    // @NotEmpty
+    //@Length(min = 3, max = 15)
+    private String fullname,
                    password;
 
+    public EditUserDetailsDTO() {
+    }
+
     public EditUserDetailsDTO(String username, String password) {
-        this.username = username;
+        this.fullname = username;
         this.password = password;
     }
 
-    public String getUsername() {
-        return username;
+    public String getFullname() {
+        return fullname;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setFullname(String fullname) {
+        this.fullname = fullname;
     }
 
     public String getPassword() {

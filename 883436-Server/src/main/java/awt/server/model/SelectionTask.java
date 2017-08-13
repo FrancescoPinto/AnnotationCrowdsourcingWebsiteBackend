@@ -5,13 +5,25 @@ package awt.server.model;
 
 import java.util.List;
 import javax.persistence.Entity;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 
 /**
  * @author Utente
  */
 @Entity
+ /*@NamedQuery(
+            name = "getWorkerSelectionTaskForCampaign",
+            query = "Select t from SelectionTask t where t.worker = ?1  and t.campaign.id = ?2"
+    )*/
 public class SelectionTask extends Task {
+
+    public SelectionTask(Long id, String statusCompleted, Worker worker, Campaign campaign) {
+        super(id, statusCompleted, worker, campaign);
+    }
+
+    public SelectionTask() {
+    }
 
     @OneToMany(targetEntity = SelectionTaskInstance.class, mappedBy = "selectionTask")
     private List<SelectionTaskInstance> selectionTaskInstances;

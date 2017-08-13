@@ -9,7 +9,7 @@ package awt.server.exceptions;
  *
  * @author Utente
  */
-public class UserNotFound extends Exception {
+public class UserNotFound extends RuntimeException {
      public UserNotFound(){
         super();
     }

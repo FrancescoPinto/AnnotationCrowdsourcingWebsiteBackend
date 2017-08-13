@@ -1,7 +1,7 @@
 package awt.server.service;
 
 
-import awt.server.auth.LoginCredentials;
+import awt.server.dto.LoginDetailsDTO;
 import awt.server.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -24,7 +24,7 @@ public class LoginService {
         this.profileService = profileService;
     }
 
-    public User login(LoginCredentials credentials) {
+    public User login(LoginDetailsDTO credentials) {
         User temp =  profileService.get(credentials.getUsername());
         if(temp.getPassword().equals(credentials.getPassword()))
             return temp;

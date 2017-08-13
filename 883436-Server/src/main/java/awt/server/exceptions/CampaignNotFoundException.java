@@ -5,17 +5,14 @@
  */
 package awt.server.exceptions;
 
+import static java.lang.String.format;
+
 /**
  *
  * @author Utente
  */
-public class UserCreationException extends RuntimeException {
-
-    public UserCreationException(){
-        super();
-    }
-
-    public UserCreationException(String message){
-        super(message);
+public class CampaignNotFoundException extends RuntimeException {
+    public CampaignNotFoundException() {
+        super("Campaign not found");
     }
 }

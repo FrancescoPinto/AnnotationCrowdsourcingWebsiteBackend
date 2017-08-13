@@ -5,6 +5,10 @@
  */
 package awt.server.dto;
 
+import awt.server.model.Master;
+import awt.server.model.User;
+import awt.server.model.Worker;
+
 /**
  *
  * @author Utente
@@ -13,6 +17,18 @@ public class UserDetailsDTO {
     private String fullname,
                    username,
                    type;
+
+    public UserDetailsDTO() {
+    }
+    
+    public UserDetailsDTO(User user) {
+        this.fullname = user.getFullname();
+        this.username = user.getUsername();
+        if(user instanceof Master)
+            this.type = "master";
+        else if(user instanceof Worker)
+            this.type = "worker";
+    }
 
     public UserDetailsDTO(String fullname, String username, String type) {
         this.fullname = fullname;

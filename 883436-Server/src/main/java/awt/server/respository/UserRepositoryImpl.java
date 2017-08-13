@@ -7,6 +7,7 @@ package awt.server.respository;
  */
 
 
+import awt.server.exceptions.ProfileNotFoundException;
 import awt.server.model.Master;
 import awt.server.model.User;
 import awt.server.model.Worker;
@@ -14,6 +15,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import static org.apache.tomcat.jni.User.username;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -34,13 +36,34 @@ public class UserRepositoryImpl implements UserRepository{
     }
     
     public User findByUsername(String username){
-        Query q = em.createQuery("SELECT m FROM Master m where m.username = ?1");
-        q.setParameter(1,username);
-        List<User> result = q.getResultList();
-        if(result.isEmpty())
-            return null;
+        Query q1 = em.createNamedQuery("findMasterByUsername");
+        q1.setParameter(1,username);
+        List<User> result1 = q1.getResultList();
+        if(result1.isEmpty()){
+            Query q2 = em.createNamedQuery("findWorkerByUsername");
+            q2.setParameter(1,username);
+            List<User> result2 = q2.getResultList();
+            if(result2.isEmpty())
+                return null;
+            else
+                return result2.get(0);
+        }
         else
-            return result.get(0);
+            return result1.get(0);
+    }
+    
+    public void editUserInfo(User user, String fullname, String password) throws ProfileNotFoundException{
+        User temp;
+        if(user instanceof Master){
+            temp = em.find(Master.class,user.getId());
+        }else if(user instanceof Worker){
+            temp = em.find(Worker.class,user.getId());
+        }else{
+            throw new ProfileNotFoundException(user.getUsername());
+        }
+        
+        temp.setFullname(fullname);
+        temp.setPassword(password);
     }
     
 }

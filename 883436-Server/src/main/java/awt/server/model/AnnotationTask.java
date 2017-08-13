@@ -5,14 +5,27 @@ package awt.server.model;
 
 import java.util.List;
 import javax.persistence.Entity;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 
 /**
  * @author Utente
  */
 @Entity
+/*@NamedQuery(
+            name = "getWorkerAnnotationTaskForCampaign",
+            query = "Select t from AnnotationTask t where t.worker = ?1  and t.campaign.id = ?2"
+    )*/
 public class AnnotationTask extends Task {
 
+    public AnnotationTask() {
+    }
+
+    public AnnotationTask(Long id, String statusCompleted, Worker worker, Campaign campaign) {
+        super(id, statusCompleted, worker, campaign);
+    }
+
+    
     @OneToMany(targetEntity = AnnotationTaskInstance.class, mappedBy = "annotationTask")
     private List<AnnotationTaskInstance> annotationTaskInstance;
 

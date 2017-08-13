@@ -5,10 +5,22 @@
  */
 package awt.server.respository;
 
+import awt.server.model.Campaign;
+import awt.server.model.Master;
+import awt.server.model.User;
+import java.util.List;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  *
  * @author Utente
  */
+@Transactional
+@Repository
 public interface CampaignRepository {
-    
+    public List<Campaign> getMasterCampaigns(Master master);
+    public Campaign createCampaign(Campaign campaign);
+    public Campaign getCampaignDetails(Long campaignId, Master master);
+    public void editCampaign(Master master, Long campaignId, String name, int selectRepl, int thr, int annRepl, int annSize);
 }

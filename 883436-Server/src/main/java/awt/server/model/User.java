@@ -33,6 +33,9 @@ public abstract class User {
     
     @Basic
     private String password;
+
+    public User() {
+    }
     
      
     

@@ -16,12 +16,15 @@ public class NewCampaignDTO {
                 annotation_replica,
                 annotation_size;
 
-    public NewCampaignDTO(String name, int selection_replica, int threshold, int annotation_replica, int annotation_size) {
+    public NewCampaignDTO(String name, int selectionReplica, int threshold, int annotationReplica, int annotationSize) {
         this.name = name;
-        this.selection_replica = selection_replica;
+        this.selection_replica = selectionReplica;
         this.threshold = threshold;
-        this.annotation_replica = annotation_replica;
-        this.annotation_size = annotation_size;
+        this.annotation_replica = annotationReplica;
+        this.annotation_size = annotationSize;
+    }
+
+    public NewCampaignDTO() {
     }
 
     public String getName() {
@@ -63,5 +66,7 @@ public class NewCampaignDTO {
     public void setAnnotation_size(int annotation_size) {
         this.annotation_size = annotation_size;
     }
+
+    
     
 }

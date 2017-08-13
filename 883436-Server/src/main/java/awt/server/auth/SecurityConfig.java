@@ -1,9 +1,7 @@
 package awt.server.auth;
 
-import awt.server.auth.JwtAuthFilter;
-import awt.server.auth.JwtAuthenticationEntryPoint;
-import awt.server.auth.JwtAuthenticationProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.HttpMethod;
@@ -57,6 +55,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
          http.csrf().disable().authorizeRequests()
         .antMatchers("/").permitAll()
         .antMatchers(HttpMethod.POST, "/api/user").permitAll()
+                 .antMatchers(HttpMethod.POST, "/api/auth").permitAll()
         .anyRequest().authenticated()
         .and()
         // We filter the api/login requests
@@ -64,4 +63,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .exceptionHandling()
                 .authenticationEntryPoint(jwtAuthEndPoint);
     }
+    
 }

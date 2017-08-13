@@ -9,7 +9,7 @@ package awt.server.exceptions;
  *
  * @author Utente
  */
-public class UserNotLogged extends Exception {
+public class UserNotLogged extends RuntimeException {
      public UserNotLogged(){
         super();
     }
