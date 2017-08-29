@@ -7,6 +7,7 @@ package awt.server.service;
 
 import awt.server.dto.WorkerDTO;
 import awt.server.model.Campaign;
+import awt.server.model.Image;
 import awt.server.model.User;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -27,4 +28,8 @@ public interface CampaignService {
     public void disableWorkerForSelectionForCampaign(User u,Long workerId,Long campaignId);  
     public void enableWorkerForAnnotationForCampaign(User u,Long workerId,Long campaignId);  
     public void disableWorkerForAnnotationForCampaign(User u,Long workerId,Long campaignId);  
+    
+    public void startCampaign(User u,Long campaignId);  
+    public void terminateCampaign(User u,Long campaignId);  
+    public List<Image> getCampaignImages(User user, Long campaignId);
 }

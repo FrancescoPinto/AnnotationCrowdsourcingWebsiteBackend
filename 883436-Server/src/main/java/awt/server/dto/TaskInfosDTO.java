@@ -5,18 +5,20 @@
  */
 package awt.server.dto;
 
+import awt.server.model.Task;
+
 /**
  *
  * @author Utente
  */
 public class TaskInfosDTO {
-    private String id,
-                   type,
+    private Long id;
+    private String type,
                    campaign,
                    session,
                    statistics;
 
-    public TaskInfosDTO(String id, String type, String campaign, String session, String statistics) {
+    public TaskInfosDTO(Long id, String type, String campaign, String session, String statistics) {
         this.id = id;
         this.type = type;
         this.campaign = campaign;
@@ -24,11 +26,11 @@ public class TaskInfosDTO {
         this.statistics = statistics;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -62,6 +64,11 @@ public class TaskInfosDTO {
 
     public void setStatistics(String statistics) {
         this.statistics = statistics;
+    }
+    
+    public static TaskInfosDTO fromTasktoTaskInfosDTO(Task t){
+        String campaign = t.getCampaign().getName();
+        return new TaskInfosDTO(t.getId(),t.getType(), campaign,"/api/task/"+t.getId()+"/session","/api/task/"+t.getId()+"/statistics");
     }
     
 }

@@ -6,11 +6,13 @@
 package awt.server.service;
 
 import awt.server.dto.WorkerDTO;
+import awt.server.exceptions.CampaignNotFoundException;
+import awt.server.exceptions.CampaignNotReadyException;
+import awt.server.exceptions.CampaignNotStartedException;
 import awt.server.exceptions.UserNotMasterException;
-import awt.server.model.AnnotationTask;
 import awt.server.model.Campaign;
+import awt.server.model.Image;
 import awt.server.model.Master;
-import awt.server.model.SelectionTask;
 import awt.server.model.Task;
 import awt.server.model.User;
 import awt.server.model.Worker;
@@ -64,8 +66,13 @@ public class CampaignServiceImpl implements CampaignService{
     
     @Override
     public void editCampaign(User user, Long campaignId, String name, int selectRepl, int thr, int annRepl, int annSize){
-        if(user instanceof Master)
-            campaignRepository.editCampaign((Master) user,campaignId,name, selectRepl, thr, annRepl, annSize);
+        if(user instanceof Master){
+            Campaign c = campaignRepository.getCampaignDetails(campaignId, (Master) user);
+            if(c == null)
+                throw new CampaignNotFoundException();
+            else
+                campaignRepository.editCampaign((Master) user,c,name, selectRepl, thr, annRepl, annSize);
+        }
         else throw new UserNotMasterException();
     }
 
@@ -124,8 +131,15 @@ public class CampaignServiceImpl implements CampaignService{
     @Override
     public void enableWorkerForSelectionForCampaign(User user,Long workerId,Long campaignId){
          if(user instanceof Master){
+             
+             //TODO: IMPEDIRE LA CHIAMATA DI QUESTI METODI SU CAMPAGNE GIA' AVVIATE O TERMINATE
+             //DOMANDA: LA LOGICA PER CUI NON CI DEVONO ESSERE DUPLICATI NON DOVREBBE ESSERE GESTITA QUI INVECE CHE NEL REPOSITORY???
+             //FORSE NO, DATO CHE ALLA FINE E' ANCHE QUALCOSA DI INTEGRITA' DEI DATI ... FORSE
+             
+            Worker w = workerRepository.getWorkerById(workerId);
+            Campaign c = campaignRepository.getCampaignDetails(campaignId, (Master) user);
            
-            taskRepository.createSelectionTaskForWorkerForCampaign(workerId,user.getId(),campaignId);
+            taskRepository.createSelectionTaskForWorkerForCampaign((Master) user, w,c);
 
         }
         else throw new UserNotMasterException();
@@ -135,7 +149,11 @@ public class CampaignServiceImpl implements CampaignService{
     public void disableWorkerForSelectionForCampaign(User user,Long workerId,Long campaignId){
          if(user instanceof Master){
            
-            taskRepository.deleteSelectionTaskForWorkerForCampaign(workerId,user.getId(),campaignId);
+               //TODO: IMPEDIRE LA CHIAMATA DI QUESTI METODI SU CAMPAGNE GIA' AVVIATE
+               
+            Worker w = workerRepository.getWorkerById(workerId);
+            Campaign c = campaignRepository.getCampaignDetails(campaignId, (Master) user);
+            taskRepository.deleteSelectionTaskForWorkerForCampaign((Master) user, w,c);
 
         }
         else throw new UserNotMasterException();
@@ -144,8 +162,10 @@ public class CampaignServiceImpl implements CampaignService{
     @Override
     public void enableWorkerForAnnotationForCampaign(User user,Long workerId,Long campaignId){
          if(user instanceof Master){
-           
-            taskRepository.createAnnotationTaskForWorkerForCampaign(workerId,user.getId(),campaignId);
+            Worker w = workerRepository.getWorkerById(workerId);
+            Campaign c = campaignRepository.getCampaignDetails(campaignId, (Master) user);
+               //TODO: IMPEDIRE LA CHIAMATA DI QUESTI METODI SU CAMPAGNE GIA' AVVIATE
+            taskRepository.createAnnotationTaskForWorkerForCampaign((Master) user, w,c);
 
         }
         else throw new UserNotMasterException();
@@ -154,11 +174,50 @@ public class CampaignServiceImpl implements CampaignService{
     @Override
     public void disableWorkerForAnnotationForCampaign(User user,Long workerId,Long campaignId){
          if(user instanceof Master){
-           
-            taskRepository.deleteAnnotationTaskForWorkerForCampaign(workerId,user.getId(),campaignId);
+              Worker w = workerRepository.getWorkerById(workerId);
+            Campaign c = campaignRepository.getCampaignDetails(campaignId, (Master) user);
+             //TODO: IMPEDIRE LA CHIAMATA DI QUESTI METODI SU CAMPAGNE GIA' AVVIATE
+            taskRepository.deleteAnnotationTaskForWorkerForCampaign((Master) user, w,c);
 
         }
         else throw new UserNotMasterException();
         
     }
+    
+    @Override
+    public void startCampaign(User user,Long campaignId){
+        if(user instanceof Master){
+              Campaign c = campaignRepository.getCampaignDetails(campaignId, (Master) user);
+              if(c.getStatus().equals("ready"))
+             //TODO: ASSICURARE LA LOGICA DI BUSINESS CORRETTA  (AVVIA CAMPAGNE CHE ESISTONO)
+             campaignRepository.startCampaign((Master) user, c);
+              else
+                  throw new CampaignNotReadyException();
+
+        }
+        else throw new UserNotMasterException();
+    }
+    @Override
+    public void terminateCampaign(User user,Long campaignId){
+        if(user instanceof Master){
+             Campaign c = campaignRepository.getCampaignDetails(campaignId, (Master) user);
+             if(c.getStatus().equals("started"))
+             //TODO: ASSICURARE LA LOGICA DI BUSINESS CORRETTA  (TERMINA CAMPAGNE CHE SONO GIA' INIZIATE!!!)
+             campaignRepository.terminateCampaign((Master) user, c);
+             else
+                 throw new CampaignNotStartedException();
+
+        }
+        else throw new UserNotMasterException();
+    }
+    
+    @Override
+    public List<Image> getCampaignImages(User user, Long campaignId){
+        if(user instanceof Master){
+             List<Image> imgs= campaignRepository.getCampaignImages((Master) user,campaignId);
+            
+             return imgs;        
+        }
+        else throw new UserNotMasterException();
+    }         
 }

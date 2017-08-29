@@ -5,25 +5,27 @@
  */
 package awt.server.dto;
 
+import awt.server.model.Task;
+
 /**
  *
  * @author Utente
  */
 //MANDI UNA List!!!
 public class TaskDTO {
-    private String id,
-                   type;
+    private Long id;
+    private String type;
 
-    public TaskDTO(String id, String type) {
+    public TaskDTO(Long id, String type) {
         this.id = id;
         this.type = type;
     }
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -33,6 +35,14 @@ public class TaskDTO {
 
     public void setType(String type) {
         this.type = type;
+    }
+    
+    public static TaskDTO fromTaskToTaskDTO(Task t){
+        return new TaskDTO(t.getId(),t.getType());
+      
+    }
+
+    public TaskDTO() {
     }
     
 }

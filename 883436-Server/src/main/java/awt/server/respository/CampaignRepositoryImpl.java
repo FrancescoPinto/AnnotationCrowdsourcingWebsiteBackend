@@ -7,6 +7,7 @@ package awt.server.respository;
 
 import awt.server.exceptions.CampaignNotFoundException;
 import awt.server.model.Campaign;
+import awt.server.model.Image;
 import awt.server.model.Master;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -22,6 +23,8 @@ import org.springframework.stereotype.Repository;
 public class CampaignRepositoryImpl implements CampaignRepository {
      @PersistenceContext
     private EntityManager em;
+     
+     private static final String STARTED = "started", READY = "ready", ENDED = "ended";
      
      @Override
      public List<Campaign> getMasterCampaigns(Master master){
@@ -49,8 +52,8 @@ public class CampaignRepositoryImpl implements CampaignRepository {
      }
      
      @Override
-     public void editCampaign(Master master, Long campaignId, String name, int selectRepl, int thr, int annRepl, int annSize){
-         Campaign c = em.find(Campaign.class, campaignId);
+     public void editCampaign(Master master, Campaign c, String name, int selectRepl, int thr, int annRepl, int annSize){
+        // Campaign c = em.find(Campaign.class, campaignId);
          if(c == null)
              throw new CampaignNotFoundException();
          else{
@@ -61,6 +64,36 @@ public class CampaignRepositoryImpl implements CampaignRepository {
              c.setAnnotationSize(annSize);
          }
      }
+     
+     @Override
+      public void startCampaign(Master u, Campaign c){
+          if(c == null)
+             throw new CampaignNotFoundException();
+         else{
+          c.setStatus(STARTED);
+          }
+      }
+      @Override
+    public void terminateCampaign(Master u,Campaign c){
+        if(c == null)
+             throw new CampaignNotFoundException();
+         else{
+        c.setStatus(ENDED);
+        }
+    }
+    
+    @Override
+    public List<Image> getCampaignImages(Master m, Long campaignId){
+        Query q = em.createQuery("select i from Image i where i.campaign.id = ?1 and i.campaign.master.id = ?2");
+        q.setParameter(1,campaignId);
+        q.setParameter(2,m.getId());
+        List<Image> imgs = q.getResultList();
+        if(imgs.isEmpty())
+            return null;
+        else
+            return imgs;
+        
+    }
       /*public Campaign createCampaign(String name, int selectionReplica, int threshold, int annotationReplica, int annotationSize){
          Campaign c = em.find(Campaign.class, )
      }*/

@@ -3,26 +3,29 @@
  */
 package awt.server.model;
 
+import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import static javax.persistence.InheritanceType.SINGLE_TABLE;
 import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 
 /**
  * @author Utente
  */
-@Inheritance(strategy=SINGLE_TABLE)
-@DiscriminatorColumn(name = "Discr")
-@MappedSuperclass
+@Entity
+//@Inheritance(strategy=SINGLE_TABLE)
+//@DiscriminatorColumn(name = "TYPE")
+//@DiscriminatorValue("abstract")
+//@MappedSuperclass
 
-public abstract class Task {
+public class Task {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -31,23 +34,54 @@ public abstract class Task {
     @Basic
     private String statusCompleted;
 
+    @Basic
+    private String type;
 
     @ManyToOne(targetEntity = Worker.class)
     private Worker worker;
 
     @ManyToOne(targetEntity = Campaign.class)
     private Campaign campaign;
+    
+      @OneToMany(targetEntity = AnnotationTaskInstance.class, mappedBy = "annotationTask")
+    private List<AnnotationTaskInstance> annotationTaskInstance;
+      
+      @OneToMany(targetEntity = SelectionTaskInstance.class, mappedBy = "selectionTask")
+    private List<SelectionTaskInstance> selectionTaskInstances;
 
-    public Task(Long id, String statusCompleted, Worker worker, Campaign campaign) {
+    public List<SelectionTaskInstance> getSelectionTaskInstances() {
+        return selectionTaskInstances;
+    }
+
+    public void setSelectionTaskInstances(List<SelectionTaskInstance> selectionTaskInstances) {
+        this.selectionTaskInstances = selectionTaskInstances;
+    }
+
+    public List<AnnotationTaskInstance> getAnnotationTaskInstances() {
+        return this.annotationTaskInstance;
+    }
+
+    public void setAnnotationTaskInstances(List<AnnotationTaskInstance> ANNOTATION_TASK_INSTANCEs) {
+        this.annotationTaskInstance = ANNOTATION_TASK_INSTANCEs;
+    }
+
+    public Task(Long id, String statusCompleted, Worker worker, Campaign campaign, String type) {
         this.id = id;
         this.statusCompleted = statusCompleted;
         this.worker = worker;
         this.campaign = campaign;
+        this.type = type;
     }
 
     public Task() {
     }
 
+     public Task(String statusCompleted, Worker worker, Campaign campaign, String type) {
+        this.statusCompleted = statusCompleted;
+        this.worker = worker;
+        this.campaign = campaign;
+        this.type = type;
+    }
     
     
     public Long getId() {
@@ -80,6 +114,22 @@ public abstract class Task {
 
     public void setCampaign(Campaign campaign) {
         this.campaign = campaign;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public List<AnnotationTaskInstance> getAnnotationTaskInstance() {
+        return annotationTaskInstance;
+    }
+
+    public void setAnnotationTaskInstance(List<AnnotationTaskInstance> annotationTaskInstance) {
+        this.annotationTaskInstance = annotationTaskInstance;
     }
 
    

@@ -41,4 +41,10 @@ public class WorkerRepositoryImpl implements WorkerRepository {
          else return result.get(0);
    
      }
+     
+         @Override
+    public Worker getWorkerById(Long id){
+        return em.find(Worker.class,id);
+    }
+    
 }

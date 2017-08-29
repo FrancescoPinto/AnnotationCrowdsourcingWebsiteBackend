@@ -27,8 +27,8 @@ public class AnnotationTaskInstance {
     @OneToOne(targetEntity = Image.class)
     private Image image;
 
-    @ManyToOne(targetEntity = AnnotationTask.class)
-    private AnnotationTask annotationTask;
+    @ManyToOne(targetEntity = Task.class)
+    private Task annotationTask;
 
     public Long getId() {
         return this.id;
@@ -54,11 +54,11 @@ public class AnnotationTaskInstance {
         this.image = image;
     }
 
-    public AnnotationTask getAnnotationTask() {
+    public Task getAnnotationTask() {
         return annotationTask;
     }
 
-    public void setAnnotationTask(AnnotationTask annotationTask) {
+    public void setAnnotationTask(Task annotationTask) {
         this.annotationTask = annotationTask;
     }
 

@@ -6,6 +6,7 @@
 package awt.server.respository;
 
 import awt.server.model.Campaign;
+import awt.server.model.Image;
 import awt.server.model.Master;
 import awt.server.model.User;
 import java.util.List;
@@ -22,5 +23,8 @@ public interface CampaignRepository {
     public List<Campaign> getMasterCampaigns(Master master);
     public Campaign createCampaign(Campaign campaign);
     public Campaign getCampaignDetails(Long campaignId, Master master);
-    public void editCampaign(Master master, Long campaignId, String name, int selectRepl, int thr, int annRepl, int annSize);
+    public void editCampaign(Master master, Campaign campaign, String name, int selectRepl, int thr, int annRepl, int annSize);
+    public void startCampaign(Master u,Campaign campaign);  
+    public void terminateCampaign(Master u,Campaign campaign);   
+    public List<Image> getCampaignImages(Master m, Long campaignId);
 }

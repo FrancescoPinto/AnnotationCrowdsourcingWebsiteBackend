@@ -18,5 +18,6 @@ import org.springframework.stereotype.Repository;
 public interface WorkerRepository {
     public List<Worker> getWorkers();
     public Worker getWorkerInfo(Long id);
+     public Worker getWorkerById(Long id);
     
 }

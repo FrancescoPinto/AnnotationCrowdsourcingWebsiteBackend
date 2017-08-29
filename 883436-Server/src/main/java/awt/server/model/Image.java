@@ -62,6 +62,22 @@ public class Image {
         this.campaign = campaign;
     }
 
+    public Image(Long id, String canonical, String filePath, Campaign campaign) {
+        this.id = id;
+        this.canonical = canonical;
+        this.filePath = filePath;
+        this.campaign = campaign;
+    }
+    
+    public Image(String canonical, String filePath, Campaign campaign) {
+        this.canonical = canonical;
+        this.filePath = filePath;
+        this.campaign = campaign;
+    }
+
+    public Image() {
+    }
+
    
 
 }

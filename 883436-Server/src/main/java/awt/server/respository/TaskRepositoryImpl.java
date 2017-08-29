@@ -5,7 +5,9 @@
  */
 package awt.server.respository;
 
+import awt.server.exceptions.TaskAlreadyDefinedException;
 import awt.server.model.Campaign;
+import awt.server.model.Master;
 import awt.server.model.Task;
 import awt.server.model.Worker;
 import java.util.List;
@@ -23,11 +25,14 @@ public class TaskRepositoryImpl implements TaskRepository{
     
     @PersistenceContext
     EntityManager em;
+    
+    private static final String UNCOMPLETE = "Uncomplete";
+    private static final String COMPLETE = "Complete";
 
     //SELECT T FROM SelectionTask T where T.worker.id = ?1
     @Override
     public Task getWorkerSelectionTaskForCampaign(Long workerId, Long masterId, Long campaignId) {
-        Query q = em.createQuery("SELECT t from SelectionTask t where t.worker.id = ?1 and t.campaign.id = ?2 and t.campaign.master.id = ?3");
+        Query q = em.createQuery("SELECT t from Task t where t.worker.id = ?1 and t.campaign.id = ?2 and t.campaign.master.id = ?3 and t.type like 'selection'");
         q.setParameter(1,workerId);
         q.setParameter(2,campaignId);
         q.setParameter(3,masterId); 
@@ -40,7 +45,7 @@ public class TaskRepositoryImpl implements TaskRepository{
     
       @Override
     public Task getWorkerAnnotationTaskForCampaign(Long workerId, Long masterId, Long campaignId) {
-        Query q = em.createQuery("SELECT t from AnnotationTask t where t.worker.id = ?1 and t.campaign.id = ?2 and t.campaign.master.id = ?3");
+        Query q = em.createQuery("SELECT t from Task t where t.worker.id = ?1 and t.campaign.id = ?2 and t.campaign.master.id = ?3 and t.type like 'annotation'");
         q.setParameter(1,workerId);
         q.setParameter(2,campaignId);
          q.setParameter(3,masterId); 
@@ -52,14 +57,80 @@ public class TaskRepositoryImpl implements TaskRepository{
     }
     
     @Override
-    public void createSelectionTaskForWorkerForCampaign(Long workerId, Long masterId, Long campaignId){
-        new SelectionTask(String statusCompleted, Worker worker, Campaign campaign)
+    public void createSelectionTaskForWorkerForCampaign(Master m,Worker w, Campaign c){
+        if(getWorkerSelectionTaskForCampaign(w.getId(),m.getId(),c.getId()) == null){
+                    Task st = new Task(UNCOMPLETE,w,c,"selection");
+                    em.persist(st);
+                }
+        else
+            throw  new TaskAlreadyDefinedException();
     }
     @Override
-    public void deleteSelectionTaskForWorkerForCampaign(Long workerId,Long masterId,Long campaignId);
-    @Override
-    public void createAnnotationTaskForWorkerForCampaign(Long workerId,Long masterId,Long campaignId);
-    @Override
-    public void deleteAnnotationTaskForWorkerForCampaign(Long workerId,Long masterId,Long campaignId);
+    public void deleteSelectionTaskForWorkerForCampaign(Master m,Worker w, Campaign c){
+        Task st = getWorkerSelectionTaskForCampaign(w.getId(),m.getId(),c.getId()) ;
+         if(st != null){
+                    em.remove(st);
+                }
+        else
+            throw  new TaskAlreadyDefinedException();
+    }
     
+    @Override
+    public void createAnnotationTaskForWorkerForCampaign(Master m,Worker w, Campaign c){
+        if(getWorkerAnnotationTaskForCampaign(w.getId(),m.getId(),c.getId()) == null){
+                    Task at = new Task(UNCOMPLETE,w,c,"annotation");
+                    em.persist(at);
+                }
+        else
+            throw  new TaskAlreadyDefinedException();
+    }
+    @Override
+    public void deleteAnnotationTaskForWorkerForCampaign(Master m,Worker w, Campaign c){
+         Task at = getWorkerAnnotationTaskForCampaign(w.getId(),m.getId(),c.getId()) ;
+         if(at != null){
+                    em.remove(at);
+                }
+        else
+            throw  new TaskAlreadyDefinedException();
+    }
+    
+    @Override
+    public List<Task> getTasksForWorker(Worker w){
+        /*Query q1 = em.createQuery("SELECT t from SelectionTask t where t.worker.id = ?1");
+        q1.setParameter(1,w.getId());
+        List<Task> temp1 =  q1.getResultList();
+        Query q2 = em.createQuery("SELECT t from AnnotationTask t where t.worker.id = ?1");
+        q2.setParameter(1,w.getId());
+        List<Task> temp2 =  q2.getResultList();
+        temp1.addAll(temp2);
+*/
+        Query q1 = em.createQuery("SELECT t from Task t where t.worker.id = ?1");
+        q1.setParameter(1,w.getId());
+        List<Task> temp1 =  q1.getResultList();
+        if(temp1.isEmpty())
+            return null;
+        else 
+            return temp1;
+        
+    }
+    
+      @Override
+    public Task getTaskInfos(Long taskId){
+           /* ATTENTO: QUESTO CON EREDITARIETA' BITABELLA E' ERRATO!
+        Query q1 = em.createQuery("SELECT t from SelectionTask t where t.id = ?1");
+        q1.setParameter(1,taskId);
+        List<Task> temp1 =  q1.getResultList();
+        if(temp1.isEmpty()){
+            Query q2 = em.createQuery("SELECT t from AnnotationTask t where t.id = ?1");
+            q2.setParameter(1,taskId);
+            List<Task> temp2 =  q2.getResultList();
+            if(temp2.isEmpty())
+                return null;
+            else
+                return temp2.get(0);
+        } else
+            return temp1.get(0);
+    */
+           return em.find(Task.class, taskId);
+    }
 }
