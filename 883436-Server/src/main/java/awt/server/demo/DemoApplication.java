@@ -33,10 +33,11 @@ public class DemoApplication implements CommandLineRunner{
     @Resource
     ImageStorageService iss;
     
-	@RequestMapping("/")
+    
+	/*@RequestMapping("/")
 	String hello() {
 		return "hello world";
-	}
+	}*/
 
 	public static void main(String[] args) {
 		SpringApplication.run(DemoApplication.class, args);
@@ -48,6 +49,8 @@ public class DemoApplication implements CommandLineRunner{
             slr.setDefaultLocale(Locale.US);
             return slr;
         }
+        
+        
         
         @Bean
         public ReloadableResourceBundleMessageSource messageSource(){

@@ -49,7 +49,7 @@ public class UserController {
     
     
     @RequestMapping(value = "/api/user", method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity registerUser(@Valid @RequestBody RegistrationDetailsDTO user){
+    public ResponseEntity registerUser(/*@Valid*/ @RequestBody RegistrationDetailsDTO user){
         
         //try{
             User temp = userService.findByUsername(user.getUsername());
@@ -75,7 +75,7 @@ public class UserController {
           // }
        // }
              
-        return ResponseEntity.badRequest().body("Errore");
+        return ResponseEntity.badRequest().body(new ErrorDTO("Bad Request"));
             
         //}catch(UserCreationException e){
          //   return ResponseEntity.badRequest().body(new ErrorDTO(e.toString()));

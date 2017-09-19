@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+<link rel="stylesheet" href="css/line-drawer.css">
+<body>
+<!--
+<div data-bind = "if:firstPage">
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href = "#">Crowdsourcing Campaigns</a>
+            </div>
+            <ul class="nav navbar-nav navbar-right">
+
+                <li data-bind = "click: function(data,event){ notFirstPage('SU');}">
+                    <a href = "#"> <!--data-bind = "click: notFirstPage.bind('SU')"
+                        <span class="glyphicon glyphicon-user">
+                      </span>Sign Up
+                    </a>
+                </li>
+
+                <li data-bind = "click: function(data,event){ notFirstPage('LI');}">
+                    <a href = "#"> <!--data-bind = "click: notFirstPage.bind('LI')"
+                        <span class="glyphicon glyphicon-log-in">
+                      </span> Login
+                    </a>
+                </li>
+
+            </ul>
+        </div>
+    </nav>
+    <div class="container" style = "margin: auto">
+        <div class="row" >
+            <div class = "col-sm-2"></div>
+            <div class="col-sm-8">
+                <h1 style = "padding-bottom:1em; text-align: center">Your Crowdsourcing Campaign Starts Now</h1>
+                <div class = "row">
+                    <div class = "col-sm-3"></div>
+                    <div class = "col-sm-3">
+                        <a data-bind = "click: function(data,event){ notFirstPage('SU');}" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-user"></span> SignUp</a>
+                    </div>
+                    <div class = "col-sm-3">
+                        <a data-bind = "click: function(data,event){ notFirstPage('LI');}" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-log-in"></span> LogIn</a>
+                    </div>
+                    <div class = "col-sm-3"></div>
+                </div>
+            </div>
+            <div class = "col-sm-2"></div>
+        </div>
+    </div>
+</div>-->
+<div id = "home">
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href = "#">Crowdsourcing Campaigns</a>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
+            <li data-bind="path: '/SignUp'">
+                <a id = "suN" data-bind="path: '/SignUp'">
+                          <span class="glyphicon glyphicon-user">
+                          </span>Sign Up
+                </a>
+            </li>
+
+            <li data-bind ="path: '/LogIn'">
+                <a id = "liN" data-bind="path: '/LogIn'">
+                          <span class="glyphicon glyphicon-log-in">
+                          </span> Login
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container" style = "margin: auto">
+    <div class="row" >
+        <div class = "col-sm-2"></div>
+        <div class="col-sm-8">
+            <h1 style = "padding-bottom:1em; text-align: center">Your Crowdsourcing Campaign Starts Now</h1>
+            <div class = "row">
+                <div class = "col-sm-3"></div>
+                <div class = "col-sm-3">
+                    <a id = "su" data-bind="path: '/SignUp'" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-user"></span> SignUp</a>
+                </div>
+                <div class = "col-sm-3">
+                    <a id = "li" data-bind="path: '/LogIn'" class="btn btn-primary" role="button"><span class="glyphicon glyphicon-log-in"></span> LogIn</a>
+                </div>
+                <div class = "col-sm-3"></div>
+            </div>
+        </div>
+        <div class = "col-sm-2"></div>
+    </div>
+</div>
+</div>
+<ko-component-router params="routes: routes, hashbang: true, repositories: repositories"></ko-component-router>
+<script src='vendor/jquery.min.js'></script>
+<script src='vendor/knockout-latest.min.js'></script>
+<script src='vendor/ko-component-router.min.js'></script>
+<script src='vendor/bootstrap.min.js'></script>
+<script src='js/index.js'></script>
+</body>
+</html>
+<!-- DALL'ESEMPIO DEL PROF
+        <ul class="nav navbar-nav">
+        <li data-bind="path: '/fullname'">
+            <a data-bind="path: '/fullname'">FullName</a>
+        </li>
+        ...
+        </ul>
+
