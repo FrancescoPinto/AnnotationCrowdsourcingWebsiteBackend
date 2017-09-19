@@ -215,7 +215,6 @@ public class TaskController {
  
                         }
                         else throw new UserNotMasterException();
-/
 
                 }catch(IOException | URISyntaxException |UserNotMasterException e)
                 {
