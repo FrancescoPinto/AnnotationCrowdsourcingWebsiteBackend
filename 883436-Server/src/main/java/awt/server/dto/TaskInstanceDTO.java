@@ -11,10 +11,10 @@ package awt.server.dto;
  */
 public class TaskInstanceDTO {
     private String type,
-                   image,
-                   size;
+                   image;
+    private Integer  size;
 
-    public TaskInstanceDTO(String type, String image, String size) {
+    public TaskInstanceDTO(String type, String image, Integer size) {
         this.type = type;
         this.image = image;
         this.size = size;
@@ -36,11 +36,11 @@ public class TaskInstanceDTO {
         this.image = image;
     }
 
-    public String getSize() {
+    public Integer getSize() {
         return size;
     }
 
-    public void setSize(String size) {
+    public void setSize(Integer size) {
         this.size = size;
     }
     

@@ -5,6 +5,8 @@
  */
 package awt.server.service;
 
+import awt.server.dto.ImageStatisticsDTO;
+import awt.server.dto.ImageStatisticsDetailsDTO;
 import awt.server.dto.WorkerDTO;
 import awt.server.model.Campaign;
 import awt.server.model.Image;
@@ -28,6 +30,10 @@ public interface CampaignService {
     public void disableWorkerForSelectionForCampaign(User u,Long workerId,Long campaignId);  
     public void enableWorkerForAnnotationForCampaign(User u,Long workerId,Long campaignId);  
     public void disableWorkerForAnnotationForCampaign(User u,Long workerId,Long campaignId);  
+    
+    public ImageStatisticsDetailsDTO getImageStatisticsDetails(User u, Long campaignId, Long imageId);
+    public ImageStatisticsDTO getCampaignImageStatistics(User u, Long campaignId, Long imageId);
+
     
     public void startCampaign(User u,Long campaignId);  
     public void terminateCampaign(User u,Long campaignId);  

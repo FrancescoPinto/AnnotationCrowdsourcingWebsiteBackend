@@ -24,7 +24,8 @@ public class SelectionTaskInstance {
     private Long id;
 
     @Basic
-    private String selected;
+    private String selected; //accepted, rejected, notAlready
+    public static final String ACCEPTED = "accepted", REJECTED = "rejected", NOTALREADY = "notAlready";
 
     @OneToOne(targetEntity = Image.class)
     private Image image;

@@ -10,48 +10,48 @@ package awt.server.dto;
  * @author Utente
  */
 public class TaskStatisticsDTO {
-    private int available,
+    private Integer available,
                 accepted,
                 rejected,
                 annotated;
 
-    public TaskStatisticsDTO(int available, int accepted, int rejected, int annotated) {
+    public TaskStatisticsDTO(Integer available, Integer accepted, Integer rejected, Integer annotated) {
         this.available = available;
         this.accepted = accepted;
         this.rejected = rejected;
         this.annotated = annotated;
     }
 
-    public int getAvailable() {
+    public Integer getAvailable() {
         return available;
     }
 
-    public void setAvailable(int available) {
+    public void setAvailable(Integer available) {
         this.available = available;
     }
 
-    public int getAccepted() {
+    public Integer getAccepted() {
         return accepted;
     }
 
-    public void setAccepted(int accepted) {
+    public void setAccepted(Integer accepted) {
         this.accepted = accepted;
     }
 
-    public int getRejected() {
+    public Integer getRejected() {
         return rejected;
     }
 
-    public void setRejected(int rejected) {
+    public void setRejected(Integer rejected) {
         this.rejected = rejected;
     }
 
-    public int getAnnotated() {
+    public Integer getAnnotated() {
         return annotated;
     }
 
-    public void setAnnotated(int annotated) {
+    public void setAnnotated(Integer annotated) {
         this.annotated = annotated;
     }
-    
+
 }

@@ -29,7 +29,12 @@ public interface TaskRepository {
     public void deleteAnnotationTaskForWorkerForCampaign(Master m,Worker w, Campaign c);
     
     public List<Task> getTasksForWorker(Worker w);
+    public List<Task> getTasksForCampaign(Long CampaignId);
     
     public Task getTaskInfos(Long taskId);
 
+     public String startWorkingSession(Long taskId);
+     public String getTaskWorkingSession(Long taskId);
+     public Long getCurrentTaskInstance(Long taskId);
+     public void setCurrentTaskInstance(Long taskId, Long currentTaskId);
 }

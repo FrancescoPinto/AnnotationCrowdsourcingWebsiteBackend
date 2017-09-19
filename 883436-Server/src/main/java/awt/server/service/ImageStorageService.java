@@ -5,8 +5,10 @@
  */
 package awt.server.service;
 
+import awt.server.dto.ImageStatisticsDetailsDTO;
 import awt.server.model.Image;
 import awt.server.model.User;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,5 +25,7 @@ public interface ImageStorageService {
     public Resource loadFile(String filename);
     public void deleteAll();
     public void init();
-     public String getFilePathString(Long campaignId, Long imageId);
+    public void deleteImage(User u, Long campaignId,Long imageId);
+    public FileSystemResource getFileSystemResource(Long campaignId, Long imageId);
+    public Image getImageInfo(User u, Long campaignId,Long imageId);  
 }

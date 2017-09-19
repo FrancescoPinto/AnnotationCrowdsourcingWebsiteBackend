@@ -22,13 +22,15 @@ public class AnnotationTaskInstance {
     private Long id;
 
     @Basic
-    private String skyline;
+    private String skyline; //o a valore o notAlready
+     public static final String NOTALREADY = "notAlready";
 
     @OneToOne(targetEntity = Image.class)
     private Image image;
 
     @ManyToOne(targetEntity = Task.class)
     private Task annotationTask;
+   
 
     public Long getId() {
         return this.id;

@@ -29,7 +29,8 @@ public class LoginService {
         if(temp.getPassword().equals(credentials.getPassword()))
             return temp;
         else
-            return null;
-    
+            return null; 
     }
+    
+    //NEL LOGOUT ANNULLA LE TASK WORKING SESSION APERTE DALL'UTENTE!!
 }

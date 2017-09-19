@@ -15,6 +15,7 @@ import javax.persistence.Inheritance;
 import static javax.persistence.InheritanceType.SINGLE_TABLE;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 
 /**
  * @author Utente
@@ -27,15 +28,29 @@ import javax.persistence.OneToMany;
 
 public class Task {
 
+    @Transient
+    public final static String OPENED = "opened", CLOSED = "closed", FINISHED = "finished";
+    
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
     @Basic
-    private String statusCompleted;
+    private String workingSession;//closed, open, FINISHED (closed = puoi aprirlo, finished = basta immagini)
 
     @Basic
     private String type;
+    public static final String SELECTION = "selection", ANNOTATION = "annotation";
+    @Basic
+    private Long currentTaskInstance;
+
+    public Long getCurrentTaskInstance() {
+        return currentTaskInstance;
+    }
+
+    public void setCurrentTaskInstance(Long currentTaskInstance) {
+        this.currentTaskInstance = currentTaskInstance;
+    }
 
     @ManyToOne(targetEntity = Worker.class)
     private Worker worker;
@@ -65,9 +80,9 @@ public class Task {
         this.annotationTaskInstance = ANNOTATION_TASK_INSTANCEs;
     }
 
-    public Task(Long id, String statusCompleted, Worker worker, Campaign campaign, String type) {
+    public Task(Long id, String workingSession, Worker worker, Campaign campaign, String type) {
         this.id = id;
-        this.statusCompleted = statusCompleted;
+        this.workingSession = workingSession;
         this.worker = worker;
         this.campaign = campaign;
         this.type = type;
@@ -76,8 +91,8 @@ public class Task {
     public Task() {
     }
 
-     public Task(String statusCompleted, Worker worker, Campaign campaign, String type) {
-        this.statusCompleted = statusCompleted;
+     public Task(String workingSession, Worker worker, Campaign campaign, String type) {
+        this.workingSession = workingSession;
         this.worker = worker;
         this.campaign = campaign;
         this.type = type;
@@ -92,12 +107,12 @@ public class Task {
         this.id = id;
     }
 
-    public String getStatusCompleted() {
-        return statusCompleted;
+    public String getWorkingSession() {
+        return workingSession;
     }
 
-    public void setStatusCompleted(String statusCompleted) {
-        this.statusCompleted = statusCompleted;
+    public void setWorkingSession(String workingSession) {
+        this.workingSession = workingSession;
     }
 
     public Worker getWorker() {

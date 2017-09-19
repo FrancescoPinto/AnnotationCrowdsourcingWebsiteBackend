@@ -5,9 +5,13 @@
  */
 package awt.server.respository;
 
+import awt.server.dto.TaskInstanceDTO;
 import awt.server.exceptions.TaskAlreadyDefinedException;
+import awt.server.exceptions.TaskNotFoundException;
+import awt.server.exceptions.WorkingSessionAlreadyOpenedException;
 import awt.server.model.Campaign;
 import awt.server.model.Master;
+import awt.server.model.SelectionTaskInstance;
 import awt.server.model.Task;
 import awt.server.model.Worker;
 import java.util.List;
@@ -133,4 +137,68 @@ public class TaskRepositoryImpl implements TaskRepository{
     */
            return em.find(Task.class, taskId);
     }
+    
+    @Override
+        public List<Task> getTasksForCampaign(Long campaignId){
+            Query q = em.createQuery("select t from Task t where t.campaign.id = ?1");
+            q.setParameter(1,campaignId);
+            List<Task> temp = q.getResultList();
+            if(temp.isEmpty())
+                return null;
+            else return temp;
+        }
+
+        @Override
+     public String startWorkingSession(Long taskId){
+          Query q = em.createQuery("select t from Task t where t.id = ?1");
+          q.setParameter(1,taskId);
+          List<Task> temp = q.getResultList();
+          if(temp.isEmpty())
+              return null;
+          else 
+          {
+              Task t = temp.get(0);
+              switch(t.getWorkingSession()){
+                  case Task.OPENED: throw new WorkingSessionAlreadyOpenedException();
+                  case Task.CLOSED:  t.setWorkingSession(Task.OPENED); return Task.OPENED;
+                  case Task.FINISHED: return Task.FINISHED;
+                  default: throw new IllegalStateException();
+              }
+           }
+     }
+     
+      @Override
+     public String getTaskWorkingSession(Long taskId){
+         Query q = em.createQuery("select t from Task t where t.id = ?1");
+         q.setParameter(1, taskId);
+         List<Task> t = q.getResultList();
+         if(t.isEmpty())
+             return null;
+         else
+             return t.get(0).getWorkingSession();
+     
+    }
+    @Override 
+    public Long getCurrentTaskInstance(Long taskId){
+        Query q = em.createQuery("select t from Task t where t.id = ?1");
+         q.setParameter(1, taskId);
+         List<Task> t = q.getResultList();
+         if(t.isEmpty())
+             return null;
+         else
+             return t.get(0).getCurrentTaskInstance();
+    }
+
+    @Override 
+    public void setCurrentTaskInstance(Long taskId, Long currentTaskInstanceId){ 
+        Query q = em.createQuery("select t from Task t where t.id = ?1");
+         q.setParameter(1, taskId);
+         List<Task> t = q.getResultList();
+         if(t.isEmpty())
+             throw new TaskNotFoundException();
+         else
+             t.get(0).setCurrentTaskInstance(currentTaskInstanceId);
+    }
+     
+    
 }

@@ -5,6 +5,7 @@
  */
 package awt.server.respository;
 
+import awt.server.exceptions.ImageNotFoundException;
 import awt.server.model.Campaign;
 import awt.server.model.Image;
 import awt.server.model.Master;
@@ -16,6 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Repository;
@@ -40,7 +42,7 @@ public class ImageRepositoryImpl implements ImageRepository {
             Image im = new Image();
             em.persist(im);
             im.setFilePath(rootLocation.resolve(c.getId()+"_"+im.getId()+".jpg").toString());
-            im.setCanonical(rootLocation.resolve(c.getId()+"_"+im.getId()+".jpg").toString());
+            im.setCanonical("/api/campaign/"+c.getId()+"/freeimage/"+im.getId());
             im.setCampaign(c);
             Files.copy(file.getInputStream(), this.rootLocation.resolve(c.getId()+"_"+im.getId()+".jpg"));
             return im;
@@ -109,8 +111,34 @@ public class ImageRepositoryImpl implements ImageRepository {
        // }
     }
     
-    @Override
-    public String getFilePathString(Long campaignId, Long imageId){
+    
+    private String getFilePathString(Long campaignId, Long imageId){
         return rootLocation.resolve(campaignId+"_"+imageId+".jpg").toString();
     }
+    
+    private Path getFilePath(Long campaignId, Long imageId){
+        return rootLocation.resolve(campaignId+"_"+imageId+".jpg");
+    }
+    @Override
+    public FileSystemResource getFileSystemResource(Long campaignId, Long imageId){
+        return new FileSystemResource(getFilePathString(campaignId,imageId));
+    }
+    
+    @Override
+    public void deleteImage(Long campaignId, Long imageId){
+        try{    
+            Files.delete(getFilePath(campaignId,imageId));
+        }catch(IOException e){
+            throw new ImageNotFoundException();
+        }
+    }
+    
+    @Override
+        public Image getImage(Long campaignId, Long imageId){
+            Image i =  em.find(Image.class, imageId);
+            if(i==null)
+                throw new ImageNotFoundException();
+            else
+                return i;
+        }
 }

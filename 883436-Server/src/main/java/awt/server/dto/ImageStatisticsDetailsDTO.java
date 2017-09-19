@@ -20,6 +20,11 @@ public class ImageStatisticsDetailsDTO {
         this.annotation = annotation;
     }
 
+     public ImageStatisticsDetailsDTO(int numacc, int numrej, List<String> annotation) {
+        this.selection = new Selection(numacc,numrej);
+        this.annotation = annotation;
+    }
+    
     public Selection getSelection() {
         return selection;
     }

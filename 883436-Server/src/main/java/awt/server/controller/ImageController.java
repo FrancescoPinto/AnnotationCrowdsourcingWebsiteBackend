@@ -39,13 +39,13 @@ public class ImageController {
         StreamUtils.copy(imgFile.getInputStream(), response.getOutputStream());
     }
     
-     @RequestMapping(value = "/api/campaign/{campaignId}/image/{imageId}", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
+     @RequestMapping(value = "/api/campaign/{campaignId}/freeimage/{imageId}", method = RequestMethod.GET, produces = MediaType.IMAGE_JPEG_VALUE)
     public void getImage(HttpServletResponse response,
             @PathVariable("campaignId") Long campaignId,
             @PathVariable("imageId") Long imageId
             ) throws IOException{
         
-        FileSystemResource imgFile = new FileSystemResource(imageService.getFilePathString(campaignId,imageId));
+        FileSystemResource imgFile = imageService.getFileSystemResource(campaignId,imageId);
 
         response.setContentType(MediaType.IMAGE_JPEG_VALUE);
         StreamUtils.copy(imgFile.getInputStream(), response.getOutputStream());

@@ -11,11 +11,15 @@ import awt.server.dto.CampaignListDTO;
 import awt.server.dto.EditCampaignDTO;
 import awt.server.dto.ErrorDTO;
 import awt.server.dto.ImageDTO;
+import awt.server.dto.ImageInfosDTO;
+import awt.server.dto.ImageStatisticsDTO;
+import awt.server.dto.ImageStatisticsDetailsDTO;
 import awt.server.dto.ImagesDTO;
 import awt.server.dto.NewCampaignDTO;
 import awt.server.dto.WorkerDTO;
 import awt.server.dto.WorkerInfosDTO;
 import awt.server.dto.WorkersDTO;
+import awt.server.exceptions.ImageNotFoundException;
 import awt.server.exceptions.NotEmptyFileException;
 import awt.server.exceptions.UserNotLogged;
 import awt.server.exceptions.UserNotMasterException;
@@ -373,9 +377,101 @@ public class CampaignController {
 
     }
     
-    // /api/campaign/{id-Campaign}/image/{id-image} <- delete immagine
+     @RequestMapping(value = "/api/campaign/{campaignId}/image/{imageId}", method = RequestMethod.DELETE)
+    public ResponseEntity deleteImage(
+            @RequestHeader("Authorization") String APIToken,
+            @PathVariable("campaignId") Long campaignId,
+            @PathVariable("imageId") Long imageId
+            ){
+        try{
+            
+                User authUser = getUser(APIToken);
+                if(authUser instanceof Master){
+                    imageStorageService.deleteImage(authUser, campaignId,imageId);    
+                    return ResponseEntity.ok().body(null);
+                }
+                else throw new UserNotMasterException();
+                        
+        
+        }catch(IOException | URISyntaxException |UserNotMasterException|ImageNotFoundException e)
+        {
+             return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
+        }
+
+    }
+    
+     @RequestMapping(value = "/api/campaign/{campaignId}/image/{imageId}", method = RequestMethod.GET)
+    public ResponseEntity getImageGenericData(
+            @RequestHeader("Authorization") String APIToken,
+            @PathVariable("campaignId") Long campaignId,
+            @PathVariable("imageId") Long imageId
+            ){
+        try{
+            
+                User authUser = getUser(APIToken);
+                if(authUser instanceof Master){
+                    Image i = imageStorageService.getImageInfo(authUser, campaignId,imageId);    
+                    return ResponseEntity.ok().body(new ImageInfosDTO(i.getId(),i.getCanonical(),"/api/campaign/"+campaignId+"/image/"+i.getId()+"/statistics"));
+                }
+                
+                else throw new UserNotMasterException();
+                        
+        
+        }catch(IOException | URISyntaxException |UserNotMasterException|ImageNotFoundException e)
+        {
+             return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
+        }
+
+    }
     // /api/campaign/{id-Campaign}/image/{id-image}/statistics <- stat immagini (annotazioni + selection)
     
+    @RequestMapping(value = "/api/campaign/{campaignId}/image/{imageId}/statistics", method = RequestMethod.GET)
+    public ResponseEntity getImageStatistics(
+            @RequestHeader("Authorization") String APIToken,
+            @PathVariable("campaignId") Long campaignId,
+            @PathVariable("imageId") Long imageId
+            ){
+        try{
+            
+                User authUser = getUser(APIToken);
+                if(authUser instanceof Master){
+                    ImageStatisticsDetailsDTO i = campaignService.getImageStatisticsDetails(authUser, campaignId,imageId);    
+                    return ResponseEntity.ok().body(i);
+                }
+                
+                else throw new UserNotMasterException();
+                        
+        
+        }catch(IOException | URISyntaxException |UserNotMasterException|ImageNotFoundException e)
+        {
+             return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
+        }
+
+    }
+    
+    @RequestMapping(value = "/api/campaign/{campaignId}/statistics", method = RequestMethod.GET)
+    public ResponseEntity getCampaignImageStatistics(
+            @RequestHeader("Authorization") String APIToken,
+            @PathVariable("campaignId") Long campaignId,
+            @PathVariable("imageId") Long imageId
+            ){
+        try{
+            
+                User authUser = getUser(APIToken);
+                if(authUser instanceof Master){
+                    ImageStatisticsDTO i = campaignService.getCampaignImageStatistics(authUser, campaignId, imageId);    
+                    return ResponseEntity.ok().body(i);
+                }
+                
+                else throw new UserNotMasterException();
+                        
+        
+        }catch(IOException | URISyntaxException |UserNotMasterException|ImageNotFoundException e)
+        {
+             return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
+        }
+
+    }
     private User getUser(String APIToken) throws UserNotLogged,IOException,URISyntaxException {
         User temp = jwt.verify(APIToken);
      

@@ -8,6 +8,7 @@ package awt.server.respository;
 import awt.server.model.Campaign;
 import awt.server.model.Image;
 import awt.server.model.Master;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,6 +26,9 @@ public interface ImageRepository {
     
     public void init();
     
-    public String getFilePathString(Long campaignId, Long imageId);
+    public Image getImage(Long campaignId, Long imageId);
+    
+    public FileSystemResource getFileSystemResource(Long campaignId,Long imageId);
+    public void deleteImage(Long campaignId, Long imageId);
 
 }
