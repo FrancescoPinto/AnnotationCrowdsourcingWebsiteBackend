@@ -16,6 +16,9 @@ public class TaskResultAnnotationDTO {
         this.skyline = skyline;
     }
 
+    public TaskResultAnnotationDTO() {
+    }
+
     public String getSkyline() {
         return skyline;
     }

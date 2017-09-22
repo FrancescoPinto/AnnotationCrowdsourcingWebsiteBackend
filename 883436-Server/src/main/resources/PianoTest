@@ -1,0 +1,32 @@
+BASATI SUL CLIENT (poi fanne alcuni anche senza client)
+PER LE VALIDAZIONI USEREI UNA COMBO DI @Valid+ if(invalido) lancia eccezione!
+REGISTRAZIONE 
+campi incompleti, username già preso, password/username non abbastanza lunghi, type non valido
+LOGIN
+username/password sbagliate
+LOGOUT
+controlla solo che il token del login è expired
+
+GETUSERINFO: controlla solo che arrivino
+MODIFICAUSERINFO: controlla modifica di fullname/password, lunghezze adeguate, non vuote
+
+GETCAMPAIGNS: controlla arrivino tutte le campagne per bene, nello stato giusto
+CREATECAMPAIGN: controlla crei la campagna, campi validi (dimensioni giuste, numerici, campi non vuoti, lunghezza giusta)
+deve anche ritornare un Location header con URL della risorsa
+
+GETCAMPAIGNINFO: controlla info siano corrette (assicurati soprattutto che gli id siano url e che tutti gli url siano url)
+EDITCAMPAIGN: assicurati che l'edit avvenga correttamente (stesse condizioni di create per quanto riguarda i campi)
+GETCAMPAIGNIMAGES: raccogli correttamente le immagini (si vedono bene, sono tutte, id è un url moncato, canonical è url completo free)
+UPLOAD NEW IMAGE: controlla che la campagna esista, che l'utente sia autorizzato, formato immagine adeguato, ritorna un location, immagine salvata correttamente
+GETIMAGEINFOS: stesso di getcampaignimages (controlla anche statistics)
+DELETEIMAGE: cancella immagini che non esistono, cancella immagini che esistono, da utente non autorizzato, controlla che l'immagine sia fisicamente rimossa (anche in db)
+GETSINGLEIMAGESTATISTICS(MASTER): controlla che il numero di accepted/rejected sia corretto (deve essere il numero totale di taskinstances con accepted/rejected per quell'immagine (così fa il loro server) 
+LISTWORKERS: recupera tutti i workers, forma corretta, gli id sono url
+GETWORKERINFOS: controlla le info siano corrette e tutti gli url siano a posto (id, selection e annotation)
+ENABLE/DISABLE FOR SELECTION/ANNOTATION : controlla che funzionino mettendoli sotto stress, ma non c'è niente da validare
+STARTCAMPAIGN: dopo lo start controlla che cambi stato, che i task vengano creati correttamente ecc.
+GETTERMINATEDCAMPAIGNIMAGESSTATISTICS: controlla che images/accepted/rejected/annotation siano corretti (controlla il postit che hai sul desktop il significato)
+
+GETTASKS: controlal che ci siano tutti i task dell'user SOLO campagne partite e non chiuse
+GETTASKINFO: controlla i dati siano corretti ...
+... ecc. ecc.

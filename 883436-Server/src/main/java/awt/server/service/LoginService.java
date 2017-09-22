@@ -3,6 +3,7 @@ package awt.server.service;
 
 import awt.server.dto.LoginDetailsDTO;
 import awt.server.model.User;
+import awt.server.model.Worker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class LoginService {
 
     private ProfileService profileService;
+
+    @Autowired
+    private TaskService taskService;
+    
+    @Autowired
+    private JwtService jwtService;
 
     @SuppressWarnings("unused")
     public LoginService() {
@@ -32,5 +39,12 @@ public class LoginService {
             return null; 
     }
     
+    public void logout(User u){
+       
+        jwtService.logoutToken(u);
+        if(u instanceof Worker){
+            taskService.beforeLogoutCleaning(u);
+        }
+    }
     //NEL LOGOUT ANNULLA LE TASK WORKING SESSION APERTE DALL'UTENTE!!
 }

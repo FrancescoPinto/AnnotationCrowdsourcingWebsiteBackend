@@ -44,19 +44,14 @@ public class Task {
     @Basic
     private Long currentTaskInstance;
 
-    public Long getCurrentTaskInstance() {
-        return currentTaskInstance;
-    }
-
-    public void setCurrentTaskInstance(Long currentTaskInstance) {
-        this.currentTaskInstance = currentTaskInstance;
-    }
-
     @ManyToOne(targetEntity = Worker.class)
     private Worker worker;
 
     @ManyToOne(targetEntity = Campaign.class)
     private Campaign campaign;
+    
+    
+    
     
       @OneToMany(targetEntity = AnnotationTaskInstance.class, mappedBy = "annotationTask")
     private List<AnnotationTaskInstance> annotationTaskInstance;
@@ -72,12 +67,12 @@ public class Task {
         this.selectionTaskInstances = selectionTaskInstances;
     }
 
-    public List<AnnotationTaskInstance> getAnnotationTaskInstances() {
-        return this.annotationTaskInstance;
+     public Long getCurrentTaskInstance() {
+        return currentTaskInstance;
     }
 
-    public void setAnnotationTaskInstances(List<AnnotationTaskInstance> ANNOTATION_TASK_INSTANCEs) {
-        this.annotationTaskInstance = ANNOTATION_TASK_INSTANCEs;
+    public void setCurrentTaskInstance(Long currentTaskInstance) {
+        this.currentTaskInstance = currentTaskInstance;
     }
 
     public Task(Long id, String workingSession, Worker worker, Campaign campaign, String type) {

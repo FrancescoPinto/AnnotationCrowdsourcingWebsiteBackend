@@ -9,14 +9,20 @@ import awt.server.dto.TaskDTO;
 import awt.server.dto.TaskInfosDTO;
 import awt.server.dto.TaskInstanceDTO;
 import awt.server.dto.TaskStatisticsDTO;
+import awt.server.exceptions.NoMoreTaskInstancesException;
 import awt.server.exceptions.TaskNotFoundException;
+import awt.server.exceptions.UserNotMasterException;
 import awt.server.exceptions.UserNotWorkerException;
 import awt.server.model.AnnotationTaskInstance;
+import awt.server.model.Campaign;
+import awt.server.model.Image;
+import awt.server.model.Master;
 import awt.server.model.SelectionTaskInstance;
 import awt.server.model.Task;
 import awt.server.model.User;
 import awt.server.model.Worker;
 import awt.server.respository.AnnotationTaskInstanceRepository;
+import awt.server.respository.CampaignRepository;
 import awt.server.respository.SelectionTaskInstanceRepository;
 import awt.server.respository.TaskRepository;
 import java.util.ArrayList;
@@ -39,13 +45,21 @@ public class TaskServiceImpl implements TaskService {
     @Autowired
     AnnotationTaskInstanceRepository atiRepository;
     
+    @Autowired
+    CampaignRepository campaignRepository;
+    
+    @Autowired
+    CampaignService campaignService;
+
+    
     @Override
-    public List<TaskDTO> getTasks(User user){
+    public List<TaskDTO> getTasksofStartedCampaigns(User user){
          if(user instanceof Worker){
             List<Task> tl = taskRepository.getTasksForWorker((Worker) user);
             List<TaskDTO> temp = new ArrayList<>();
             if(tl != null){
                 for(Task t:tl){
+                        if(t.getCampaign().getStatus().equals(Campaign.STARTED))
                         temp.add(TaskDTO.fromTaskToTaskDTO(t));
                         }
                 return temp;
@@ -100,11 +114,43 @@ public class TaskServiceImpl implements TaskService {
             
                 if(t.getType().equals(Task.SELECTION)){
                     SelectionTaskInstance s = stiRepository.getNextSelectionTaskInstance(t);
+                    if(s == null){
+                        
+                        taskRepository.closeWorkingSession(taskId);
+                        throw new NoMoreTaskInstancesException();
+                    }
                     taskRepository.setCurrentTaskInstance(taskId, s.getId());
                     return new TaskInstanceDTO(Task.SELECTION, s.getImage().getCanonical(),null);
                 }
                 else if(t.getType().equals(Task.ANNOTATION)){
-                    AnnotationTaskInstance a = atiRepository.getNextAnnotationTaskInstance(t); 
+                    List<AnnotationTaskInstance> atis = t.getAnnotationTaskInstance();
+                    List<AnnotationTaskInstance> temp = new ArrayList<>();
+                    List<Image> selectedImages = campaignService.getSelectedImages(t.getCampaign()); //ricevi le immagini selezionate
+                    //per le immagini selezionate cerchi le task instances nel nostro task che siano annotation non già fatte
+                    if(!atis.isEmpty()){
+                        for(AnnotationTaskInstance ati : atis){
+                            if(!selectedImages.isEmpty()){
+                                for(Image i: selectedImages)
+                                    if(ati.getSkyline().equals(AnnotationTaskInstance.NOTALREADY) && i.getId()== ati.getImage().getId())
+                                        temp.add(ati);
+                            }else{
+                                taskRepository.closeWorkingSession(taskId);
+                                throw new  NoMoreTaskInstancesException();
+                            }
+                        }
+                    } else{
+                        taskRepository.closeWorkingSession(taskId);
+                        throw new NoMoreTaskInstancesException();
+                    }
+                    
+                    
+                    
+                     if(temp.isEmpty()){
+                        taskRepository.closeWorkingSession(taskId);
+                        throw new NoMoreTaskInstancesException();
+                     }
+                     
+                     AnnotationTaskInstance a = temp.get(0);
                     taskRepository.setCurrentTaskInstance(taskId, a.getId());
                     return new TaskInstanceDTO(Task.ANNOTATION, a.getImage().getCanonical(),t.getCampaign().getAnnotationSize());
                 }
@@ -131,7 +177,7 @@ public class TaskServiceImpl implements TaskService {
          if(u instanceof Worker){
             Long idCurrentTaskInstance = taskRepository.getCurrentTaskInstance(taskId);
             if(idCurrentTaskInstance != null){
-                stiRepository.setCurrentTaskInstanceResult(idCurrentTaskInstance,String.valueOf(accepted));
+                stiRepository.setCurrentTaskInstanceResult(idCurrentTaskInstance,accepted?SelectionTaskInstance.ACCEPTED:SelectionTaskInstance.REJECTED);
             }
             else throw new TaskNotFoundException(); 
         }
@@ -161,7 +207,7 @@ public class TaskServiceImpl implements TaskService {
                 }else if(t.getType().equals(t.ANNOTATION)){
                     int available = 0;
                     int annotated = 0; 
-                    for(AnnotationTaskInstance a : t.getAnnotationTaskInstances()){
+                    for(AnnotationTaskInstance a : t.getAnnotationTaskInstance()){
                         if(a.getSkyline().equals(a.NOTALREADY))
                             available++;
                         else
@@ -175,4 +221,53 @@ public class TaskServiceImpl implements TaskService {
         }
         else throw new UserNotWorkerException();
     }
+    
+    @Override
+    public void initializeTasks(User m,Campaign c){
+        if(m instanceof Master){
+        List<Task> tasks = taskRepository.getTasksForCampaign(c.getId());
+        if(tasks.isEmpty())
+            return;
+        else
+        {
+            for(Task t: tasks){
+                if(t.getType().equals(Task.ANNOTATION)){
+                    List<Image> images = campaignRepository.getCampaignImages((Master) m, c.getId());
+                    if(!images.isEmpty())          
+                        for(Image i: images)
+                             atiRepository.createAnnotationTaskInstance(i,t,AnnotationTaskInstance.NOTALREADY);               
+                }
+                if(t.getType().equals(Task.SELECTION)){
+                    List<Image> images = campaignRepository.getCampaignImages((Master) m, c.getId());
+                    if(!images.isEmpty())                                   
+                        for(Image i: images)
+                             stiRepository.createSelectionTaskInstance(i,t,SelectionTaskInstance.NOTALREADY);
+                    }
+                }
+            }
+        }  
+        else throw new UserNotMasterException();
+                    
+    }
+    
+    @Override
+    public void beforeLogoutCleaning(User user){
+        if(user instanceof Worker){
+            List<Task> tasks = taskRepository.getTasksForWorker((Worker) user);
+             if(tasks != null){
+                for(Task t:tasks){
+                    if(t.getCampaign().getStatus().equals(Campaign.STARTED)){
+                    
+                        taskRepository.closeWorkingSession(t.getId());
+                    }
+                }
+             }
+               //recupera i task, vedi quelli relativi alle campagne ancora aperte e che hanno aperto la sessione di lavoro, settagli la sessione a closed
+            }
+            else 
+                 throw new UserNotWorkerException();
+    }
+    
+   // @Override
+    //public void finishTask
 }

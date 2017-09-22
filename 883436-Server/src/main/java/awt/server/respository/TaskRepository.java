@@ -37,4 +37,7 @@ public interface TaskRepository {
      public String getTaskWorkingSession(Long taskId);
      public Long getCurrentTaskInstance(Long taskId);
      public void setCurrentTaskInstance(Long taskId, Long currentTaskId);
+     
+     public void closeWorkingSession(Long taskId);
+     public void finishWorkingSession(Long taskId);
 }

@@ -45,10 +45,14 @@ public class CampaignRepositoryImpl implements CampaignRepository {
          q.setParameter(1,master.getId());
          q.setParameter(2,campaignId);
          List<Campaign> result = q.getResultList();
-         if(result.isEmpty())
+         if(result.isEmpty()){
+              System.out.println("NO CAMPAIGN DATA");
              return null;
-         else
+         }
+         else{
+             System.out.println("DAL REPOSITORY" + result.get(0).getId());
             return result.get(0);
+         }
      }
      
      @Override
@@ -88,10 +92,11 @@ public class CampaignRepositoryImpl implements CampaignRepository {
         q.setParameter(1,campaignId);
         q.setParameter(2,m.getId());
         List<Image> imgs = q.getResultList();
-        if(imgs.isEmpty())
+        return imgs;
+        /*if(imgs.isEmpty())
             return null;
         else
-            return imgs;
+            return imgs;*/
         
     }
       /*public Campaign createCampaign(String name, int selectionReplica, int threshold, int annotationReplica, int annotationSize){

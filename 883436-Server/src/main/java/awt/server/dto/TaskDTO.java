@@ -13,19 +13,19 @@ import awt.server.model.Task;
  */
 //MANDI UNA List!!!
 public class TaskDTO {
-    private Long id;
+    private String id;
     private String type;
 
-    public TaskDTO(Long id, String type) {
+    public TaskDTO(String id, String type) {
         this.id = id;
         this.type = type;
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -38,7 +38,7 @@ public class TaskDTO {
     }
     
     public static TaskDTO fromTaskToTaskDTO(Task t){
-        return new TaskDTO(t.getId(),t.getType());
+        return new TaskDTO("/api/task/"+t.getId(),t.getType());
       
     }
 

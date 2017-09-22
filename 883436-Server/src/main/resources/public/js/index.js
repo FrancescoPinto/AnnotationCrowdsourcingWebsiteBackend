@@ -195,7 +195,7 @@ function ViewModel(ctx) {
         }*/
 
         var data = new FormData();
-        data.append("file.jpg",document.getElementById("images").files[0]);
+        data.append("file",document.getElementById("images").files[0]);
 
         /*var i = 0;
         for(var x in document.getElementById("images").files[x]){
@@ -357,7 +357,7 @@ exports.register = function () {
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
 },{"./template.html":8}],8:[function(require,module,exports){
-module.exports = "<nav-bar params = \"repositories: repositories\"></nav-bar>\r\n<div class=\"container\" style = \"margin: auto\">\r\n\r\n    <div class=\"row\" >\r\n        <div class = \"col-sm-1\"></div>\r\n\r\n        <div class = \"col-sm-7\">\r\n            <div class=\"panel panel-primary\">\r\n                <div class=\"panel-heading\">Add images to the Campaign</div>\r\n                <div class=\"panel-body\">\r\n                    <form class=\"form-horizontal\">\r\n                        <input id = \"images\"  type=\"file\" accept = \"image/jpeg\" class=\"btn btn-default\"></input>\r\n                        <input type = \"submit\" value = \"Add Images\" data-bind = \"click: addImages\"/>\r\n                    </form>\r\n                </div>\r\n            </div>\r\n            <div class=\"panel panel-primary\">\r\n                <div class=\"panel-heading\">Edit images of Campaign</div>\r\n                <div class=\"panel-body\">\r\n                        <p> Press the X button to remove an image from the campaign</p>\r\n                    <ul data-bind=\"foreach: images\" style = \"list-style-type:none\">\r\n                        <li>\r\n                        <div class=\"panel panel-primary\">\r\n                            <div class=\"panel-heading\">\r\n                                <a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\" data-bind = \"click: $parent.removeImage\">&times;</a>\r\n                            </div>\r\n                            <div class=\"panel-body\">\r\n                                <div class=\"row\">\r\n                                    <div class=\"col-md-4\">\r\n                                        <div class=\"thumbnail\">\r\n                                            <!--<a href = \"#\" data-bind = \"click: $parent.getImageInfo\">-->\r\n                                                <img data-bind = \"attr: {src: canonical}\"/>\r\n                                            <!--</a>-->\r\n                                        </div>\r\n                                    </div>\r\n                                </div>\r\n                            </div>\r\n                        </div>\r\n                     </li>\r\n                    </ul>\r\n                </div>\r\n            </div>\r\n        </div>\r\n        <div class = \"col-sm-1\"></div>\r\n    </div>\r\n</div>";
+module.exports = "<nav-bar params = \"repositories: repositories\"></nav-bar>\r\n<div class=\"container\" style = \"margin: auto\">\r\n\r\n    <div class=\"row\" >\r\n        <div class = \"col-sm-1\"></div>\r\n\r\n        <div class = \"col-sm-7\">\r\n            <div class=\"panel panel-primary\">\r\n                <div class=\"panel-heading\">Add images to the Campaign</div>\r\n                <div class=\"panel-body\">\r\n                    <form class=\"form-horizontal\">\r\n                        <input id = \"images\"  type=\"file\" accept = \"image/jpeg\" class=\"btn btn-default\"></input>\r\n                        <input type = \"submit\" value = \"Add Images\" name = \"file\" data-bind = \"click: addImages\"/>\r\n                    </form>\r\n                </div>\r\n            </div>\r\n            <div class=\"panel panel-primary\">\r\n                <div class=\"panel-heading\">Edit images of Campaign</div>\r\n                <div class=\"panel-body\">\r\n                        <p> Press the X button to remove an image from the campaign</p>\r\n                    <ul data-bind=\"foreach: images\" style = \"list-style-type:none\">\r\n                        <li>\r\n                        <div class=\"panel panel-primary\">\r\n                            <div class=\"panel-heading\">\r\n                                <a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\" data-bind = \"click: $parent.removeImage\">&times;</a>\r\n                            </div>\r\n                            <div class=\"panel-body\">\r\n                                <div class=\"row\">\r\n                                    <div class=\"col-md-4\">\r\n                                        <div class=\"thumbnail\">\r\n                                            <!--<a href = \"#\" data-bind = \"click: $parent.getImageInfo\">-->\r\n                                                <img data-bind = \"attr: {src: canonical}\"/>\r\n                                            <!--</a>-->\r\n                                        </div>\r\n                                    </div>\r\n                                </div>\r\n                            </div>\r\n                        </div>\r\n                     </li>\r\n                    </ul>\r\n                </div>\r\n            </div>\r\n        </div>\r\n        <div class = \"col-sm-1\"></div>\r\n    </div>\r\n</div>";
 
 },{}],9:[function(require,module,exports){
 (function (global){
@@ -1448,9 +1448,11 @@ function ViewModel(ctx) {
                 self.getNextTaskInstance();
            // }
         }).catch(function (e) {
-            if(e == "Error: Not Found" && ctx.repositories.status.getCurrentTask().type == "selection"){
+            alert("errore in start working session");
+            alert(e.status);
+            if(e.jqXHR.status == 410 && ctx.repositories.status.getCurrentTask().type == "selection"){
                 self.nextTaskAvailable(false);
-            }else if(e == "Error: Not Found" && ctx.repositories.status.getCurrentTask().type == "annotation"){
+            }else if(e.jqXHR.status == 410 && ctx.repositories.status.getCurrentTask().type == "annotation"){
                 self.annotationEnabled(false);
             }
             //alert("session" + e.textStatus);
@@ -1471,9 +1473,11 @@ function ViewModel(ctx) {
             self.image(result.image);
             self.size(result.size);
             }).catch(function (e) {
-            if(e == "Error: Gone" && ctx.repositories.status.getCurrentTask().type == "selection"){
+                alert("errore in getNexttaskinstance");
+                alert(e);
+            if(e.jqXHR.status == 404 && ctx.repositories.status.getCurrentTask().type == "selection"){
                 self.nextTaskAvailable(false);
-            }else if ( ctx.repositories.status.getCurrentTask().type == "annotation"){
+            }else if (e.jqXHR.status == 404 && ctx.repositories.status.getCurrentTask().type == "annotation"){
                 self.annotationEnabled(false);
             }
             //alert("getNextTask" + e);
@@ -2251,7 +2255,7 @@ function Repository(server) {
     this._server = server || '';
 }
 
-Repository.prototype.uploadCampaignPhotos = function (apiToken,files, imageUrl) { //forse dovresti crare upload file con un parametro URL che usi per riciclare lo stesso metodo per diverse ufnzionalità
+Repository.prototype.uploadCampaignPhotos = function (apiToken,file, imageUrl) { //forse dovresti crare upload file con un parametro URL che usi per riciclare lo stesso metodo per diverse ufnzionalità
     var self = this;
     //return ctx.repositories.uploadfile(apiToken, files, imageUrl ); @TODO vedi se è più elegante fare uploadfile o come hai deciso di fare ora (in tal caso passa ctx in uploadCampaignPhotos se lo usi)
     return new Promise(function (resolve, reject) {
@@ -2259,13 +2263,14 @@ Repository.prototype.uploadCampaignPhotos = function (apiToken,files, imageUrl) 
             type: "POST",
             url: self._server + imageUrl,
             headers:{
-                'Authorization': apiToken,
+                'Authorization': apiToken//,
+                //'Content-Type': 'multipart/form-data;'// boundary=----------287032381131322'
             },
-            data: files,
+            data: file,
             cache: false,
             processData: false,
             contentType: false,
-            success: function(files){
+            success: function(data){
                 alert("Caricamento avvenuto con successo!");
             }
         }).done(function (result) {
@@ -2303,7 +2308,7 @@ Repository.prototype.getCampaignImages = function (apiToken, imageUrl){
                 alert(result[x]);
             }*/
             for(var x in result.images){
-                result.images[x].canonical = "http://awt.ifmledit.org"+result.images[x].canonical;
+                result.images[x].canonical = self._server+result.images[x].canonical;
             }
             resolve(result);
         }).fail(function (jqXHR, textStatus, errorThrown) {
@@ -2400,8 +2405,8 @@ Repository.prototype.removeImage = function(apiToken,imageUrl){
             url: self._server + imageUrl,
             type: 'DELETE',
             headers:{
-                'Authorization': apiToken,
-            },
+                'Authorization': apiToken
+            }
         }).done(function (result) {
             resolve(result);
         }).fail(function (jqXHR, textStatus, errorThrown) {
@@ -2728,12 +2733,12 @@ Repository.prototype.login = function (username,pwd) {
             url: self._server + '/api/auth',
             type: 'POST',
             headers:{
-                'Authorization': 'APIKey de20596e-ea23-4bf8-89f9-0b7f8928d435',
+             
                 'Content-Type':'application/json'
             },
             data: JSON.stringify({
                 username: username,
-                password: pwd,
+                password: pwd
             })
         }).done(function (result) {
             resolve(result);
@@ -3189,7 +3194,7 @@ Repository.prototype.getNextTaskInstance = function (apiToken,sessionUrl) {
             }
         }).done(function (result) {
             alert(result.image);
-            result.image = "http://awt.ifmledit.org"+result.image;
+            result.image = self._server+result.image;
             resolve(result);
         }).fail(function (jqXHR, textStatus, errorThrown) {
             /*for (var x in jqXHR)
@@ -3209,13 +3214,13 @@ Repository.prototype.submitAnnotation = function(apiToken,sessionUrl,skyline){
     var self = this;
     return new Promise(function (resolve, reject) {
         $.ajax({
-            url: self._server + sessionUrl,
+            url: self._server + sessionUrl + "/annotation",
             type: 'PUT',
             headers:{
                 'Authorization': apiToken,
                 'Content-Type':"application/json"
             },
-            data:JSON.stringify({"skyline":skyline})
+            data: JSON.stringify({skyline:skyline})
         }).done(function (result) {
             resolve(result);
         }).fail(function (jqXHR, textStatus, errorThrown) {
@@ -3235,14 +3240,15 @@ Repository.prototype.submitAnnotation = function(apiToken,sessionUrl,skyline){
 Repository.prototype.submitSelection = function(apiToken,sessionUrl,accepted) {
     var self = this;
     return new Promise(function (resolve, reject) {
+        //var acc = new String(accepted);
         $.ajax({
-            url: self._server + sessionUrl,
+            url: self._server + sessionUrl+"/selection",
             type: 'PUT',
             headers: {
                 'Authorization': apiToken,
                 'Content-Type': "application/json"
             },
-            data: JSON.stringify({"accepted": accepted})
+            data: JSON.stringify({accepted: accepted})
         }).done(function (result) {
             resolve(result);
         }).fail(function (jqXHR, textStatus, errorThrown) {
@@ -3356,6 +3362,7 @@ Repository.prototype.getUserInfo = function (apitoken) {
         }).done(function (result) {
             resolve(result);
         }).fail(function (jqXHR, textStatus, errorThrown) {
+            alert("ERRORE IN GETUSERINFO");
             alert(jqXHR.responseJSON.error);
             var error = new Error(errorThrown);
             error.textStatus = textStatus;
@@ -3380,11 +3387,13 @@ Repository.prototype.getTasksInfo = function (apitoken){
         }).done(function (result) {
             resolve(result);
         }).fail(function (jqXHR, textStatus, errorThrown) {
-            alert(jqXHR.responseJSON.error);
+            
             var error = new Error(errorThrown);
             error.textStatus = textStatus;
             error.jqXHR = jqXHR;
             error.errors = JSON.parse(jqXHR.responseText);
+            alert("errore in Tasks info primo");
+            alert(error.errors);
             reject(error);
         });
     });
@@ -3404,13 +3413,16 @@ Repository.prototype.getTaskInfo = function (apitoken,taskUrl){
         }).done(function (result) {
             resolve(result);
         }).fail(function (jqXHR, textStatus, errorThrown) {
-            for (var x in jqXHR) {
-                alert("" + x + ":" + jqXHR[x]);
-            }
+            //for (var x in jqXHR) {
+            //    alert("" + x + ":" + jqXHR[x]);
+            //}
             var error = new Error(errorThrown);
             error.textStatus = textStatus;
             error.jqXHR = jqXHR;
             error.errors = JSON.parse(jqXHR.responseText);
+            alert("Errore in taskInfo");
+            alert(error.errors);
+
             reject(error);
         });
     });
@@ -3421,7 +3433,7 @@ Repository.prototype.getCampaignInfo = function (id,apitoken){
 
     return new Promise(function (resolve, reject) {
         $.ajax({
-            url: self._server + id,
+            url: self._server + '/api/campaign/'+ id,
             type: 'GET',
             headers:{
                 'Authorization': apitoken

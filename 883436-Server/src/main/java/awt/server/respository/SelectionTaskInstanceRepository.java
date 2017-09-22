@@ -5,6 +5,7 @@
  */
 package awt.server.respository;
 
+import awt.server.model.Image;
 import awt.server.model.SelectionTaskInstance;
 import awt.server.model.Task;
 import java.util.List;
@@ -21,5 +22,6 @@ public interface SelectionTaskInstanceRepository {
         public List<SelectionTaskInstance> getSelectionTaskInstancesOfCampaign(Long campaignId);
         public SelectionTaskInstance getNextSelectionTaskInstance(Task t);
         public void setCurrentTaskInstanceResult(Long currentTaskInstanceId, String selected);
+        public void createSelectionTaskInstance(Image i,Task t, String status);
 
 }

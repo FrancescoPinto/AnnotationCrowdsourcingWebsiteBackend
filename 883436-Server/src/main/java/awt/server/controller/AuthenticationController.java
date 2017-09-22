@@ -15,6 +15,7 @@ import awt.server.exceptions.FailedToLoginException;
 import awt.server.model.User;
 import awt.server.service.JwtService;
 import awt.server.service.LoginService;
+import awt.server.service.UserService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,19 +30,22 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 @RestController
-public class LoginController {
+public class AuthenticationController {
 
     private final LoginService loginService;
     private final JwtService jwtService;
     private List<String> tempTokens;
 
+    @Autowired
+    UserService userService;
+    
     @SuppressWarnings("unused")
-    public LoginController() {
+    public AuthenticationController() {
         this(null, null);
     }
 
     @Autowired
-    public LoginController(LoginService loginService, JwtService jwtService) {
+    public AuthenticationController(LoginService loginService, JwtService jwtService) {
         this.loginService = loginService;
         this.jwtService = jwtService;
     }
@@ -68,7 +72,13 @@ public class LoginController {
     
     @RequestMapping(path = "/api/auth",
            method = RequestMethod.DELETE)
-    public void logout(@RequestHeader("Authorization") String APIToken) {
-     //HOW LOGIN?                
+    public ResponseEntity logout(@RequestHeader("Authorization") String APIToken) {
+            try{
+                    User temp = userService.getUser(APIToken);
+                    loginService.logout(temp);
+                    return  ResponseEntity.ok().body(null);
+                 }catch(Exception e){
+                        throw new RuntimeException(e);
+               }
     }
 }

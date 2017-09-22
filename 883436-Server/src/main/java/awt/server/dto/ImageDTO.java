@@ -10,19 +10,19 @@ package awt.server.dto;
  * @author Utente
  */
 public class ImageDTO {
-    private Long id;
+    private String id;
     private String canonical;
 
-    public ImageDTO(Long id, String canonical) {
-        this.id = id;
+    public ImageDTO(Long id, Long campaignId, String canonical) {
+        this.id = "/api/campaign/"+campaignId+"/image/"+id;
         this.canonical = canonical;
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

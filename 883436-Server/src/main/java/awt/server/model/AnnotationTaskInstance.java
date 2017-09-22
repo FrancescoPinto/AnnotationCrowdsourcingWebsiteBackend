@@ -3,11 +3,11 @@
  */
 package awt.server.model;
 
-import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 
@@ -21,7 +21,7 @@ public class AnnotationTaskInstance {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Basic
+    @Lob
     private String skyline; //o a valore o notAlready
      public static final String NOTALREADY = "notAlready";
 
@@ -30,6 +30,15 @@ public class AnnotationTaskInstance {
 
     @ManyToOne(targetEntity = Task.class)
     private Task annotationTask;
+
+    public AnnotationTaskInstance(String skyline, Image image, Task annotationTask) {
+        this.skyline = skyline;
+        this.image = image;
+        this.annotationTask = annotationTask;
+    }
+
+    public AnnotationTaskInstance() {
+    }
    
 
     public Long getId() {

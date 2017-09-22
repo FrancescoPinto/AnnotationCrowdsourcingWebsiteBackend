@@ -60,7 +60,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                  .antMatchers("/vendor/**").permitAll()
         .antMatchers(HttpMethod.POST, "/api/user").permitAll()
         .antMatchers(HttpMethod.POST, "/api/auth").permitAll()
-        .antMatchers(HttpMethod.GET,"/api/campaign/*/image/*").permitAll()
+        .antMatchers(HttpMethod.GET,"/api/campaign/*/freeimage/*").permitAll()
         .anyRequest().authenticated()
         .and()
         // We filter the api/login requests

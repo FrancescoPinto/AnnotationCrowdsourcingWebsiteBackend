@@ -12,23 +12,30 @@ import awt.server.model.Worker;
  * @author Utente
  */
 public class WorkerDTO {
-    private Long id;
+    private String id;
     private String fullname;
     private boolean selector,
                     annotator;
 
-    public WorkerDTO(Long id, String fullname, boolean selector, boolean annotator) {
+    public WorkerDTO(String id, String fullname, boolean selector, boolean annotator) {
         this.id = id;
         this.fullname = fullname;
         this.selector = selector;
         this.annotator = annotator;
     }
+    
+    public WorkerDTO(Long id, Long campaignId, String fullname, boolean selector, boolean annotator) {
+        this.id = "/api/campaign/"+campaignId+"/worker/"+id;
+        this.fullname = fullname;
+        this.selector = selector;
+        this.annotator = annotator;
+    }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

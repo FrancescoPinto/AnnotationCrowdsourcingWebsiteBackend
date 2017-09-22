@@ -12,25 +12,33 @@ import awt.server.model.Task;
  * @author Utente
  */
 public class TaskInfosDTO {
-    private Long id;
+    private String id;
     private String type,
                    campaign,
                    session,
                    statistics;
 
-    public TaskInfosDTO(Long id, String type, String campaign, String session, String statistics) {
+    public TaskInfosDTO(String id, String type, String campaign, String session, String statistics) {
         this.id = id;
         this.type = type;
         this.campaign = campaign;
         this.session = session;
         this.statistics = statistics;
     }
+    
+      public TaskInfosDTO(Long id, String type, String campaign, String session, String statistics) {
+        this.id = "/api/task/"+id;
+        this.type = type;
+        this.campaign = campaign;
+        this.session = session;
+        this.statistics = statistics;
+    }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

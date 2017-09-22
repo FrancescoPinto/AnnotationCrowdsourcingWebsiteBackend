@@ -86,7 +86,9 @@ public class UserController {
              method = RequestMethod.GET)
     public ResponseEntity getUserGenericInfo(@RequestHeader("Authorization") String APIToken){
         try{
-                User authUser = getUser(APIToken);
+                System.out.println(APIToken);
+                User authUser = userService.getUser(APIToken);
+                System.out.println(authUser.getId());
                 return ResponseEntity.ok().body(new UserDetailsDTO(authUser));
 
         }catch(Exception e){
@@ -98,7 +100,7 @@ public class UserController {
     public ResponseEntity editUserDetails(@RequestHeader("Authorization") String APIToken, @Valid @RequestBody EditUserDetailsDTO edit){
    
         try{
-                User authUser = getUser(APIToken);
+                User authUser = userService.getUser(APIToken);
                 userService.editUserDetails(authUser, edit.getFullname(),edit.getPassword());
                 return ResponseEntity.ok().body(null);
         }catch(IOException | URISyntaxException e)
@@ -109,14 +111,7 @@ public class UserController {
        
     }
     
-    private User getUser(String APIToken) throws UserNotLogged,IOException,URISyntaxException {
-        User temp = jwt.verify(APIToken);
-     
-        if(temp == null){
-            throw new UserNotLogged();
-        }
-        return temp;
-    }
+   
     /*
     @RequestMapping(value = "/api/auth", method = RequestMethod.POST, consumes = "application/json")
     public ResponseEntity loginUser(@RequestBody LoginDetailsDTO user){

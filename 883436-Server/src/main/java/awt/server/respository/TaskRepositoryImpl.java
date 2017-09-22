@@ -30,8 +30,6 @@ public class TaskRepositoryImpl implements TaskRepository{
     @PersistenceContext
     EntityManager em;
     
-    private static final String UNCOMPLETE = "Uncomplete";
-    private static final String COMPLETE = "Complete";
 
     //SELECT T FROM SelectionTask T where T.worker.id = ?1
     @Override
@@ -63,11 +61,11 @@ public class TaskRepositoryImpl implements TaskRepository{
     @Override
     public void createSelectionTaskForWorkerForCampaign(Master m,Worker w, Campaign c){
         if(getWorkerSelectionTaskForCampaign(w.getId(),m.getId(),c.getId()) == null){
-                    Task st = new Task(UNCOMPLETE,w,c,"selection");
+                    Task st = new Task(Task.CLOSED,w,c,"selection");
                     em.persist(st);
                 }
-        else
-            throw  new TaskAlreadyDefinedException();
+      //  else
+        //    throw  new TaskAlreadyDefinedException();
     }
     @Override
     public void deleteSelectionTaskForWorkerForCampaign(Master m,Worker w, Campaign c){
@@ -75,18 +73,18 @@ public class TaskRepositoryImpl implements TaskRepository{
          if(st != null){
                     em.remove(st);
                 }
-        else
-            throw  new TaskAlreadyDefinedException();
+       // else
+        //    throw  new TaskAlreadyDefinedException();
     }
     
     @Override
     public void createAnnotationTaskForWorkerForCampaign(Master m,Worker w, Campaign c){
         if(getWorkerAnnotationTaskForCampaign(w.getId(),m.getId(),c.getId()) == null){
-                    Task at = new Task(UNCOMPLETE,w,c,"annotation");
+                    Task at = new Task(Task.CLOSED,w,c,"annotation");
                     em.persist(at);
                 }
-        else
-            throw  new TaskAlreadyDefinedException();
+        //else
+         //   throw  new TaskAlreadyDefinedException();
     }
     @Override
     public void deleteAnnotationTaskForWorkerForCampaign(Master m,Worker w, Campaign c){
@@ -94,8 +92,8 @@ public class TaskRepositoryImpl implements TaskRepository{
          if(at != null){
                     em.remove(at);
                 }
-        else
-            throw  new TaskAlreadyDefinedException();
+        //else
+         //   throw  new TaskAlreadyDefinedException();
     }
     
     @Override
@@ -159,9 +157,47 @@ public class TaskRepositoryImpl implements TaskRepository{
           {
               Task t = temp.get(0);
               switch(t.getWorkingSession()){
-                  case Task.OPENED: throw new WorkingSessionAlreadyOpenedException();
+                  case Task.OPENED: return Task.OPENED;//throw new WorkingSessionAlreadyOpenedException();
                   case Task.CLOSED:  t.setWorkingSession(Task.OPENED); return Task.OPENED;
                   case Task.FINISHED: return Task.FINISHED;
+                  default: throw new IllegalStateException();
+              }
+           }
+     }
+     
+     @Override
+     public void closeWorkingSession(Long taskId){
+          Query q = em.createQuery("select t from Task t where t.id = ?1");
+          q.setParameter(1,taskId);
+          List<Task> temp = q.getResultList();
+          if(temp.isEmpty())
+              return;
+          else 
+          {
+              Task t = temp.get(0);
+              switch(t.getWorkingSession()){
+                  case Task.OPENED: t.setWorkingSession(Task.CLOSED); return;
+                  case Task.CLOSED:  return;
+                  case Task.FINISHED: return;
+                  default: throw new IllegalStateException();
+              }
+           }
+     }
+     
+     @Override
+     public void finishWorkingSession(Long taskId){
+          Query q = em.createQuery("select t from Task t where t.id = ?1");
+          q.setParameter(1,taskId);
+          List<Task> temp = q.getResultList();
+          if(temp.isEmpty())
+              return;
+          else 
+          {
+              Task t = temp.get(0);
+              switch(t.getWorkingSession()){
+                  case Task.OPENED: t.setWorkingSession(Task.FINISHED); return;
+                  case Task.CLOSED:  t.setWorkingSession(Task.FINISHED); return;
+                  case Task.FINISHED: return;
                   default: throw new IllegalStateException();
               }
            }

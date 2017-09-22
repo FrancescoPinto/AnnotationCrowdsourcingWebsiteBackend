@@ -3,6 +3,7 @@
  */
 package awt.server.model;
 
+import awt.server.model.convenience.CampaignStatistics;
 import awt.server.dto.NewCampaignDTO;
 import java.util.List;
 import javax.persistence.Basic;
@@ -38,6 +39,7 @@ public class Campaign {
 
     @Basic
     private String status;
+    public static final String STARTED = "started", TERMINATED = "ended", ready = "ready";
 
     @Basic
     @NotNull

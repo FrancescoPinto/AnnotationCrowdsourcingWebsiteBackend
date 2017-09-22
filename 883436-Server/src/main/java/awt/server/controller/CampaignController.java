@@ -21,7 +21,6 @@ import awt.server.dto.WorkerInfosDTO;
 import awt.server.dto.WorkersDTO;
 import awt.server.exceptions.ImageNotFoundException;
 import awt.server.exceptions.NotEmptyFileException;
-import awt.server.exceptions.UserNotLogged;
 import awt.server.exceptions.UserNotMasterException;
 import awt.server.model.Campaign;
 import awt.server.model.Image;
@@ -29,7 +28,7 @@ import awt.server.model.Master;
 import awt.server.model.User;
 import awt.server.service.CampaignService;
 import awt.server.service.ImageStorageService;
-import awt.server.service.JwtService;
+import awt.server.service.UserService;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -58,15 +57,14 @@ public class CampaignController {
     @Autowired
     ImageStorageService imageStorageService;
     
-       
     @Autowired
-    private JwtService jwt;
+    UserService userService;
     
     
     @RequestMapping(value = "/api/campaign", method = RequestMethod.GET)
     public ResponseEntity getMasterCampaigns(@RequestHeader("Authorization") String APIToken){
         try{
-                User authUser = getUser(APIToken); 
+                User authUser = userService.getUser(APIToken); 
                 List<Campaign> temp = campaignService.getMasterCampaigns(authUser);
                 List<CampaignDTO> tempDTO = new ArrayList<>();
                 for(Campaign c: temp){
@@ -85,7 +83,7 @@ public class CampaignController {
     public ResponseEntity createCampaign(@RequestHeader("Authorization") String APIToken, @Valid @RequestBody  NewCampaignDTO newCampaign){
         try{
             
-                User authUser = getUser(APIToken);
+                User authUser = userService.getUser(APIToken);
                 if(authUser instanceof Master){
                 Campaign campaign = campaignService.createCampaign(new Campaign(newCampaign,"ready",(Master) authUser));
                 return ResponseEntity.ok().header("Location", "/api/campaign/"+campaign.getId()).body(null);
@@ -105,9 +103,11 @@ public class CampaignController {
     public ResponseEntity getCampaignDetails(@PathVariable("id") Long id,@RequestHeader("Authorization") String APIToken){
         try{
             
-                User authUser = getUser(APIToken);
+                User authUser = userService.getUser(APIToken);
                 if(authUser instanceof Master){
+                    System.out.println("AUTH USER" + authUser.getId());
                 Campaign campaign = campaignService.getCampaignDetails(id, authUser);
+                System.out.println(campaign.getId());
                 return ResponseEntity.ok().body(CampaignInfoDTO.fromCampaignToCampaignInfoDTO(campaign));
                 }
                 else throw new UserNotMasterException();
@@ -121,13 +121,13 @@ public class CampaignController {
     }
     
        @RequestMapping(value = "/api/campaign/{id}", method = RequestMethod.PUT, consumes = "application/json")
-    public ResponseEntity editUserCampaign(
+    public ResponseEntity editCampaign(
             @RequestHeader("Authorization") String APIToken,
             @Valid @RequestBody  EditCampaignDTO newInfo,
             @PathVariable("id") Long id){
         try{
             
-                User authUser = getUser(APIToken);
+                User authUser = userService.getUser(APIToken);
                 if(authUser instanceof Master){
                 campaignService.editCampaign((Master) authUser,id,newInfo.getName(),newInfo.getSelection_replica(), newInfo.getThreshold(), newInfo.getAnnotation_replica(), newInfo.getAnnotation_size() );
                 return ResponseEntity.ok().body(null);
@@ -144,12 +144,12 @@ public class CampaignController {
     
     
           @RequestMapping(value = "/api/campaign/{id}/worker", method = RequestMethod.GET)
-    public ResponseEntity getWorkers(
+    public ResponseEntity getWorkersForCampaign(
             @RequestHeader("Authorization") String APIToken,
             @PathVariable("id") Long id){
         try{
             
-                User authUser = getUser(APIToken);
+                User authUser = userService.getUser(APIToken);
                 if(authUser instanceof Master){
                 List<WorkerDTO> workers = campaignService.getWorkersForCampaign(authUser, id);         
                 return ResponseEntity.ok().body(new WorkersDTO(workers));
@@ -166,13 +166,13 @@ public class CampaignController {
     
     
          @RequestMapping(value = "/api/campaign/{campaignId}/worker/{workerId}", method = RequestMethod.GET)
-    public ResponseEntity getWorkers(
+    public ResponseEntity getWorkerDataForCampaign(
             @RequestHeader("Authorization") String APIToken,
             @PathVariable("campaignId") Long campaignId,
             @PathVariable("workerId") Long workerId){
         try{
             
-                User authUser = getUser(APIToken);
+                User authUser = userService.getUser(APIToken);
                 if(authUser instanceof Master){
                 WorkerDTO w = campaignService.getWorkerInfo(authUser, workerId, campaignId);         
                 return ResponseEntity.ok().body(new WorkerInfosDTO(w,"/api/campaign/"+campaignId+"/worker/"+workerId+"/selection","/api/campaign/"+campaignId+"/worker/"+workerId+"/annotation"));
@@ -195,7 +195,7 @@ public class CampaignController {
             @PathVariable("workerId") Long workerId){
         try{
             
-                User authUser = getUser(APIToken);
+                User authUser = userService.getUser(APIToken);
                 if(authUser instanceof Master){
                 campaignService.enableWorkerForSelectionForCampaign(authUser, workerId, campaignId);         
                 return ResponseEntity.ok().body(null);
@@ -217,7 +217,7 @@ public class CampaignController {
             @PathVariable("workerId") Long workerId){
         try{
             
-                User authUser = getUser(APIToken);
+                User authUser = userService.getUser(APIToken);
                 if(authUser instanceof Master){
                 campaignService.disableWorkerForSelectionForCampaign(authUser, workerId, campaignId);         
                 return ResponseEntity.ok().body(null);
@@ -239,7 +239,7 @@ public class CampaignController {
             @PathVariable("workerId") Long workerId){
         try{
             
-                User authUser = getUser(APIToken);
+                User authUser = userService.getUser(APIToken);
                 if(authUser instanceof Master){
                 campaignService.enableWorkerForAnnotationForCampaign(authUser, workerId, campaignId);         
                 return ResponseEntity.ok().body(null);
@@ -261,7 +261,7 @@ public class CampaignController {
             @PathVariable("workerId") Long workerId){
         try{
             
-                User authUser = getUser(APIToken);
+                User authUser = userService.getUser(APIToken);
                 if(authUser instanceof Master){
                 campaignService.disableWorkerForAnnotationForCampaign(authUser, workerId, campaignId);         
                 return ResponseEntity.ok().body(null);
@@ -285,7 +285,7 @@ public class CampaignController {
             ){
         try{
             
-                User authUser = getUser(APIToken);
+                User authUser = userService.getUser(APIToken);
                 if(authUser instanceof Master){
                 campaignService.startCampaign(authUser, campaignId);         
                 return ResponseEntity.ok().body(null);
@@ -307,7 +307,7 @@ public class CampaignController {
             ){
         try{
             
-                User authUser = getUser(APIToken);
+                User authUser = userService.getUser(APIToken);
                 if(authUser instanceof Master){
                 campaignService.terminateCampaign(authUser, campaignId);         
                 return ResponseEntity.ok().body(null);
@@ -329,15 +329,15 @@ public class CampaignController {
             ){
         try{
             
-                User authUser = getUser(APIToken);
+                User authUser = userService.getUser(APIToken);
                 if(authUser instanceof Master){
                     List<Image> imgs = campaignService.getCampaignImages(authUser, campaignId);    
                     List<ImageDTO> result = new ArrayList<>();
                     if(imgs.isEmpty())
-                        return ResponseEntity.ok().body(new ImagesDTO());
+                        return ResponseEntity.ok().body("{\"images\":[]}");
                     else {
                         for(Image i: imgs){
-                        result.add(new ImageDTO(i.getId(),i.getCanonical()));
+                        result.add(new ImageDTO(i.getId(),campaignId,i.getCanonical()));
                         }
                     }
                 return ResponseEntity.ok().body(new ImagesDTO(result));
@@ -352,17 +352,21 @@ public class CampaignController {
 
     }
     
-      @RequestMapping(value = "/api/campaign/{campaignId}/image", method = RequestMethod.POST, consumes = "multipart/form-data")
+      @RequestMapping(value = "/api/campaign/{campaignId}/image", method = RequestMethod.POST, consumes = "multipart/form-data") //consumes = MediaType.MULTIPART_FORM_DATA_VALUE)//
     public ResponseEntity uploadImage(
             @RequestHeader("Authorization") String APIToken,
             @PathVariable("campaignId") Long campaignId,
-            @RequestParam("file") MultipartFile file
+            //@RequestPart("file") MultipartFile file
+           /* @RequestBody*/ @RequestParam("file") MultipartFile file
+            //@ModelAttribute("file") UploadedFile uploadedFile
             ){
         try{
             
-                User authUser = getUser(APIToken);
+                User authUser = userService.getUser(APIToken);
                 if(authUser instanceof Master){
-                    if(!file.isEmpty()){
+                   // if(!uploadedFile.getFile().isEmpty()){
+                   if(!file.isEmpty()){
+                        //Image i = imageStorageService.store(uploadedFile.getFile(),authUser, campaignId); 
                         Image i = imageStorageService.store(file,authUser, campaignId); 
                         return ResponseEntity.ok().header("Location", i.getCanonical()).body(null);
                     } else throw new NotEmptyFileException();
@@ -385,9 +389,11 @@ public class CampaignController {
             ){
         try{
             
-                User authUser = getUser(APIToken);
+                User authUser = userService.getUser(APIToken);
                 if(authUser instanceof Master){
-                    imageStorageService.deleteImage(authUser, campaignId,imageId);    
+                    System.out.println("Cerco di cancellare immagine "+imageId);
+                    imageStorageService.deleteImage(authUser, campaignId,imageId);   
+                    
                     return ResponseEntity.ok().body(null);
                 }
                 else throw new UserNotMasterException();
@@ -408,7 +414,7 @@ public class CampaignController {
             ){
         try{
             
-                User authUser = getUser(APIToken);
+                User authUser = userService.getUser(APIToken);
                 if(authUser instanceof Master){
                     Image i = imageStorageService.getImageInfo(authUser, campaignId,imageId);    
                     return ResponseEntity.ok().body(new ImageInfosDTO(i.getId(),i.getCanonical(),"/api/campaign/"+campaignId+"/image/"+i.getId()+"/statistics"));
@@ -433,7 +439,7 @@ public class CampaignController {
             ){
         try{
             
-                User authUser = getUser(APIToken);
+                User authUser = userService.getUser(APIToken);
                 if(authUser instanceof Master){
                     ImageStatisticsDetailsDTO i = campaignService.getImageStatisticsDetails(authUser, campaignId,imageId);    
                     return ResponseEntity.ok().body(i);
@@ -452,14 +458,14 @@ public class CampaignController {
     @RequestMapping(value = "/api/campaign/{campaignId}/statistics", method = RequestMethod.GET)
     public ResponseEntity getCampaignImageStatistics(
             @RequestHeader("Authorization") String APIToken,
-            @PathVariable("campaignId") Long campaignId,
-            @PathVariable("imageId") Long imageId
+            @PathVariable("campaignId") Long campaignId
+  
             ){
         try{
             
-                User authUser = getUser(APIToken);
+                User authUser = userService.getUser(APIToken);
                 if(authUser instanceof Master){
-                    ImageStatisticsDTO i = campaignService.getCampaignImageStatistics(authUser, campaignId, imageId);    
+                    ImageStatisticsDTO i = campaignService.getCampaignImageStatistics(authUser, campaignId);    
                     return ResponseEntity.ok().body(i);
                 }
                 
@@ -472,12 +478,5 @@ public class CampaignController {
         }
 
     }
-    private User getUser(String APIToken) throws UserNotLogged,IOException,URISyntaxException {
-        User temp = jwt.verify(APIToken);
-     
-        if(temp == null){
-            throw new UserNotLogged();
-        }
-        return temp;
-    }
+ 
 }

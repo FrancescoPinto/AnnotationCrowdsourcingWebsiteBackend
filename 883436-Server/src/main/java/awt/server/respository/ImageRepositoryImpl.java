@@ -44,7 +44,10 @@ public class ImageRepositoryImpl implements ImageRepository {
             im.setFilePath(rootLocation.resolve(c.getId()+"_"+im.getId()+".jpg").toString());
             im.setCanonical("/api/campaign/"+c.getId()+"/freeimage/"+im.getId());
             im.setCampaign(c);
+                        System.out.println("METADATI IMMAGINE SALVATI");
+
             Files.copy(file.getInputStream(), this.rootLocation.resolve(c.getId()+"_"+im.getId()+".jpg"));
+            System.out.println("IMMAGINE SALVATA");
             return im;
             
             /*int i = 1;
@@ -126,8 +129,11 @@ public class ImageRepositoryImpl implements ImageRepository {
     
     @Override
     public void deleteImage(Long campaignId, Long imageId){
-        try{    
+        try{
+            Image i = em.find(Image.class,imageId);
+            em.remove(i);
             Files.delete(getFilePath(campaignId,imageId));
+            
         }catch(IOException e){
             throw new ImageNotFoundException();
         }

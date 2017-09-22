@@ -10,17 +10,20 @@ package awt.server.dto;
  * @author Utente
  */
 public class TaskResultSelectionDTO {
-    private String accepted;
+    private boolean accepted;
 
-    public TaskResultSelectionDTO(String accepted) {
+    public TaskResultSelectionDTO(boolean accepted) {
         this.accepted = accepted;
     }
 
-    public String getAccepted() {
+    public TaskResultSelectionDTO() {
+    }
+
+    public boolean getAccepted() {
         return accepted;
     }
 
-    public void setAccepted(String accepted) {
+    public void setAccepted(boolean accepted) {
         this.accepted = accepted;
     }
     

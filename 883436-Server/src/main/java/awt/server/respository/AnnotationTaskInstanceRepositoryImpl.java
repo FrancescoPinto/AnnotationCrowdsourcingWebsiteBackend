@@ -7,6 +7,7 @@ package awt.server.respository;
 
 import awt.server.exceptions.TaskNotFoundException;
 import awt.server.model.AnnotationTaskInstance;
+import awt.server.model.Image;
 import awt.server.model.Task;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -49,7 +50,7 @@ public class AnnotationTaskInstanceRepositoryImpl implements AnnotationTaskInsta
           @Override
         public AnnotationTaskInstance getNextAnnotationTaskInstance(Task t){
              if(t.getType().equals(Task.ANNOTATION)){
-                 List<AnnotationTaskInstance> atis = t.getAnnotationTaskInstances();
+                 List<AnnotationTaskInstance> atis = t.getAnnotationTaskInstance();
                  for(AnnotationTaskInstance ati: atis)
                  {
                      if(ati.getSkyline().equals(AnnotationTaskInstance.NOTALREADY))
@@ -70,6 +71,12 @@ public class AnnotationTaskInstanceRepositoryImpl implements AnnotationTaskInsta
                  throw new TaskNotFoundException(); 
             else
               temp.get(0).setSkyline(annotation);
+        }
+        
+        @Override
+        public void createAnnotationTaskInstance(Image i,Task t, String status){
+            AnnotationTaskInstance a = new AnnotationTaskInstance(status,i,t);
+            em.persist(a);
         }
 
 }

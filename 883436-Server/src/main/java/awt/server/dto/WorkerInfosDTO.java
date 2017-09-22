@@ -10,14 +10,14 @@ package awt.server.dto;
  * @author Utente
  */
 public class WorkerInfosDTO {
-    private Long id;
+    private String id;
     private String fullname,
                    selection,
                    annotation;
     private boolean selector,
                     annotator;
 
-    public WorkerInfosDTO(Long id, String fullname, String selection, String annotation, boolean selector, boolean annotator) {
+    public WorkerInfosDTO(String id, String fullname, String selection, String annotation, boolean selector, boolean annotator) {
         this.id = id;
         this.fullname = fullname;
         this.selection = selection;
@@ -36,11 +36,11 @@ public class WorkerInfosDTO {
     }
 
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

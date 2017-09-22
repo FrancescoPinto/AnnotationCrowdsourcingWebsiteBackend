@@ -32,10 +32,11 @@ public interface CampaignService {
     public void disableWorkerForAnnotationForCampaign(User u,Long workerId,Long campaignId);  
     
     public ImageStatisticsDetailsDTO getImageStatisticsDetails(User u, Long campaignId, Long imageId);
-    public ImageStatisticsDTO getCampaignImageStatistics(User u, Long campaignId, Long imageId);
+    public ImageStatisticsDTO getCampaignImageStatistics(User u, Long campaignId);
 
     
     public void startCampaign(User u,Long campaignId);  
     public void terminateCampaign(User u,Long campaignId);  
     public List<Image> getCampaignImages(User user, Long campaignId);
+    public List<Image> getSelectedImages(Campaign c);
 }

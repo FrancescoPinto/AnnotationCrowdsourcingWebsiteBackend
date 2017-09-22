@@ -36,7 +36,7 @@ public class DemoApplication implements CommandLineRunner{
     
 	/*@RequestMapping("/")
 	String hello() {
-		return "hello world";
+		return "forward:/index.html";
 	}*/
 
 	public static void main(String[] args) {

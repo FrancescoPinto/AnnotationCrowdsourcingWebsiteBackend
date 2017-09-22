@@ -5,14 +5,10 @@
  */
 package awt.server.respository;
 
-import awt.server.dto.TaskInstanceDTO;
 import awt.server.exceptions.TaskNotFoundException;
-import awt.server.exceptions.UserNotWorkerException;
-import awt.server.model.AnnotationTaskInstance;
+import awt.server.model.Image;
 import awt.server.model.SelectionTaskInstance;
 import awt.server.model.Task;
-import awt.server.model.User;
-import awt.server.model.Worker;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -42,7 +38,7 @@ public class SelectionTaskInstanceRepositoryImpl implements SelectionTaskInstanc
         
         @Override
         public List<SelectionTaskInstance> getSelectionTaskInstancesOfCampaign(Long campaignId){
-            Query q = em.createQuery("select sti from SelectionTaskInstance sti where sti.annotationTask.campaign.id = ?1");
+            Query q = em.createQuery("select sti from SelectionTaskInstance sti where sti.selectionTask.campaign.id = ?1");
             q.setParameter(1,campaignId);
             List<SelectionTaskInstance> temp = q.getResultList();
             if(temp.isEmpty())
@@ -74,6 +70,12 @@ public class SelectionTaskInstanceRepositoryImpl implements SelectionTaskInstanc
                  throw new TaskNotFoundException(); 
             else
               temp.get(0).setSelected(selected);
+        }
+        
+         @Override
+        public void createSelectionTaskInstance(Image i,Task t, String status){
+            SelectionTaskInstance s = new SelectionTaskInstance(status,i,t);
+            em.persist(s);
         }
     
 }

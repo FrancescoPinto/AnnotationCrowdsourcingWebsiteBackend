@@ -6,6 +6,7 @@
 package awt.server.respository;
 
 import awt.server.model.AnnotationTaskInstance;
+import awt.server.model.Image;
 import awt.server.model.Task;
 import java.util.List;
 import org.springframework.stereotype.Repository;
@@ -21,4 +22,5 @@ public interface AnnotationTaskInstanceRepository {
         public List<AnnotationTaskInstance> getAnnotationTaskInstancesOfCampaign(Long campaignId);
         public AnnotationTaskInstance getNextAnnotationTaskInstance(Task t);
         public void setCurrentTaskInstanceResult(Long currentTaskInstanceId, String annotation);
+        public void createAnnotationTaskInstance(Image i,Task t,String status);   
 }

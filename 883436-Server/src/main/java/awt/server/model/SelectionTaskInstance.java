@@ -33,6 +33,15 @@ public class SelectionTaskInstance {
     @ManyToOne(targetEntity = Task.class)
     private Task selectionTask;
 
+    public SelectionTaskInstance(String selected, Image image, Task selectionTask) {
+        this.selected = selected;
+        this.image = image;
+        this.selectionTask = selectionTask;
+    }
+
+    public SelectionTaskInstance() {
+    }
+
     public Long getId() {
         return this.id;
     }

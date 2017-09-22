@@ -54,6 +54,10 @@ public class CampaignServiceImpl implements CampaignService{
     @Autowired
     AnnotationTaskInstanceRepository atiRepository;
     
+    @Autowired
+    TaskService taskService;
+    
+    
     @Override
     public List<Campaign> getMasterCampaigns(User user) throws UserNotMasterException{
         if(user instanceof Master)
@@ -108,7 +112,7 @@ public class CampaignServiceImpl implements CampaignService{
                             workerIsSelector = true;
 
 
-                        workerResult.add(new WorkerDTO(w.getId(),w.getFullname(),workerIsSelector,workerIsAnnotator));
+                        workerResult.add(new WorkerDTO(w.getId(), campaignId,w.getFullname(),workerIsSelector,workerIsAnnotator));
                     }
                    return workerResult;
                 }
@@ -133,7 +137,7 @@ public class CampaignServiceImpl implements CampaignService{
             if(tempSelection != null)
                 workerIsSelector = true;
 
-            return new WorkerDTO(worker.getId(),worker.getFullname(),workerIsSelector,workerIsAnnotator);
+            return new WorkerDTO(worker.getId(), campaignId, worker.getFullname(),workerIsSelector,workerIsAnnotator);
           
         }
         else throw new UserNotMasterException();
@@ -201,9 +205,12 @@ public class CampaignServiceImpl implements CampaignService{
     public void startCampaign(User user,Long campaignId){
         if(user instanceof Master){
               Campaign c = campaignRepository.getCampaignDetails(campaignId, (Master) user);
-              if(c.getStatus().equals("ready"))
+              if(c.getStatus().equals("ready")){
              //TODO: ASSICURARE LA LOGICA DI BUSINESS CORRETTA  (AVVIA CAMPAGNE CHE ESISTONO)
              campaignRepository.startCampaign((Master) user, c);
+             //inizializza i task
+             taskService.initializeTasks(user,c);
+              }
               else
                   throw new CampaignNotReadyException();
 
@@ -228,7 +235,6 @@ public class CampaignServiceImpl implements CampaignService{
     public List<Image> getCampaignImages(User user, Long campaignId){
         if(user instanceof Master){
              List<Image> imgs= campaignRepository.getCampaignImages((Master) user,campaignId);
-            
              return imgs;        
         }
         else throw new UserNotMasterException();
@@ -245,14 +251,14 @@ public class CampaignServiceImpl implements CampaignService{
                 List<AnnotationTaskInstance> ati = atiRepository.getAnnotationTaskInstancesForImageOfCampaign(imageId);
                 List<String> skylines = new ArrayList<>();
                 for(AnnotationTaskInstance a : ati){
-                    if(a.getSkyline().length() > 0)
+                    if(!a.getSkyline().equals(AnnotationTaskInstance.NOTALREADY))
                     skylines.add(a.getSkyline());
                 }
                 
                 int numaccept = 0;
                 int numrej = 0;
                 for(SelectionTaskInstance s: sti){
-                    if(s.getSelected().equals("selected"))
+                    if(s.getSelected().equals("accepted"))
                         numaccept++;
                     else if(s.getSelected().equals("rejected"))
                         numrej++;
@@ -276,7 +282,7 @@ public class CampaignServiceImpl implements CampaignService{
     }
   
            @Override
-        public ImageStatisticsDTO getCampaignImageStatistics(User u, Long campaignId, Long imageId){
+        public ImageStatisticsDTO getCampaignImageStatistics(User u, Long campaignId){
          if(u instanceof Master){
              Campaign c = campaignRepository.getCampaignDetails(campaignId, (Master)u);
              if(c.getStatus().equals("ended")){
@@ -286,23 +292,34 @@ public class CampaignServiceImpl implements CampaignService{
                 List<AnnotationTaskInstance> ati = atiRepository.getAnnotationTaskInstancesOfCampaign(campaignId);
                 int numannot = 0;
                 for(AnnotationTaskInstance a : ati){
-                        if(a.getSkyline().length() > 0)
+                        if(!a.getSkyline().equals(AnnotationTaskInstance.NOTALREADY))
                             numannot++;
                 }
                 
                 int numaccept = 0;
                 int numrej = 0;
-                for(SelectionTaskInstance s: sti){
-                    if(s.getSelected().equals("selected"))
+                List<Image> selectedImages = getSelectedImages(c);
+                
+                /*for(SelectionTaskInstance s: sti){
+                    if(s.getSelected().equals("accepted"))
                         numaccept++;
                     else if(s.getSelected().equals("rejected"))
                         numrej++;
-                }
+                }*/
                 
                 int numImg = 0;
                 List<Image> i = campaignRepository.getCampaignImages((Master)u, campaignId);
                 if(i != null)
                     numImg = i.size();
+                
+                if(selectedImages.isEmpty()){
+                    numrej = numImg;
+                }else
+                {
+                    numaccept = selectedImages.size();
+                    numrej = numImg - numaccept;
+                }
+                
                 return new ImageStatisticsDTO(numImg,numaccept,numrej,numannot);
                 
              }
@@ -311,4 +328,20 @@ public class CampaignServiceImpl implements CampaignService{
           }
           else throw new UserNotMasterException();
     }
+        @Override
+        public List<Image> getSelectedImages(Campaign c){
+            List<Image> images = c.getImages();
+            List<Image> selectedImages = new ArrayList<>();
+            for(Image i: images){
+                List<SelectionTaskInstance> stis = stiRepository.getSelectionTaskInstancesForImageOfCampaign(i.getId());
+                int numSelected = 0;
+                for(SelectionTaskInstance sti: stis){
+                    if(sti.getSelected().equals(SelectionTaskInstance.ACCEPTED))
+                        numSelected++;
+                }
+                if(numSelected >= c.getThreshold())
+                    selectedImages.add(i);
+            }
+            return selectedImages;
+        }
 }

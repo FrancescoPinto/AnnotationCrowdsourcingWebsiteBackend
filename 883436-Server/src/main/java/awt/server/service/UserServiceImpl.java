@@ -6,8 +6,11 @@
 package awt.server.service;
 
 import awt.server.exceptions.ProfileNotFoundException;
+import awt.server.exceptions.UserNotLogged;
 import awt.server.model.User;
 import awt.server.respository.UserRepository;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +24,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserServiceImpl implements UserService{
      @Autowired
     private UserRepository userRepository;
+     
+            
+    @Autowired
+    private JwtService jwt;
     
      @Override
     public void registerUser(User user){ 
@@ -35,5 +42,18 @@ public class UserServiceImpl implements UserService{
     @Override
     public User findByUsername(String username){
         return userRepository.findByUsername(username);
+    }
+    
+    @Override
+     public User getUser(String APIToken) throws UserNotLogged,IOException,URISyntaxException {
+        
+        String tempAPIToken = APIToken.replace("APIToken ", "");
+     
+        User temp = jwt.verify(tempAPIToken);
+     
+        if(temp == null){
+            throw new UserNotLogged();
+        }
+        return temp;
     }
 }
