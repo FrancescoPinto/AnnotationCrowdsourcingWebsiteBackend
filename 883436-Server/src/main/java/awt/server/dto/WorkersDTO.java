@@ -5,6 +5,7 @@
  */
 package awt.server.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,8 +18,16 @@ public class WorkersDTO {
     public WorkersDTO() {
     }
 
-    public WorkersDTO(List<WorkerDTO> workers) {
-        this.workers = workers;
+    //public WorkersDTO(List<WorkerDTO> workers) {
+    //    this.workers = workers;
+    //}
+    
+      public WorkersDTO(List<awt.server.model.convenience.Worker> workers) {
+          List<WorkerDTO> temp = new ArrayList<>();
+          for(awt.server.model.convenience.Worker w : workers){
+              temp.add(new WorkerDTO(w));
+          }
+        this.workers = temp;
     }
 
     public List<WorkerDTO> getWorkers() {

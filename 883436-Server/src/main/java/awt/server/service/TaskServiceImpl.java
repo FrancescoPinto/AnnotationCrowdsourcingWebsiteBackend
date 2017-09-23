@@ -5,11 +5,6 @@
  */
 package awt.server.service;
 
-import awt.server.dto.TaskDTO;
-import awt.server.dto.TaskInfosDTO;
-import awt.server.dto.TaskInstanceDTO;
-import awt.server.dto.TaskStatisticsDTO;
-import awt.server.exceptions.NoMoreTaskInstancesException;
 import awt.server.exceptions.TaskNotFoundException;
 import awt.server.exceptions.UserNotMasterException;
 import awt.server.exceptions.UserNotWorkerException;
@@ -21,8 +16,12 @@ import awt.server.model.SelectionTaskInstance;
 import awt.server.model.Task;
 import awt.server.model.User;
 import awt.server.model.Worker;
+import awt.server.model.convenience.TaskInfos;
+import awt.server.model.convenience.TaskSimplified;
+import awt.server.model.convenience.TaskStatistics;
 import awt.server.respository.AnnotationTaskInstanceRepository;
 import awt.server.respository.CampaignRepository;
+import awt.server.respository.ImageRepository;
 import awt.server.respository.SelectionTaskInstanceRepository;
 import awt.server.respository.TaskRepository;
 import java.util.ArrayList;
@@ -50,17 +49,20 @@ public class TaskServiceImpl implements TaskService {
     
     @Autowired
     CampaignService campaignService;
+    
+    @Autowired
+    ImageRepository imageRepository;
 
     
     @Override
-    public List<TaskDTO> getTasksofStartedCampaigns(User user){
+    public List<TaskSimplified> getTasksofStartedCampaigns(User user){
          if(user instanceof Worker){
             List<Task> tl = taskRepository.getTasksForWorker((Worker) user);
-            List<TaskDTO> temp = new ArrayList<>();
+            List<TaskSimplified> temp = new ArrayList<>();
             if(tl != null){
                 for(Task t:tl){
                         if(t.getCampaign().getStatus().equals(Campaign.STARTED))
-                        temp.add(TaskDTO.fromTaskToTaskDTO(t));
+                        temp.add(TaskSimplified.fromTaskToTaskSimplified(t));
                         }
                 return temp;
             }else
@@ -72,16 +74,16 @@ public class TaskServiceImpl implements TaskService {
     }
     
     @Override
-     public TaskInfosDTO getTaskInfo(User user, Long taskId){
+     public TaskInfos getTaskInfo(User user, Long taskId){
           if(user instanceof Worker){
             Task t = taskRepository.getTaskInfos(taskId);
             
           //  il problema è che lui ha due serie di id diversi per i diversi tipi di task ... ma la api mi passa solo l'id del task..."
            // quindi io vorrei un id unico TRA ENTRAMBE LE TABELLE!
             if(t != null){     
-                return TaskInfosDTO.fromTasktoTaskInfosDTO(t);
+                return TaskInfos.fromTasktoTaskInfos(t);
             }else
-                return null;
+                throw new TaskNotFoundException();
             
         }
         else 
@@ -106,86 +108,11 @@ public class TaskServiceImpl implements TaskService {
         else 
              throw new UserNotWorkerException();
     }
-     @Override
-    public TaskInstanceDTO getNextTaskInstance(User u, Long taskId){
-        if(u instanceof Worker){
-            Task t = taskRepository.getTaskInfos(taskId);
-            if(t != null){
-            
-                if(t.getType().equals(Task.SELECTION)){
-                    SelectionTaskInstance s = stiRepository.getNextSelectionTaskInstance(t);
-                    if(s == null){
-                        
-                        taskRepository.closeWorkingSession(taskId);
-                        throw new NoMoreTaskInstancesException();
-                    }
-                    taskRepository.setCurrentTaskInstance(taskId, s.getId());
-                    return new TaskInstanceDTO(Task.SELECTION, s.getImage().getCanonical(),null);
-                }
-                else if(t.getType().equals(Task.ANNOTATION)){
-                    List<AnnotationTaskInstance> atis = t.getAnnotationTaskInstance();
-                    List<AnnotationTaskInstance> temp = new ArrayList<>();
-                    List<Image> selectedImages = campaignService.getSelectedImages(t.getCampaign()); //ricevi le immagini selezionate
-                    //per le immagini selezionate cerchi le task instances nel nostro task che siano annotation non già fatte
-                    if(!atis.isEmpty()){
-                        for(AnnotationTaskInstance ati : atis){
-                            if(!selectedImages.isEmpty()){
-                                for(Image i: selectedImages)
-                                    if(ati.getSkyline().equals(AnnotationTaskInstance.NOTALREADY) && i.getId()== ati.getImage().getId())
-                                        temp.add(ati);
-                            }else{
-                                taskRepository.closeWorkingSession(taskId);
-                                throw new  NoMoreTaskInstancesException();
-                            }
-                        }
-                    } else{
-                        taskRepository.closeWorkingSession(taskId);
-                        throw new NoMoreTaskInstancesException();
-                    }
-                    
-                    
-                    
-                     if(temp.isEmpty()){
-                        taskRepository.closeWorkingSession(taskId);
-                        throw new NoMoreTaskInstancesException();
-                     }
-                     
-                     AnnotationTaskInstance a = temp.get(0);
-                    taskRepository.setCurrentTaskInstance(taskId, a.getId());
-                    return new TaskInstanceDTO(Task.ANNOTATION, a.getImage().getCanonical(),t.getCampaign().getAnnotationSize());
-                }
-                else throw new TaskNotFoundException(); 
-            }
-            else throw new TaskNotFoundException(); 
-        }
-        else throw new UserNotWorkerException();
-    }
+    
+    
     
     @Override
-    public void setCurrentInstanceResult(User u, Long taskId, String skyline){
-        if(u instanceof Worker){
-            Long idCurrentTaskInstance = taskRepository.getCurrentTaskInstance(taskId);
-            if(idCurrentTaskInstance != null){
-                atiRepository.setCurrentTaskInstanceResult(idCurrentTaskInstance,skyline);
-            }
-            else throw new TaskNotFoundException(); 
-        }
-        else throw new UserNotWorkerException();
-    } 
-    @Override
-    public void setCurrentInstanceResult(User u, Long taskId, Boolean accepted){
-         if(u instanceof Worker){
-            Long idCurrentTaskInstance = taskRepository.getCurrentTaskInstance(taskId);
-            if(idCurrentTaskInstance != null){
-                stiRepository.setCurrentTaskInstanceResult(idCurrentTaskInstance,accepted?SelectionTaskInstance.ACCEPTED:SelectionTaskInstance.REJECTED);
-            }
-            else throw new TaskNotFoundException(); 
-        }
-        else throw new UserNotWorkerException();
-    };
-    
-    @Override
-    public TaskStatisticsDTO getTaskStatistics(User u, Long taskId){
+    public TaskStatistics getTaskStatistics(User u, Long taskId){
         if(u instanceof Worker){
             Task t = taskRepository.getTaskInfos(taskId);
             if(t == null)
@@ -203,7 +130,7 @@ public class TaskServiceImpl implements TaskService {
                         if(s.getSelected().equals(s.REJECTED))
                             rejected++;
                     }
-                    return new TaskStatisticsDTO(available,accepted,rejected,null); 
+                    return new TaskStatistics(available,accepted,rejected,null); 
                 }else if(t.getType().equals(t.ANNOTATION)){
                     int available = 0;
                     int annotated = 0; 
@@ -213,7 +140,7 @@ public class TaskServiceImpl implements TaskService {
                         else
                             annotated++;
                     }
-                    return new TaskStatisticsDTO(available,null,null, annotated);
+                    return new TaskStatistics(available,null,null, annotated);
                 }
                 else throw new TaskNotFoundException();
             }
@@ -232,13 +159,13 @@ public class TaskServiceImpl implements TaskService {
         {
             for(Task t: tasks){
                 if(t.getType().equals(Task.ANNOTATION)){
-                    List<Image> images = campaignRepository.getCampaignImages((Master) m, c.getId());
+                    List<Image> images = imageRepository.getCampaignImages((Master) m, c.getId());
                     if(!images.isEmpty())          
                         for(Image i: images)
                              atiRepository.createAnnotationTaskInstance(i,t,AnnotationTaskInstance.NOTALREADY);               
                 }
                 if(t.getType().equals(Task.SELECTION)){
-                    List<Image> images = campaignRepository.getCampaignImages((Master) m, c.getId());
+                    List<Image> images = imageRepository.getCampaignImages((Master) m, c.getId());
                     if(!images.isEmpty())                                   
                         for(Image i: images)
                              stiRepository.createSelectionTaskInstance(i,t,SelectionTaskInstance.NOTALREADY);

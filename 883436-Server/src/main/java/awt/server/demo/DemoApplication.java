@@ -1,6 +1,5 @@
 package awt.server.demo;
 
-import awt.server.service.ImageStorageService;
 import java.util.Locale;
 import javax.annotation.Resource;
 import org.springframework.boot.CommandLineRunner;
@@ -19,6 +18,7 @@ import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
+import awt.server.service.ImageService;
 
 @SpringBootApplication
 @RestController
@@ -31,7 +31,7 @@ public class DemoApplication implements CommandLineRunner{
 
 
     @Resource
-    ImageStorageService iss;
+    ImageService iss;
     
     
 	/*@RequestMapping("/")

@@ -10,11 +10,12 @@ import awt.server.dto.ErrorDTO;
 import awt.server.dto.RegistrationDetailsDTO;
 import awt.server.dto.UserDetailsDTO;
 import awt.server.exceptions.ProfileNotFoundException;
-import awt.server.exceptions.UserNotLogged;
+import awt.server.exceptions.UserCreationException;
+import awt.server.exceptions.UserNotFound;
 import awt.server.model.Master;
 import awt.server.model.User;
 import awt.server.model.Worker;
-import awt.server.service.JwtService;
+import awt.server.service.auth.JwtService;
 import awt.server.service.UserService;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -52,8 +53,7 @@ public class UserController {
     public ResponseEntity registerUser(/*@Valid*/ @RequestBody RegistrationDetailsDTO user){
         
         //try{
-            User temp = userService.findByUsername(user.getUsername());
-        if(temp == null){
+          
                 
         //}catch(ProfileNotFoundException e){
            try{ 
@@ -66,16 +66,19 @@ public class UserController {
                 }
 
                 return ResponseEntity.ok().body(null);
-            }catch (Exception e){
+            }catch(UserCreationException e){
+                   return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
+
+            }
+           catch (Exception e){
                 return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
             }
-        }   
+        
          //  }catch(Exception e1){
          //      throw new RuntimeException(e1);
           // }
        // }
              
-        return ResponseEntity.badRequest().body(new ErrorDTO("Bad Request"));
             
         //}catch(UserCreationException e){
          //   return ResponseEntity.badRequest().body(new ErrorDTO(e.toString()));
@@ -85,14 +88,15 @@ public class UserController {
      @RequestMapping(value = "/api/user/me", 
              method = RequestMethod.GET)
     public ResponseEntity getUserGenericInfo(@RequestHeader("Authorization") String APIToken){
-        try{
-                System.out.println(APIToken);
-                User authUser = userService.getUser(APIToken);
-                System.out.println(authUser.getId());
+        try{     
+                User authUser = userService.getUser(APIToken); 
                 return ResponseEntity.ok().body(new UserDetailsDTO(authUser));
 
-        }catch(Exception e){
-            return ResponseEntity.badRequest().body(new ErrorDTO("User not logged"));//.body(new ErrorDTO(e.toString())); 
+        }catch(UserNotFound e){
+            return ResponseEntity.notFound().build();//body(new ErrorDTO(e.getMessage()));//.body(new ErrorDTO(e.toString())); 
+       }catch(IOException|URISyntaxException e){
+            return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
+
        }
     }
     
@@ -106,6 +110,8 @@ public class UserController {
         }catch(IOException | URISyntaxException e)
         {
              return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
+        }catch(ProfileNotFoundException e){
+            return ResponseEntity.notFound().build();//
         }
 
        

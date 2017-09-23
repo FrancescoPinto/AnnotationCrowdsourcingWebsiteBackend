@@ -3,12 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package awt.server.controller;
+package awt.server.respository;
+
+import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author Utente
  */
-public class _AnnotationTaskInstanceController {
+@Repository
+public class MasterRepositoryImpl {
     
 }

@@ -22,5 +22,7 @@ public class SPAController {
     String home(ModelMap model) {
         return "index";
     }
+    
+    
 
 }

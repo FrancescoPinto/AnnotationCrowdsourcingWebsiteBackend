@@ -1,4 +1,4 @@
-package awt.server.service;
+package awt.server.service.auth;
 
 
 

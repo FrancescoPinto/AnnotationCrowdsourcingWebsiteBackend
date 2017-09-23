@@ -1,4 +1,4 @@
-package awt.server.service;
+package awt.server.service.auth;
 
 import awt.server.model.User;
 import awt.server.respository.UserRepository;

@@ -3,43 +3,49 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package awt.server.dto;
+package awt.server.model.convenience;
 
-import awt.server.model.convenience.Worker;
+import awt.server.dto.*;
 
 /**
  *
  * @author Utente
  */
-public class WorkerDTO {
-    private String id;
+public class Worker {
+    private Long id, campaignId;
     private String fullname;
     private boolean selector,
                     annotator;
 
-    public WorkerDTO(String id, String fullname, boolean selector, boolean annotator) {
+    /*public Worker(Long id, Long campaign, String fullname, boolean selector, boolean annotator) {
         this.id = id;
+        this.campaignId = campaign;
         this.fullname = fullname;
         this.selector = selector;
         this.annotator = annotator;
-    }
+    }*/
     
-    public WorkerDTO(Long id, Long campaignId, String fullname, boolean selector, boolean annotator) {
-        this.id = "/api/campaign/"+campaignId+"/worker/"+id;
+    public Worker(Long id, Long campaignId, String fullname, boolean selector, boolean annotator) {
+        this.id = id;
+        this.campaignId = campaignId; 
         this.fullname = fullname;
         this.selector = selector;
         this.annotator = annotator;
-    }
-    
-    public WorkerDTO(Worker w){
-        this(w.getId(),w.getCampaignId(),w.getFullname(),w.isSelector(),w.isAnnotator());
     }
 
-    public String getId() {
+    public Long getCampaignId() {
+        return campaignId;
+    }
+
+    public void setCampaignId(Long campaignId) {
+        this.campaignId = campaignId;
+    }
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

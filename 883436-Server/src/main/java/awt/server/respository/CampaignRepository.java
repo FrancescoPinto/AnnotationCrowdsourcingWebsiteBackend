@@ -26,5 +26,5 @@ public interface CampaignRepository {
     public void editCampaign(Master master, Campaign campaign, String name, int selectRepl, int thr, int annRepl, int annSize);
     public void startCampaign(Master u,Campaign campaign);  
     public void terminateCampaign(Master u,Campaign campaign);   
-    public List<Image> getCampaignImages(Master m, Long campaignId);
+   
 }

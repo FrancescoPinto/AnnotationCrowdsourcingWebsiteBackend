@@ -10,11 +10,13 @@ import awt.server.model.SelectionTaskInstance;
 import awt.server.model.Task;
 import java.util.List;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
  * @author Utente
  */
+@Transactional
 @Repository
 public interface SelectionTaskInstanceRepository {
     

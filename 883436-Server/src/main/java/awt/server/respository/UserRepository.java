@@ -6,9 +6,8 @@
 package awt.server.respository;
 
 import awt.server.exceptions.ProfileNotFoundException;
-import awt.server.model.Master;
 import awt.server.model.User;
-import awt.server.model.Worker;
+import org.springframework.stereotype.Repository;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @author Utente
  */
-
+@Repository
 @Transactional
 public interface UserRepository {
     public User findByUsername(String username);

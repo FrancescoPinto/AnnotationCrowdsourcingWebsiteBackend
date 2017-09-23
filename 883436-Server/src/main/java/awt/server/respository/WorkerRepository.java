@@ -5,16 +5,17 @@
  */
 package awt.server.respository;
 
-import awt.server.model.Master;
 import awt.server.model.Worker;
 import java.util.List;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
  * @author Utente
  */
 @Repository
+@Transactional
 public interface WorkerRepository {
     public List<Worker> getWorkers();
     public Worker getWorkerInfo(Long id);

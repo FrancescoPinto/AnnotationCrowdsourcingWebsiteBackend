@@ -3,32 +3,24 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package awt.server.dto;
+package awt.server.model.convenience;
 
-import awt.server.model.convenience.TaskStatistics;
 
 /**
  *
  * @author Utente
  */
-public class TaskStatisticsDTO {
+public class TaskStatistics {
     private Integer available,
                 accepted,
                 rejected,
                 annotated;
 
-    public TaskStatisticsDTO(Integer available, Integer accepted, Integer rejected, Integer annotated) {
+    public TaskStatistics(Integer available, Integer accepted, Integer rejected, Integer annotated) {
         this.available = available;
         this.accepted = accepted;
         this.rejected = rejected;
         this.annotated = annotated;
-    }
-    
-    public TaskStatisticsDTO(TaskStatistics t){
-         this.available = t.getAvailable();
-        this.accepted = t.getAccepted();
-        this.rejected = t.getRejected();
-        this.annotated = t.getAnnotated();
     }
 
     public Integer getAvailable() {

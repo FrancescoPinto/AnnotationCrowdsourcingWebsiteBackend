@@ -6,6 +6,7 @@
 package awt.server.dto;
 
 import awt.server.model.Task;
+import awt.server.model.convenience.TaskInfos;
 
 /**
  *
@@ -26,13 +27,25 @@ public class TaskInfosDTO {
         this.statistics = statistics;
     }
     
-      public TaskInfosDTO(Long id, String type, String campaign, String session, String statistics) {
+      public TaskInfosDTO(Long id, String type, String campaign) {
         this.id = "/api/task/"+id;
         this.type = type;
         this.campaign = campaign;
-        this.session = session;
-        this.statistics = statistics;
+        this.session = "/api/task/"+id+"/session";
+        this.statistics = "/api/task/"+id+"/statistics";
     }
+      
+       public TaskInfosDTO(String id, String type, String campaign) {
+        this.id = "/api/task/"+id;
+        this.type = type;
+        this.campaign = campaign;
+        this.session = "/api/task/"+id+"/session";
+        this.statistics = "/api/task/"+id+"/statistics";
+    }
+      
+      public TaskInfosDTO(TaskInfos t){
+          this(String.valueOf(t.getId()),t.getType(),t.getCampaign());
+      }
 
     public String getId() {
         return id;
@@ -74,9 +87,5 @@ public class TaskInfosDTO {
         this.statistics = statistics;
     }
     
-    public static TaskInfosDTO fromTasktoTaskInfosDTO(Task t){
-        String campaign = t.getCampaign().getName();
-        return new TaskInfosDTO(t.getId(),t.getType(), campaign,"/api/task/"+t.getId()+"/session","/api/task/"+t.getId()+"/statistics");
-    }
     
 }

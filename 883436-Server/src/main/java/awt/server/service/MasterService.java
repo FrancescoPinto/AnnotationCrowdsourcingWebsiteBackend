@@ -3,12 +3,17 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package awt.server.controller;
+package awt.server.service;
+
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
  * @author Utente
  */
-public class _MasterController {
+@Component
+@Transactional
+public interface MasterService {
     
 }

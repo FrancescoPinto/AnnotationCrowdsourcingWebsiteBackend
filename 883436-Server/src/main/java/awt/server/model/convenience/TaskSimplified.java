@@ -3,27 +3,22 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package awt.server.dto;
+package awt.server.model.convenience;
 
 import awt.server.model.Task;
-import awt.server.model.convenience.TaskSimplified;
+
 
 /**
  *
  * @author Utente
  */
 //MANDI UNA List!!!
-public class TaskDTO {
+public class TaskSimplified {
     private String id;
     private String type;
 
-    public TaskDTO(String id, String type) {
+    public TaskSimplified(String id, String type) {
         this.id = id;
-        this.type = type;
-    }
-    
-    public TaskDTO(TaskSimplified t){
-        this.id = "/api/task/"+t.getId(); 
         this.type = type;
     }
 
@@ -43,12 +38,12 @@ public class TaskDTO {
         this.type = type;
     }
     
-    public static TaskDTO fromTaskToTaskDTO(Task t){
-        return new TaskDTO("/api/task/"+t.getId(),t.getType());
+    public static TaskSimplified fromTaskToTaskSimplified(Task t){
+        return new TaskSimplified(""+t.getId(),t.getType());
       
     }
 
-    public TaskDTO() {
+    public TaskSimplified() {
     }
     
 }

@@ -15,8 +15,10 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -135,6 +137,7 @@ public class ImageRepositoryImpl implements ImageRepository {
             Files.delete(getFilePath(campaignId,imageId));
             
         }catch(IOException e){
+            e.printStackTrace();
             throw new ImageNotFoundException();
         }
     }
@@ -147,4 +150,18 @@ public class ImageRepositoryImpl implements ImageRepository {
             else
                 return i;
         }
+        
+         @Override
+    public List<Image> getCampaignImages(Master m, Long campaignId){
+        Query q = em.createQuery("select i from Image i where i.campaign.id = ?1 and i.campaign.master.id = ?2");
+        q.setParameter(1,campaignId);
+        q.setParameter(2,m.getId());
+        List<Image> imgs = q.getResultList();
+        return imgs;
+        /*if(imgs.isEmpty())
+            return null;
+        else
+            return imgs;*/
+        
+    }
 }

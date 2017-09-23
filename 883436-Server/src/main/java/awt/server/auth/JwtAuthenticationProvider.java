@@ -3,7 +3,7 @@ package awt.server.auth;
 
 import awt.server.exceptions.JwtAuthenticationException;
 import awt.server.model.User;
-import awt.server.service.JwtService;
+import awt.server.service.auth.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;

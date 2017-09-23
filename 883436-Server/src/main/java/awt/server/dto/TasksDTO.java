@@ -5,6 +5,8 @@
  */
 package awt.server.dto;
 
+import awt.server.model.convenience.TaskSimplified;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,8 +19,12 @@ public class TasksDTO {
     public TasksDTO() {
     }
 
-    public TasksDTO(List<TaskDTO> tasks) {
-        this.tasks = tasks;
+    public TasksDTO(List<TaskSimplified> tasks) {
+        List<TaskDTO> temp = new ArrayList<>();
+        for(TaskSimplified ts:tasks){
+            temp.add(new TaskDTO(ts)); 
+        }
+        this.tasks = temp;
     }
 
     public List<TaskDTO> getTasks() {

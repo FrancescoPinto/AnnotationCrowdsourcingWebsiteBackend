@@ -1,9 +1,10 @@
-package awt.server.service;
+package awt.server.service.auth;
 
 
 import awt.server.dto.LoginDetailsDTO;
 import awt.server.model.User;
 import awt.server.model.Worker;
+import awt.server.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

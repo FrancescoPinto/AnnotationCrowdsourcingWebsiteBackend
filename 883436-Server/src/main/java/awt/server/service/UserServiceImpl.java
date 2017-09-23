@@ -5,7 +5,8 @@
  */
 package awt.server.service;
 
-import awt.server.exceptions.ProfileNotFoundException;
+import awt.server.exceptions.UserCreationException;
+import awt.server.service.auth.JwtService;
 import awt.server.exceptions.UserNotLogged;
 import awt.server.model.User;
 import awt.server.respository.UserRepository;
@@ -31,7 +32,10 @@ public class UserServiceImpl implements UserService{
     
      @Override
     public void registerUser(User user){ 
+         User temp = findByUsername(user.getUsername());
+        if(temp == null){
         userRepository.registerUser(user);
+        }else throw new UserCreationException();
     }
     
     @Override

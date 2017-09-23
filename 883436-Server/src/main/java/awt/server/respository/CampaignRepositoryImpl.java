@@ -86,19 +86,7 @@ public class CampaignRepositoryImpl implements CampaignRepository {
         }
     }
     
-    @Override
-    public List<Image> getCampaignImages(Master m, Long campaignId){
-        Query q = em.createQuery("select i from Image i where i.campaign.id = ?1 and i.campaign.master.id = ?2");
-        q.setParameter(1,campaignId);
-        q.setParameter(2,m.getId());
-        List<Image> imgs = q.getResultList();
-        return imgs;
-        /*if(imgs.isEmpty())
-            return null;
-        else
-            return imgs;*/
-        
-    }
+   
       /*public Campaign createCampaign(String name, int selectionReplica, int threshold, int annotationReplica, int annotationSize){
          Campaign c = em.find(Campaign.class, )
      }*/

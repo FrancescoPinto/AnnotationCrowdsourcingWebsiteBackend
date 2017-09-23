@@ -62,8 +62,8 @@ public class Campaign {
     @Max(value = 10, message = "Max 10")
     private int annotationSize;
 
-    @OneToOne(targetEntity = CampaignStatistics.class, mappedBy = "campaign")
-    private CampaignStatistics campaignStatistics;
+    //@OneToOne(targetEntity = CampaignStatistics.class, mappedBy = "campaign")
+    //private CampaignStatistics campaignStatistics;
 
     @ManyToOne(targetEntity = Master.class)
     private Master master;
@@ -71,7 +71,7 @@ public class Campaign {
     @OneToMany(targetEntity = Image.class, mappedBy = "campaign")
     private List<Image> images;
 
-    public Campaign(Long id, String name, String status, int selectionReplica, int threshold, int annotationReplica, int annotation_size, CampaignStatistics campaignStatistics, Master master, List<Image> images) {
+    public Campaign(Long id, String name, String status, int selectionReplica, int threshold, int annotationReplica, int annotation_size, /*CampaignStatistics campaignStatistics,*/ Master master, List<Image> images) {
         this.id = id;
         this.name = name;
         this.status = status;
@@ -79,7 +79,7 @@ public class Campaign {
         this.threshold = threshold;
         this.annotationReplica = annotationReplica;
         this.annotationSize = annotation_size;
-        this.campaignStatistics = campaignStatistics;
+        //this.campaignStatistics = campaignStatistics;
         this.master = master;
         this.images = images;
     }
@@ -155,13 +155,13 @@ public class Campaign {
         this.annotationSize = annotationSize;
     }
 
-    public CampaignStatistics getCampaignStatistics() {
+    /*public CampaignStatistics getCampaignStatistics() {
         return campaignStatistics;
     }
 
     public void setCampaignStatistics(CampaignStatistics campaignStatistics) {
         this.campaignStatistics = campaignStatistics;
-    }
+    }*/
 
     public Master getMaster() {
         return master;

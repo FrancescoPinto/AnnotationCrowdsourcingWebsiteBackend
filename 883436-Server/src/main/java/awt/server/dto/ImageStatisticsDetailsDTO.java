@@ -5,6 +5,7 @@
  */
 package awt.server.dto;
 
+import awt.server.model.convenience.ImageStatisticsDetails;
 import java.util.List;
 
 /**
@@ -24,6 +25,10 @@ public class ImageStatisticsDetailsDTO {
         this.selection = new Selection(numacc,numrej);
         this.annotation = annotation;
     }
+     
+     public ImageStatisticsDetailsDTO(ImageStatisticsDetails i){
+         this(i.getNumacc(), i.getNumacc(),i.getAnnotation());
+     }
     
     public Selection getSelection() {
         return selection;

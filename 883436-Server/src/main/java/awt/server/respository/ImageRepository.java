@@ -8,15 +8,18 @@ package awt.server.respository;
 import awt.server.model.Campaign;
 import awt.server.model.Image;
 import awt.server.model.Master;
+import java.util.List;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
  * @author Utente
  */
+@Transactional
 @Repository
 public interface ImageRepository {
     public Image store(MultipartFile file, Master m, Campaign c);
@@ -30,5 +33,5 @@ public interface ImageRepository {
     
     public FileSystemResource getFileSystemResource(Long campaignId,Long imageId);
     public void deleteImage(Long campaignId, Long imageId);
-
+    public List<Image> getCampaignImages(Master m, Long campaignId);
 }

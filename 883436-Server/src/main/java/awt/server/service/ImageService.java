@@ -5,9 +5,11 @@
  */
 package awt.server.service;
 
-import awt.server.dto.ImageStatisticsDetailsDTO;
+import awt.server.model.Campaign;
 import awt.server.model.Image;
 import awt.server.model.User;
+import awt.server.model.convenience.ImageStatisticsDetails;
+import java.util.List;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -20,7 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @Service
 @Transactional
-public interface ImageStorageService {
+public interface ImageService {
     public Image store(MultipartFile file, User u, Long campaignId);
     public Resource loadFile(String filename);
     public void deleteAll();
@@ -28,4 +30,8 @@ public interface ImageStorageService {
     public void deleteImage(User u, Long campaignId,Long imageId);
     public FileSystemResource getFileSystemResource(Long campaignId, Long imageId);
     public Image getImageInfo(User u, Long campaignId,Long imageId);  
+    
+    public ImageStatisticsDetails getImageStatisticsDetails(User u, Long campaignId, Long imageId);
+    public List<Image> getCampaignImages(User user, Long campaignId);
+    public List<Image> getSelectedImages(Campaign c);
 }

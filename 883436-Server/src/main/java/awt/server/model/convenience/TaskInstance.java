@@ -3,27 +3,23 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package awt.server.dto;
+package awt.server.model.convenience;
 
-import awt.server.model.convenience.TaskInstance;
+import awt.server.dto.*;
 
 /**
  *
  * @author Utente
  */
-public class TaskInstanceDTO {
+public class TaskInstance {
     private String type,
                    image;
     private Integer  size;
 
-    public TaskInstanceDTO(String type, String image, Integer size) {
+    public TaskInstance(String type, String image, Integer size) {
         this.type = type;
         this.image = image;
         this.size = size;
-    }
-    
-    public TaskInstanceDTO(TaskInstance t){
-        this(t.getType(),t.getImage(),t.getSize());
     }
 
     public String getType() {

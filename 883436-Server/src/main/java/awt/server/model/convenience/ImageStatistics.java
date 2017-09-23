@@ -3,32 +3,25 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package awt.server.dto;
+package awt.server.model.convenience;
 
-import awt.server.model.convenience.ImageStatistics;
+import awt.server.dto.*;
 
 /**
  *
  * @author Utente
  */
-public class ImageStatisticsDTO {
+public class ImageStatistics {
     private int images,
                 accepted,
                 rejected,
                 annotation;
 
-    public ImageStatisticsDTO(int images, int accepted, int rejected, int annotation) {
+    public ImageStatistics(int images, int accepted, int rejected, int annotation) {
         this.images = images;
         this.accepted = accepted;
         this.rejected = rejected;
         this.annotation = annotation;
-    }
-    
-    public ImageStatisticsDTO(ImageStatistics i){
-        this.images = i.getImages();
-        this.accepted = i.getAccepted();
-        this.rejected = i.getRejected();
-        this.annotation = i.getAnnotation();
     }
 
     public int getImages() {
