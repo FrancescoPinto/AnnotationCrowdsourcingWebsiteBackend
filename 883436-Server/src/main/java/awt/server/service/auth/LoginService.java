@@ -2,6 +2,7 @@ package awt.server.service.auth;
 
 
 import awt.server.dto.LoginDetailsDTO;
+import awt.server.exceptions.FailedToLoginException;
 import awt.server.model.User;
 import awt.server.model.Worker;
 import awt.server.service.TaskService;
@@ -34,6 +35,9 @@ public class LoginService {
 
     public User login(LoginDetailsDTO credentials) {
         User temp =  profileService.get(credentials.getUsername());
+        if(temp == null)
+            throw new FailedToLoginException("Wrong username and/or password");
+        
         if(temp.getPassword().equals(credentials.getPassword()))
             return temp;
         else

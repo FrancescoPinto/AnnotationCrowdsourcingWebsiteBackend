@@ -5,18 +5,34 @@
  */
 package awt.server.dto;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotEmpty;
+
 /**
  *
  * @author Utente
  */
 public class NewCampaignDTO {
+    @NotEmpty
+    @Length(min = 1,max = 30)
     private String name;
-    private int selection_replica,
-                threshold,
-                annotation_replica,
-                annotation_size;
+    @NotNull
+    @Min(1) 
+    private Integer selection_replica;
+    @NotNull
+    @Min(1)
+    private Integer threshold;
+    @NotNull
+    @Min(1)
+    private Integer annotation_replica;
+    @NotNull
+    @Min(1) @Max(10)
+    private Integer annotation_size;
 
-    public NewCampaignDTO(String name, int selectionReplica, int threshold, int annotationReplica, int annotationSize) {
+    public NewCampaignDTO(String name, Integer selectionReplica, Integer threshold, Integer annotationReplica, Integer annotationSize) {
         this.name = name;
         this.selection_replica = selectionReplica;
         this.threshold = threshold;
@@ -35,35 +51,35 @@ public class NewCampaignDTO {
         this.name = name;
     }
 
-    public int getSelection_replica() {
+    public Integer getSelection_replica() {
         return selection_replica;
     }
 
-    public void setSelection_replica(int selection_replica) {
+    public void setSelection_replica(Integer selection_replica) {
         this.selection_replica = selection_replica;
     }
 
-    public int getThreshold() {
+    public Integer getThreshold() {
         return threshold;
     }
 
-    public void setThreshold(int threshold) {
+    public void setThreshold(Integer threshold) {
         this.threshold = threshold;
     }
 
-    public int getAnnotation_replica() {
+    public Integer getAnnotation_replica() {
         return annotation_replica;
     }
 
-    public void setAnnotation_replica(int annotation_replica) {
+    public void setAnnotation_replica(Integer annotation_replica) {
         this.annotation_replica = annotation_replica;
     }
 
-    public int getAnnotation_size() {
+    public Integer getAnnotation_size() {
         return annotation_size;
     }
 
-    public void setAnnotation_size(int annotation_size) {
+    public void setAnnotation_size(Integer annotation_size) {
         this.annotation_size = annotation_size;
     }
 

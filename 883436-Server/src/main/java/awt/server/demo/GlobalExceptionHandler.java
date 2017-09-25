@@ -3,7 +3,7 @@ package awt.server.demo;
 
 import awt.server.dto.ErrorDTO;
 import awt.server.exceptions.FailedToLoginException;
-import awt.server.exceptions.ProfileNotFoundException;
+import awt.server.exceptions.UserCreationException;
 import awt.server.exceptions.UserNotLogged;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,6 +19,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 
 import static org.springframework.http.HttpStatus.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -34,16 +35,27 @@ public class GlobalExceptionHandler {
         this.messageSource = messageSource;
     }
     
+    //@ResponseStatus(NOT_FOUND)
+    //@ExceptionHandler(ProfileNotFoundException.class)
+    //public void profileNotFound() {
+    //}
+
     @ResponseStatus(NOT_FOUND)
-    @ExceptionHandler(ProfileNotFoundException.class)
-    public void profileNotFound() {
-    }
-
-    @ResponseStatus(UNAUTHORIZED)
     @ExceptionHandler(FailedToLoginException.class)
-    public void failedToLogin() {
+    public ResponseEntity<ErrorDTO> failedToLogin(FailedToLoginException ex) {
+        ErrorDTO response = new ErrorDTO(ex.getMessage());
+        return new ResponseEntity<ErrorDTO>(response, HttpStatus.NOT_FOUND);
     }
 
+     @ResponseStatus(BAD_REQUEST)
+    @ExceptionHandler(UserCreationException.class)
+    public ResponseEntity<ErrorDTO> failedTo(UserCreationException ex) {
+        ErrorDTO response = new ErrorDTO(ex.getMessage());
+        return new ResponseEntity<ErrorDTO>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    
+    
     @ResponseStatus(FORBIDDEN)
     @ExceptionHandler(SignatureException.class)
     public void failedToVerify() {

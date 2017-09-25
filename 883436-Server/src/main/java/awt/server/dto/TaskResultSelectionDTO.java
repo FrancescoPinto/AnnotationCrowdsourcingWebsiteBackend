@@ -5,12 +5,15 @@
  */
 package awt.server.dto;
 
+import javax.validation.constraints.NotNull;
+
 /**
  *
  * @author Utente
  */
 public class TaskResultSelectionDTO {
-    private boolean accepted;
+    @NotNull
+    private Boolean accepted;
 
     public TaskResultSelectionDTO(boolean accepted) {
         this.accepted = accepted;

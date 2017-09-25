@@ -75,16 +75,14 @@ public class CampaignController {
     }
     
     @RequestMapping(value = "/api/campaign", method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity createCampaign(@RequestHeader("Authorization") String APIToken, @Valid @RequestBody  NewCampaignDTO newCampaign, BindingResult result){
+    public ResponseEntity createCampaign(@RequestHeader("Authorization") String APIToken, @Valid @RequestBody  NewCampaignDTO newCampaign){
         try{
-            if(result.hasErrors())
-                return ResponseEntity.badRequest().body(null);
-            else{
+           
                 User authUser = userService.getUser(APIToken);        
                 Campaign temp = new Campaign(newCampaign,"ready",(Master) authUser);
                 Campaign campaign = campaignService.createCampaign(authUser, temp);
                 return ResponseEntity.ok().header("Location", "/api/campaign/"+campaign.getId()).body(null);
-            }
+
         }catch(IOException | URISyntaxException |UserNotMasterException e)
         {
              return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));

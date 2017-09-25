@@ -5,11 +5,15 @@
  */
 package awt.server.dto;
 
+import javax.validation.constraints.Size;
+
 /**
  *
  * @author Utente
  */
 public class LoginDetailsDTO {
+    
+    @Size(min = 3, max = 15)
     private String username,
                    password;
 

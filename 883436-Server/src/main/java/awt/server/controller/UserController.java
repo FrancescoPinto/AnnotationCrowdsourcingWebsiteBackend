@@ -50,7 +50,7 @@ public class UserController {
     
     
     @RequestMapping(value = "/api/user", method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity registerUser(/*@Valid*/ @RequestBody RegistrationDetailsDTO user){
+    public ResponseEntity registerUser(@Valid @RequestBody RegistrationDetailsDTO user){
         
         //try{
           

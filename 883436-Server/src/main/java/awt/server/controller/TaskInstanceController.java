@@ -19,6 +19,7 @@ import awt.server.service.TaskService;
 import awt.server.service.UserService;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -83,7 +84,7 @@ public class TaskInstanceController {
             @RequestHeader("Authorization") String APIToken,
             @PathVariable("taskId") Long taskId,
             //@RequestParam(name = "skyline", required = false) TaskResultAnnotationDTO tra,
-            @RequestBody(required = false) TaskResultSelectionDTO trs//("accepted"/*, required = false*/) TaskResultSelectionDTO trs
+            @Valid @RequestBody(required = false) TaskResultSelectionDTO trs//("accepted"/*, required = false*/) TaskResultSelectionDTO trs
             //HttpServletRequest request
             ){
     
@@ -122,7 +123,7 @@ public class TaskInstanceController {
             @RequestHeader("Authorization") String APIToken,
             @PathVariable("taskId") Long taskId,
             //@RequestParam(name = "skyline", required = false) TaskResultAnnotationDTO tra,
-            @RequestBody(required = false) TaskResultAnnotationDTO tra
+            @Valid @RequestBody(required = false) TaskResultAnnotationDTO tra
             ){
     
             try{

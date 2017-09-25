@@ -5,6 +5,9 @@
  */
 package awt.server.dto;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -16,15 +19,21 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 //ATTENTO: INVIERAI UNA List<CampaignDTO> automaticamente convertita in array
 public class EditCampaignDTO {
-   // @NotEmpty
-   // @Length(min = 1, max = 15)
+   @NotEmpty
+   @Length(min = 1, max = 30)
     private String name;
-   // @NotEmpty
-   // @Size(min = 3, max = 15)
-    private int    selection_replica,
-                   threshold,
-                   annotation_replica,
-                   annotation_size;
+    @NotNull
+    @Min(1) 
+    private Integer selection_replica;
+    @NotNull
+    @Min(1)
+    private Integer threshold;
+    @NotNull
+    @Min(1)
+    private Integer annotation_replica;
+    @NotNull
+    @Min(1) @Max(10)
+    private Integer annotation_size;
 
     public EditCampaignDTO(String name, int selectionReplica, int threshold, int annotationReplica, int annotationSize) {
         this.name = name;

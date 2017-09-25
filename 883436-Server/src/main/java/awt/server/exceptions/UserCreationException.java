@@ -12,7 +12,7 @@ package awt.server.exceptions;
 public class UserCreationException extends RuntimeException {
 
     public UserCreationException(){
-        super();
+        super("Username already taken");
     }
 
     public UserCreationException(String message){

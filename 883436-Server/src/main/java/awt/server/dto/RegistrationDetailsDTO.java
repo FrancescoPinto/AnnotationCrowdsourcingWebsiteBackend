@@ -6,7 +6,7 @@
 package awt.server.dto;
 
 
-import org.hibernate.validator.constraints.Length;
+import javax.validation.constraints.Size;
 import org.hibernate.validator.constraints.NotEmpty;
 
 /**
@@ -15,7 +15,7 @@ import org.hibernate.validator.constraints.NotEmpty;
  */
 public class RegistrationDetailsDTO {
     @NotEmpty
-    @Length(min = 3, max = 15)
+    @Size(min = 3, max = 15)
     private String fullname,
                    username,
                    password,

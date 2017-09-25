@@ -9,6 +9,7 @@ package awt.server.controller;
  *
  * @author Utente
  */
+import awt.server.dto.ErrorDTO;
 import awt.server.dto.LoginDetailsDTO;
 import awt.server.dto.TokenDTO;
 import awt.server.exceptions.FailedToLoginException;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import org.springframework.http.ResponseEntity;
@@ -54,7 +56,7 @@ public class AuthenticationController {
            method = RequestMethod.POST,
            consumes = "application/json",
             produces = APPLICATION_JSON_VALUE)
-    public ResponseEntity login(@RequestBody LoginDetailsDTO credentials,
+    public ResponseEntity login(@Valid @RequestBody LoginDetailsDTO credentials,
                                 HttpServletResponse response) {
         User temp = loginService.login(credentials);
         if (temp == null)
@@ -64,9 +66,13 @@ public class AuthenticationController {
                 String token = jwtService.tokenFor(temp);
                     response.setHeader("Authorization", token);
                     return  ResponseEntity.ok().body(new TokenDTO(token));
-                }catch(Exception e){
-                        throw new RuntimeException(e);
-               }
+           // }catch (FailedToLoginException e){
+             //   throw new RuntimeException(e);
+            
+            }catch(Exception e){
+                return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
+                    //return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage())); 
+           }
                
     }
     

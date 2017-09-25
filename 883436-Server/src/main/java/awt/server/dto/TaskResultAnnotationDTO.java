@@ -5,11 +5,14 @@
  */
 package awt.server.dto;
 
+import org.hibernate.validator.constraints.NotEmpty;
+
 /**
  *
  * @author Utente
  */
 public class TaskResultAnnotationDTO {
+    @NotEmpty
     private String skyline;
 
     public TaskResultAnnotationDTO(String skyline) {
