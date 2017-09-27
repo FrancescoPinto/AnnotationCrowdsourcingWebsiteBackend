@@ -1,0 +1,143 @@
+
+E666 -> codice errore tipico ritorna l'errore in format [{"error":"..."}] e non {errror:...} oppure {error:{username:...,password:...}}
+
+CONTROLLATO CON POSTMAN!!!
+ancora da controllare col client web
+
+POST /api/user per master
+OK con contenuto valido
+OK con utente già creato
+E666 con dati invalidi (ma reagisce correttamente a type sbagliato, password/username non presenti e campi vuoti) 
+In caso di messaggio JSON non parsabile correttamente risponde in bodo bruttino ... (i.e. fa 400 bad request e struttura tipica di errore HTTP con message che spiega)
+il problema di cui sopra credo si possa risolvere semplicemente chiudendo tutto il corpo in un try-catch con Exceptione poi inviando l'errore nel body con ErrorDTO (ha funzionato da altre parti)
+
+POST /api/user per worker
+OK con dati corretti, risposta corretta
+E666 con dati invalidi
+OK con credenziali scorrette ma valide
+ERRORE con header sbagliato (è ok, però risponde con risposta "http" standard di errore, quindi non letta bene dal client)
+
+GET /api/user/me
+OK senza authorization header
+OK con authorization header
+OK con token sbagliato
+
+PUT /api/user/me
+OK con tutti i dati 
+E666 con dati invalidi
+
+GET /api/campaign
+OK tutto
+ok se provi a usare il token di worker
+
+POST /api/campaign
+ok se provi a usare il token di un worker
+ok se dati validi
+E666 se dati invalidi
+ok ritorna il Location header correttamente 
+
+GET /api/campaign/{id}
+NI con id di campagna inesistente (fa notfound, ma non dò l'errror come lo vuole il client)
+OK se user non è master
+OK se tuttto è a posto
+NI se campagna non esiste o non appartiene all'utente (fa notfound ...)
+
+
+PUT /api/campaign/{id}
+NI con id di campagna inesistente (fa notfound, ma non error: )
+ok se user non è master
+ok se la campagna non è in stato readi
+ok se tutto è a posto
+E666 per dati invalidi
+
+
+GET /api/campaign/[id]/image
+ok se non ci sono immagini
+ok se ci sono
+BOH se campagna non esiste ritorna immagini vuote, può essere ok
+
+POST /api/campaign/[id}/image
+NI se non carichi nessuna immagine (fa bad request, però non nella forma che ti serve)
+OK se la campagna non è in stato ready
+ok se la campagna non esiste
+ok se non è master
+OK ritorna il location
+
+Get localhost:8080/api/campaign/[id]/image/[imageid]
+OK se è tutto a posto
+NI SE NON è DELLA campagna, o se la campagna non esiste, o se non è del master fa solo NotFound
+ok se user non è master
+
+DELETE   localhost:8080/api/campaign/[id]/image/[imageid]
+ok, se è tutto ok
+NI se non è della campagna o del mastero non esiste
+ok se no è master
+
+get localhost:8080/api/campaign/4/image/12/statistics
+OK se non ci sono info (no annotazioni o selezioni fatte)
+OK se ci sono info
+NO se non esiste la campagna o l'immagine
+
+Get /api/campaign/[id]/worker
+NI se la campagna non appartiene/non esiste (notfound)
+OK se ci sono info e la campagna appartiene al master
+OK se non è master, cerchi worker/campagna che non esiste
+
+GET .../[ID]
+OK ...
+
+POST .../worker/id/selection
+Ok se non esiste
+OK se tutto ok
+OK se campagna not ready
+
+POST/DELETE /.../worker/id/selection|annotation
+OK in ogni caso
+
+post (START CAMPAIGN)
+OK se non c'è campagna
+OK se c'è ed è nello stato giusto
+OK se c'è e non è nello stato giusto
+
+DELETE (TERMINATE CAMPAIGN)
+OK se non c'è campagna
+OK se c'è ed è nello stato giusto
+OK se c'è e non è nello stato giusto
+
+Get (statistica campagna)
+OK se è tutto a posto
+Ok se la campagna non è nello stato giusto
+
+GET /api/task
+OK se tutto è a posto
+OK se non è worker
+OK se non è loggato
+OK se non ci sono task
+
+GET /api/task/[id]
+Ok se il task c'è
+NI se non c'è (fa notfound senza {errror:...}
+OK se non è user
+ok SE NON è worker
+
+POST /api/task/{id}/session
+NI se manca Authentication header (solito badrequest senza error)
+OK se è tutto a posto
+NO se fai doppia richiesta di session quando è già aperta (il loro server ritorna notFound) anche se poi nella specifica non si dice niente sulla session ...
+OK se non è worker
+
+GET /api/task/{id}/session
+OK se fai multiple richieste
+IN QUESTI DUE (questo e il prossimo) controlla la logica Gone e Not Found
+
+PUT /api/task/{id}/session
+QUESTO QUI L'HO DIVERSIFICATO RISPETTO ALLA SPECIFICA
+ho aggiunto /session/selection e /session/annotation
+vedi se riesci a unificarli
+NI se manca il body (solito badrequest...)
+NI se il body è non valido (tipo sbagliato in caso di selection) (dà errore, ma non tipo {error:...}
+NI se la fai senza aver prima preso una nextaskinstance (notfound come solito)
+
+get /api/task/{id}/session
+NI se il task non esiste
+NI se non c'è Auth o non è worker

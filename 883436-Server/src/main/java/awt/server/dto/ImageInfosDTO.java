@@ -10,11 +10,11 @@ package awt.server.dto;
  * @author Utente
  */
 public class ImageInfosDTO {
-    private Long id;
+    private String id;
     private String canonical,
                    statistics;
 
-    public ImageInfosDTO(Long id, String canonical, String statistics) {
+    public ImageInfosDTO(String id, String canonical, String statistics) {
         this.id = id;
         this.canonical = canonical;
         this.statistics = statistics;
@@ -32,11 +32,11 @@ public class ImageInfosDTO {
     }
 
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

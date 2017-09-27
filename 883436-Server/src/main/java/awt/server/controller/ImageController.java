@@ -12,6 +12,8 @@ import awt.server.dto.ImageInfosDTO;
 import awt.server.dto.ImageStatisticsDetailsDTO;
 import awt.server.dto.ImagesDTO;
 import awt.server.exceptions.CampaignNotClosedException;
+import awt.server.exceptions.CampaignNotFoundException;
+import awt.server.exceptions.CampaignNotReadyException;
 import awt.server.exceptions.ImageNotFoundException;
 import awt.server.exceptions.NotEmptyFileException;
 import awt.server.exceptions.UserNotMasterException;
@@ -39,6 +41,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import awt.server.service.ImageService;
 import java.io.InputStream;
+import java.net.URI;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -84,7 +88,8 @@ public class ImageController {
     }
     
         @RequestMapping(value = "/api/campaign/{campaignId}/image", method = RequestMethod.POST, consumes = "multipart/form-data") //consumes = MediaType.MULTIPART_FORM_DATA_VALUE)//
-    public ResponseEntity uploadImage(
+        @Transactional
+        public ResponseEntity uploadImage(
             @RequestHeader("Authorization") String APIToken,
             @PathVariable("campaignId") Long campaignId,
             //@RequestPart("file") MultipartFile file
@@ -99,7 +104,9 @@ public class ImageController {
                    if(!file.isEmpty()){
                         //Image i = imageStorageService.store(uploadedFile.getFile(),authUser, campaignId); 
                         Image i = imageService.store(file,authUser, campaignId); 
-                        return ResponseEntity.ok().header("Location", i.getCanonical()).body(null);
+                        //return ResponseEntity.ok().header("Location", i.getCanonical()).body(null);
+                          URI location = new URI("/api/campaign/"+campaignId+"/image/"+i.getId());
+                return ResponseEntity.created(location).build();
                     } else throw new NotEmptyFileException();
                // }
                // else throw new UserNotMasterException();
@@ -108,11 +115,14 @@ public class ImageController {
         }catch(IOException | URISyntaxException |UserNotMasterException e)
         {
              return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
+        }catch(CampaignNotReadyException|CampaignNotFoundException e){
+            return ResponseEntity.status(412).body(new ErrorDTO(e.getMessage()));
         }
 
     }
     
      @RequestMapping(value = "/api/campaign/{campaignId}/image/{imageId}", method = RequestMethod.DELETE)
+     @Transactional
     public ResponseEntity deleteImage(
             @RequestHeader("Authorization") String APIToken,
             @PathVariable("campaignId") Long campaignId,
@@ -131,6 +141,8 @@ public class ImageController {
              return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
         }catch(ImageNotFoundException e){
             return ResponseEntity.notFound().build();
+        }catch(CampaignNotReadyException |CampaignNotFoundException e){
+            return ResponseEntity.status(412).body(new ErrorDTO(e.getMessage()));
         }
 
     }
@@ -145,7 +157,7 @@ public class ImageController {
             
                 User authUser = userService.getUser(APIToken);
                 Image i = imageService.getImageInfo(authUser, campaignId,imageId);    
-                return ResponseEntity.ok().body(new ImageInfosDTO(i.getId(),i.getCanonical(),"/api/campaign/"+campaignId+"/image/"+i.getId()+"/statistics"));
+                return ResponseEntity.ok().body(new ImageInfosDTO("/api/campaign/"+campaignId+"/image/"+i.getId(),i.getCanonical(),"/api/campaign/"+campaignId+"/image/"+i.getId()+"/statistics"));
 
         }catch(IOException | URISyntaxException |UserNotMasterException e){
              return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
@@ -173,7 +185,7 @@ public class ImageController {
         }catch(IOException | URISyntaxException |UserNotMasterException e)
         {
              return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
-        }catch(ImageNotFoundException e){
+        }catch(ImageNotFoundException |CampaignNotFoundException e){
             return ResponseEntity.notFound().build();
         }catch(CampaignNotClosedException e){
             return ResponseEntity.status(412).body(new ErrorDTO(e.getMessage()));

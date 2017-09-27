@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @author Utente
  */
-@Transactional
+
 @Repository
 public interface SelectionTaskInstanceRepository {
     

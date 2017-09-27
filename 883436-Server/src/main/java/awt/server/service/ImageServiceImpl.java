@@ -5,8 +5,9 @@
  */
 package awt.server.service;
 
-import awt.server.dto.ImageStatisticsDetailsDTO;
 import awt.server.exceptions.CampaignNotClosedException;
+import awt.server.exceptions.CampaignNotFoundException;
+import awt.server.exceptions.CampaignNotReadyException;
 import awt.server.exceptions.UserNotMasterException;
 import awt.server.model.AnnotationTaskInstance;
 import awt.server.model.Campaign;
@@ -62,6 +63,11 @@ public class ImageServiceImpl implements ImageService {
       public Image store(MultipartFile file, User u, Long campaignId){
           if(u instanceof Master){
           Campaign c = campaignRepository.getCampaignDetails(campaignId, (Master) u);
+          if(c == null)
+              throw new CampaignNotFoundException();
+          
+            if(!c.getStatus().equals(Campaign.ready))
+                throw new CampaignNotReadyException();
           return imageRepository.store(file,(Master) u, c);
           }
           else throw new UserNotMasterException();
@@ -91,7 +97,13 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public void deleteImage(User u, Long campaignId,Long imageId){
           if(u instanceof Master){
-          imageRepository.deleteImage(campaignId,imageId);
+              Campaign c = campaignRepository.getCampaignDetails(campaignId, (Master) u);
+               if(c == null)
+              throw new CampaignNotFoundException();
+          
+            if(!c.getStatus().equals(Campaign.ready))
+                throw new CampaignNotReadyException();
+          imageRepository.deleteImage(campaignId,imageId, u.getId());
           }
           else throw new UserNotMasterException();
     } 
@@ -99,7 +111,7 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public Image getImageInfo(User u, Long campaignId,Long imageId){
         if(u instanceof Master){
-          return imageRepository.getImage(campaignId,imageId);
+          return imageRepository.getImage(campaignId,imageId, u.getId());
           }
           else throw new UserNotMasterException();
     }
@@ -117,12 +129,17 @@ public class ImageServiceImpl implements ImageService {
     public ImageStatisticsDetails getImageStatisticsDetails(User u, Long campaignId, Long imageId){
          if(u instanceof Master){
              Campaign c = campaignRepository.getCampaignDetails(campaignId, (Master)u);
+             if(c == null)
+                 throw new CampaignNotFoundException();
              if(c.getStatus().equals("ended")){
                 // List<Task> ts = taskRepository.getTasksForCampaign(campaignId);
                 // for(Task t: ts){
                 List<SelectionTaskInstance> sti = stiRepository.getSelectionTaskInstancesForImageOfCampaign(imageId);
                 List<AnnotationTaskInstance> ati = atiRepository.getAnnotationTaskInstancesForImageOfCampaign(imageId);
                 List<String> skylines = new ArrayList<>();
+                if(ati == null)
+                    ;
+                else
                 for(AnnotationTaskInstance a : ati){
                     if(!a.getSkyline().equals(AnnotationTaskInstance.NOTALREADY))
                     skylines.add(a.getSkyline());
@@ -130,6 +147,9 @@ public class ImageServiceImpl implements ImageService {
                 
                 int numaccept = 0;
                 int numrej = 0;
+                if(sti == null)
+                    ;
+                else
                 for(SelectionTaskInstance s: sti){
                     if(s.getSelected().equals("accepted"))
                         numaccept++;

@@ -5,6 +5,7 @@
  */
 package awt.server.dto;
 
+import javax.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.NotEmpty;
 
 /**
@@ -13,6 +14,7 @@ import org.hibernate.validator.constraints.NotEmpty;
  */
 public class TaskResultAnnotationDTO {
     @NotEmpty
+    @NotNull
     private String skyline;
 
     public TaskResultAnnotationDTO(String skyline) {

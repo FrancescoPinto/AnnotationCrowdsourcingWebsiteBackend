@@ -27,7 +27,7 @@ public class ImageStatisticsDetailsDTO {
     }
      
      public ImageStatisticsDetailsDTO(ImageStatisticsDetails i){
-         this(i.getNumacc(), i.getNumacc(),i.getAnnotation());
+         this(i.getNumacc(), i.getNumrej(),i.getAnnotation());
      }
     
     public Selection getSelection() {

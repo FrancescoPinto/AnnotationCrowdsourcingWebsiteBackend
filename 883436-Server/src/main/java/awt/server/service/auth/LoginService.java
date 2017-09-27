@@ -5,6 +5,7 @@ import awt.server.dto.LoginDetailsDTO;
 import awt.server.exceptions.FailedToLoginException;
 import awt.server.model.User;
 import awt.server.model.Worker;
+import awt.server.respository.InvalidTokenRepository;
 import awt.server.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,6 +23,10 @@ public class LoginService {
     
     @Autowired
     private JwtService jwtService;
+    
+    
+    @Autowired
+    private InvalidTokenRepository invalidTokenRepository;
 
     @SuppressWarnings("unused")
     public LoginService() {
@@ -35,6 +40,7 @@ public class LoginService {
 
     public User login(LoginDetailsDTO credentials) {
         User temp =  profileService.get(credentials.getUsername());
+                
         if(temp == null)
             throw new FailedToLoginException("Wrong username and/or password");
         
@@ -44,12 +50,17 @@ public class LoginService {
             return null; 
     }
     
-    public void logout(User u){
+    public void logout(User u, String apitoken){
        
-        jwtService.logoutToken(u);
+        jwtService.logoutToken(apitoken,u.getUsername());
         if(u instanceof Worker){
             taskService.beforeLogoutCleaning(u);
         }
+    }
+    
+     public void loginToken(String username){
+       
+       invalidTokenRepository.loginToken(username);
     }
     //NEL LOGOUT ANNULLA LE TASK WORKING SESSION APERTE DALL'UTENTE!!
 }

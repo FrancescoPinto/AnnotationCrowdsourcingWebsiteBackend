@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Utente
  */
 @Repository
-@Transactional
+
 public interface UserRepository {
     public User findByUsername(String username);
     public void registerUser(User user);

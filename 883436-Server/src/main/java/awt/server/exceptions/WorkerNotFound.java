@@ -9,12 +9,12 @@ package awt.server.exceptions;
  *
  * @author Utente
  */
-public class UserNotLogged extends RuntimeException {
-     public UserNotLogged(){
-        super("User is not logged");
+public class WorkerNotFound extends RuntimeException {
+     public WorkerNotFound(){
+        super("Worker not found");
     }
 
-    public UserNotLogged(String message){
+    public WorkerNotFound(String message){
         super(message);
     }
 }

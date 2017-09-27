@@ -130,11 +130,20 @@ public class ImageRepositoryImpl implements ImageRepository {
     }
     
     @Override
-    public void deleteImage(Long campaignId, Long imageId){
+    public void deleteImage(Long campaignId, Long imageId, Long masterId){
         try{
-            Image i = em.find(Image.class,imageId);
-            em.remove(i);
-            Files.delete(getFilePath(campaignId,imageId));
+            
+            Query q = em.createQuery("select i from Image i where i.campaign.id = ?1 and i.id = ?2 and i.campaign.master.id = ?3");
+            q.setParameter(1,campaignId);
+            q.setParameter(2,imageId);
+             q.setParameter(3,masterId);
+            List<Image> imgs = q.getResultList();
+          //  Image i =  em.find(Image.class, imageId);
+            if(imgs.isEmpty())
+                throw new ImageNotFoundException();
+            else{
+            em.remove(imgs.get(0));
+            Files.delete(getFilePath(campaignId,imageId));}
             
         }catch(IOException e){
             e.printStackTrace();
@@ -143,12 +152,17 @@ public class ImageRepositoryImpl implements ImageRepository {
     }
     
     @Override
-        public Image getImage(Long campaignId, Long imageId){
-            Image i =  em.find(Image.class, imageId);
-            if(i==null)
+        public Image getImage(Long campaignId, Long imageId, Long masterId){
+            Query q = em.createQuery("select i from Image i where i.campaign.id = ?1 and i.id = ?2 and i.campaign.master.id = ?3");
+            q.setParameter(1,campaignId);
+            q.setParameter(2,imageId);
+               q.setParameter(3,masterId);
+            List<Image> imgs = q.getResultList();
+          //  Image i =  em.find(Image.class, imageId);
+            if(imgs.isEmpty())
                 throw new ImageNotFoundException();
             else
-                return i;
+                return imgs.get(0);
         }
         
          @Override

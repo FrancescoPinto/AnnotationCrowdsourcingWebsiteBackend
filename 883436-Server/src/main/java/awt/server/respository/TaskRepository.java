@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Utente
  */
 @Repository
-@Transactional
+
 public interface TaskRepository {
     public Task getWorkerSelectionTaskForCampaign(Long workerId, Long masterId, Long campaignId);
     public Task getWorkerAnnotationTaskForCampaign(Long workerId, Long masterId, Long campaignId);

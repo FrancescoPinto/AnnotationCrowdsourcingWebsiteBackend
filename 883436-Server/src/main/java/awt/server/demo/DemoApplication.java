@@ -12,19 +12,21 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.web.bind.annotation.RequestMapping;
+
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import awt.server.service.ImageService;
+import javax.validation.Validator; 
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 @SpringBootApplication
 @RestController
 @EnableAutoConfiguration
 @ComponentScan({"awt.server"})
-@EntityScan("awt.server.model")
+@EntityScan({"awt.server.model","awt.server.convenience"})
 @EnableJpaRepositories({"awt.server.repository"})
 @EnableTransactionManagement
 public class DemoApplication implements CommandLineRunner{
@@ -68,6 +70,12 @@ public class DemoApplication implements CommandLineRunner{
         @Bean
         public MultipartResolver multipartResolver() {
             return new StandardServletMultipartResolver();
+        }
+        
+        @Bean
+        public Validator localValidatorFactoryBean() {
+           return new LocalValidatorFactoryBean();
+      
         }
        /*  @Bean
     public HibernateTransactionManager transactionManager() {

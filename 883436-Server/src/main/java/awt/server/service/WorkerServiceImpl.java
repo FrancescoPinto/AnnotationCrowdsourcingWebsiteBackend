@@ -5,17 +5,15 @@
  */
 package awt.server.service;
 
-import awt.server.dto.WorkerDTO;
+import awt.server.exceptions.CampaignNotReadyException;
 import awt.server.exceptions.UserNotMasterException;
+import awt.server.exceptions.WorkerNotFound;
 import awt.server.model.Campaign;
 import awt.server.model.Master;
 import awt.server.model.Task;
 import awt.server.model.User;
 import awt.server.model.Worker;
-import awt.server.respository.AnnotationTaskInstanceRepository;
 import awt.server.respository.CampaignRepository;
-import awt.server.respository.ImageRepository;
-import awt.server.respository.SelectionTaskInstanceRepository;
 import awt.server.respository.TaskRepository;
 import awt.server.respository.WorkerRepository;
 import java.util.ArrayList;
@@ -37,6 +35,9 @@ public class WorkerServiceImpl implements WorkerService{
 
     @Autowired
     CampaignRepository campaignRepository;
+    
+    @Autowired
+    CampaignService campaignService;
    
     
     @Autowired
@@ -47,7 +48,7 @@ public class WorkerServiceImpl implements WorkerService{
         if(user instanceof Master){
             List<Worker> workers = workerRepository.getWorkers();
             List<awt.server.model.convenience.Worker> workerResult = new ArrayList<>();
-            
+            campaignService.getCampaignDetails(campaignId,user);
             if(workers != null){
                 for(Worker w : workers){
                         boolean workerIsSelector = false;
@@ -74,7 +75,10 @@ public class WorkerServiceImpl implements WorkerService{
     @Override
         public awt.server.model.convenience.Worker getWorkerInfo(User user, Long workerId, Long campaignId){
         if(user instanceof Master){
+             campaignService.getCampaignDetails(campaignId,user);
             Worker worker = workerRepository.getWorkerInfo(workerId);
+            if(worker == null)
+                throw new WorkerNotFound();
             Task tempAnnotation = taskRepository.getWorkerAnnotationTaskForCampaign(worker.getId(),user.getId(),campaignId);
             Task tempSelection = taskRepository.getWorkerSelectionTaskForCampaign(worker.getId(),user.getId(),campaignId);
 
@@ -103,7 +107,12 @@ public class WorkerServiceImpl implements WorkerService{
              //FORSE NO, DATO CHE ALLA FINE E' ANCHE QUALCOSA DI INTEGRITA' DEI DATI ... FORSE
              
             Worker w = workerRepository.getWorkerById(workerId);
+             if(w == null)
+                throw new WorkerNotFound();
+            
             Campaign c = campaignRepository.getCampaignDetails(campaignId, (Master) user);
+            if(!c.getStatus().equals(Campaign.ready))
+                throw new CampaignNotReadyException();
            
             taskRepository.createSelectionTaskForWorkerForCampaign((Master) user, w,c);
 
@@ -118,9 +127,12 @@ public class WorkerServiceImpl implements WorkerService{
                //TODO: IMPEDIRE LA CHIAMATA DI QUESTI METODI SU CAMPAGNE GIA' AVVIATE
                
             Worker w = workerRepository.getWorkerById(workerId);
+                      if(w == null)
+                throw new WorkerNotFound();
             Campaign c = campaignRepository.getCampaignDetails(campaignId, (Master) user);
             taskRepository.deleteSelectionTaskForWorkerForCampaign((Master) user, w,c);
-
+              if(!c.getStatus().equals(Campaign.ready))
+                throw new CampaignNotReadyException();
         }
         else throw new UserNotMasterException();
         
@@ -130,9 +142,12 @@ public class WorkerServiceImpl implements WorkerService{
          if(user instanceof Master){
             Worker w = workerRepository.getWorkerById(workerId);
             Campaign c = campaignRepository.getCampaignDetails(campaignId, (Master) user);
+                      if(w == null)
+                throw new WorkerNotFound();
                //TODO: IMPEDIRE LA CHIAMATA DI QUESTI METODI SU CAMPAGNE GIA' AVVIATE
             taskRepository.createAnnotationTaskForWorkerForCampaign((Master) user, w,c);
-
+                 if(!c.getStatus().equals(Campaign.ready))
+                throw new CampaignNotReadyException();
         }
         else throw new UserNotMasterException();
         
@@ -142,9 +157,12 @@ public class WorkerServiceImpl implements WorkerService{
          if(user instanceof Master){
               Worker w = workerRepository.getWorkerById(workerId);
             Campaign c = campaignRepository.getCampaignDetails(campaignId, (Master) user);
+                      if(w == null)
+                throw new WorkerNotFound();
              //TODO: IMPEDIRE LA CHIAMATA DI QUESTI METODI SU CAMPAGNE GIA' AVVIATE
             taskRepository.deleteAnnotationTaskForWorkerForCampaign((Master) user, w,c);
-
+               if(!c.getStatus().equals(Campaign.ready))
+                throw new CampaignNotReadyException();
         }
         else throw new UserNotMasterException();
         

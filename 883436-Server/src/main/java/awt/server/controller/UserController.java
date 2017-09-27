@@ -7,11 +7,13 @@ package awt.server.controller;
 
 import awt.server.dto.EditUserDetailsDTO;
 import awt.server.dto.ErrorDTO;
+import awt.server.dto.ErrorMapDTO;
 import awt.server.dto.RegistrationDetailsDTO;
 import awt.server.dto.UserDetailsDTO;
 import awt.server.exceptions.ProfileNotFoundException;
 import awt.server.exceptions.UserCreationException;
 import awt.server.exceptions.UserNotFound;
+import awt.server.exceptions.UserTypeNotValidException;
 import awt.server.model.Master;
 import awt.server.model.User;
 import awt.server.model.Worker;
@@ -19,7 +21,11 @@ import awt.server.service.auth.JwtService;
 import awt.server.service.UserService;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Set;
+import javax.validation.ConstraintViolation;
 import javax.validation.Valid;
+import javax.validation.Validator;
+import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -48,13 +54,17 @@ public class UserController {
     @Autowired
     private JwtService jwt;
     
+        
+    @Autowired
+    private Validator validator;
     
     @RequestMapping(value = "/api/user", method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity registerUser(@Valid @RequestBody RegistrationDetailsDTO user){
+    public ResponseEntity registerUser(@RequestBody RegistrationDetailsDTO user){
         
         //try{
           
-                
+        Set<ConstraintViolation<RegistrationDetailsDTO>> constraintViolations = validator.validate( user );
+        if(constraintViolations.isEmpty()){
         //}catch(ProfileNotFoundException e){
            try{ 
                 if(user.getType().equals("master")){
@@ -63,17 +73,24 @@ public class UserController {
                 }else if(user.getType().equals("worker")){
                     Worker tempUser = new Worker(user);
                      userService.registerUser(tempUser);
-                }
+                }else throw new UserTypeNotValidException();
 
                 return ResponseEntity.ok().body(null);
-            }catch(UserCreationException e){
+            }catch(UserCreationException|UserTypeNotValidException e){
                    return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
 
             }
            catch (Exception e){
                 return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
             }
-        
+             }else{
+           ErrorMapDTO temp = new ErrorMapDTO();
+           for(ConstraintViolation<RegistrationDetailsDTO> cv: constraintViolations){
+              temp.addError(((PathImpl)cv.getPropertyPath()).getLeafNode().getName(), cv.getMessage());
+              
+           }
+          return ResponseEntity.badRequest().body(temp);
+       }
          //  }catch(Exception e1){
          //      throw new RuntimeException(e1);
           // }
@@ -101,8 +118,9 @@ public class UserController {
     }
     
     @RequestMapping(value = "/api/user/me", method = RequestMethod.PUT, consumes = "application/json")
-    public ResponseEntity editUserDetails(@RequestHeader("Authorization") String APIToken, @Valid @RequestBody EditUserDetailsDTO edit){
-   
+    public ResponseEntity editUserDetails(@RequestHeader("Authorization") String APIToken, @RequestBody EditUserDetailsDTO edit){
+         Set<ConstraintViolation<EditUserDetailsDTO>> constraintViolations = validator.validate( edit );
+        if(constraintViolations.isEmpty()){
         try{
                 User authUser = userService.getUser(APIToken);
                 userService.editUserDetails(authUser, edit.getFullname(),edit.getPassword());
@@ -113,7 +131,14 @@ public class UserController {
         }catch(ProfileNotFoundException e){
             return ResponseEntity.notFound().build();//
         }
-
+        }else{
+           ErrorMapDTO temp = new ErrorMapDTO();
+           for(ConstraintViolation<EditUserDetailsDTO> cv: constraintViolations){
+              temp.addError(((PathImpl)cv.getPropertyPath()).getLeafNode().getName(), cv.getMessage());
+              
+           }
+          return ResponseEntity.badRequest().body(temp);
+       }
        
     }
     

@@ -30,4 +30,5 @@ public interface TaskService {
     public TaskStatistics getTaskStatistics(User u, Long taskId);
     public void initializeTasks(User m,Campaign c);
     public void beforeLogoutCleaning(User u);
+    public void closeWorkingSession(User u);
 }

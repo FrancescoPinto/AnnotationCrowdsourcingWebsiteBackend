@@ -7,18 +7,20 @@ package awt.server.respository;
 
 import awt.server.exceptions.CampaignNotFoundException;
 import awt.server.model.Campaign;
-import awt.server.model.Image;
 import awt.server.model.Master;
+import awt.server.model.convenience.NewCampaign;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
  * @author Utente
  */
+@Transactional
 @Repository
 public class CampaignRepositoryImpl implements CampaignRepository {
      @PersistenceContext
@@ -34,7 +36,8 @@ public class CampaignRepositoryImpl implements CampaignRepository {
      }
      
      @Override
-     public Campaign createCampaign(Campaign campaign){
+     public Campaign createCampaign(Master master,NewCampaign newCampaign){
+         Campaign campaign = new Campaign(newCampaign,"ready",master);
          em.persist(campaign);
          return em.find(Campaign.class, campaign.getId());
      }

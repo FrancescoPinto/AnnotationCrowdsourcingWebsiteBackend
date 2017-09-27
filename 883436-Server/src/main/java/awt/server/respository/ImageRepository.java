@@ -19,7 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
  *
  * @author Utente
  */
-@Transactional
+
 @Repository
 public interface ImageRepository {
     public Image store(MultipartFile file, Master m, Campaign c);
@@ -29,9 +29,9 @@ public interface ImageRepository {
     
     public void init();
     
-    public Image getImage(Long campaignId, Long imageId);
+    public Image getImage(Long campaignId, Long imageId, Long masterId);
     
     public FileSystemResource getFileSystemResource(Long campaignId,Long imageId);
-    public void deleteImage(Long campaignId, Long imageId);
+    public void deleteImage(Long campaignId, Long imageId, Long masterId);
     public List<Image> getCampaignImages(Master m, Long campaignId);
 }

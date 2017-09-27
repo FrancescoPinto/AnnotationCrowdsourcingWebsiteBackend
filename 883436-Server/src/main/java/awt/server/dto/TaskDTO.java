@@ -24,7 +24,7 @@ public class TaskDTO {
     
     public TaskDTO(TaskSimplified t){
         this.id = "/api/task/"+t.getId(); 
-        this.type = type;
+        this.type = t.getType();
     }
 
     public String getId() {

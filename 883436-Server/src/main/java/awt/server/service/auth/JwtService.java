@@ -3,7 +3,9 @@ package awt.server.service.auth;
 
 
 import awt.server.auth.SecretKeyProvider;
+import awt.server.exceptions.UserNotLogged;
 import awt.server.model.User;
+import awt.server.respository.InvalidTokenRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -13,7 +15,6 @@ import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 import static java.time.ZoneOffset.UTC;
 import java.util.Date;
-import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +27,8 @@ public class JwtService {
     private final SecretKeyProvider secretKeyProvider;
     private final ProfileService profileService;
 
-    
+    @Autowired
+    InvalidTokenRepository invalidTokenRepository;
  
     @SuppressWarnings("unused")
     public JwtService() {
@@ -41,26 +43,31 @@ public class JwtService {
 
     public String tokenFor(User user) throws IOException, URISyntaxException {
         byte[] secretKey = secretKeyProvider.getKey();
-        Date expiration = Date.from(LocalDateTime.now(UTC).plusHours(2).toInstant(UTC));
-        return Jwts.builder()
+        Date expiration = Date.from(LocalDateTime.now(UTC).plusHours(5).toInstant(UTC));
+        String token =  Jwts.builder()
                 .setSubject(user.getUsername())
                 .setExpiration(expiration)
                 .setIssuer(ISSUER)
                 .signWith(SignatureAlgorithm.HS512, secretKey)
                 .compact();
+        
+        return token;
     }
 
     public User verify(String token) throws IOException, URISyntaxException {
+        if(invalidTokenRepository.isTokenInvalid(token))
+            return null;
         byte[] secretKey = secretKeyProvider.getKey();
         Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
         return profileService.get(claims.getBody().getSubject().toString());
     }
     
-    public String logoutToken(User user) {
+    public void logoutToken(String token, String username) {
         //final Date createdDate = timeProvider.now();
        // final Date expirationDate = calculateExpirationDate(createdDate);
 
-        byte[] secret = new byte[20];
+       invalidTokenRepository.logoutToken(token, username);
+       /* byte[] secret = new byte[20];
         new Random().nextBytes(secret);
         
         Date expiration = Date.from(LocalDateTime.now(UTC).plusHours(1).toInstant(UTC));
@@ -69,7 +76,7 @@ public class JwtService {
                 .setExpiration(expiration)
                 .setIssuer(ISSUER)
                 .signWith(SignatureAlgorithm.HS512, secret)
-                .compact();
+                .compact();*/
         /*
         final Claims claims = getAllClaimsFromToken(token);
         claims.setIssuedAt(createdDate);

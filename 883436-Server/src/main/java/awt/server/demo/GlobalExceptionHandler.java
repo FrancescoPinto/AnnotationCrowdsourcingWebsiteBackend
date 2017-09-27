@@ -24,6 +24,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -42,31 +43,41 @@ public class GlobalExceptionHandler {
 
     @ResponseStatus(NOT_FOUND)
     @ExceptionHandler(FailedToLoginException.class)
-    public ResponseEntity<ErrorDTO> failedToLogin(FailedToLoginException ex) {
-        ErrorDTO response = new ErrorDTO(ex.getMessage());
-        return new ResponseEntity<ErrorDTO>(response, HttpStatus.NOT_FOUND);
+    public /*ResponseEntity<ErrorDTO>*/ResponseEntity failedToLogin(FailedToLoginException ex) {
+        //ErrorDTO response = new ErrorDTO(ex.getMessage());
+        return ResponseEntity.status(404).body(new ErrorDTO(ex.getMessage()));
+
+        //return new ResponseEntity<ErrorDTO>(response, HttpStatus.NOT_FOUND);
     }
 
      @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(UserCreationException.class)
     public ResponseEntity<ErrorDTO> failedTo(UserCreationException ex) {
-        ErrorDTO response = new ErrorDTO(ex.getMessage());
-        return new ResponseEntity<ErrorDTO>(response, HttpStatus.BAD_REQUEST);
+        //ErrorDTO response = new ErrorDTO(ex.getMessage());
+        //return new ResponseEntity<ErrorDTO>(response, HttpStatus.BAD_REQUEST);
+         return ResponseEntity.badRequest().body(new ErrorDTO(ex.getMessage()));
+    }
+    
+    @ResponseStatus(BAD_REQUEST)
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    public ResponseEntity noImage(MissingServletRequestPartException ex) {
+         return ResponseEntity.badRequest().body(new ErrorDTO(ex.getMessage()));
     }
 
-    
-    
+    @ResponseStatus(UNAUTHORIZED)
+    @ExceptionHandler(UserNotLogged.class)
+    public ResponseEntity faliedLogin(UserNotLogged ex) {
+        //ErrorDTO response = new ErrorDTO(ex.getMessage());
+        //return new ResponseEntity<ErrorDTO>(response, HttpStatus.BAD_REQUEST);
+         return ResponseEntity.status(401).body(new ErrorDTO(ex.getMessage()));
+    }
     @ResponseStatus(FORBIDDEN)
     @ExceptionHandler(SignatureException.class)
     public void failedToVerify() {
         System.out.println("");
     }
     
-    @ResponseStatus(FORBIDDEN)
-    @ExceptionHandler(UserNotLogged.class)
-    public void notLogged(){
-    }
-    
+ 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody

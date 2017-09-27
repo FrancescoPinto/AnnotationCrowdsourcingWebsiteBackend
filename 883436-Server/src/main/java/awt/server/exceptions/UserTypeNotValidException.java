@@ -9,12 +9,9 @@ package awt.server.exceptions;
  *
  * @author Utente
  */
-public class UserNotLogged extends RuntimeException {
-     public UserNotLogged(){
-        super("User is not logged");
+public class UserTypeNotValidException extends RuntimeException {
+    public UserTypeNotValidException(){
+        super("User type is not valid");
     }
-
-    public UserNotLogged(String message){
-        super(message);
-    }
+    
 }

@@ -17,8 +17,10 @@ import awt.server.model.Campaign;
 import awt.server.model.Image;
 import awt.server.model.Master;
 import awt.server.model.SelectionTaskInstance;
+import awt.server.model.Task;
 import awt.server.model.User;
 import awt.server.model.convenience.ImageStatistics;
+import awt.server.model.convenience.NewCampaign;
 import awt.server.respository.AnnotationTaskInstanceRepository;
 import awt.server.respository.CampaignRepository;
 import awt.server.respository.SelectionTaskInstanceRepository;
@@ -71,9 +73,9 @@ public class CampaignServiceImpl implements CampaignService{
     }
     
     @Override
-    public Campaign createCampaign(User user,Campaign campaign){
+    public Campaign createCampaign(User user,NewCampaign campaign){
         if(user instanceof Master)
-            return campaignRepository.createCampaign(campaign);
+            return campaignRepository.createCampaign((Master) user,campaign);
          else throw new UserNotMasterException();
     }
     
@@ -97,8 +99,10 @@ public class CampaignServiceImpl implements CampaignService{
             Campaign c = campaignRepository.getCampaignDetails(campaignId, (Master) user);
             if(c == null)
                 throw new CampaignNotFoundException();
-            else
+            else if(c.getStatus().equals("ready"))
                 campaignRepository.editCampaign((Master) user,c,name, selectRepl, thr, annRepl, annSize);
+            else
+                throw new CampaignNotReadyException();
         }
         else throw new UserNotMasterException();
     }
@@ -112,6 +116,20 @@ public class CampaignServiceImpl implements CampaignService{
                 Campaign c = campaignRepository.getCampaignDetails(campaignId, (Master) user);
                 if(c.getStatus().equals("ready")){
                //TODO: ASSICURARE LA LOGICA DI BUSINESS CORRETTA  (AVVIA CAMPAGNE CHE ESISTONO)
+                List<Task> tasks = taskRepository.getTasksForCampaign(c.getId());
+                int annotation = 0;
+                int selection = 0;
+                if(tasks == null)
+                    throw new PreconditionFailedException("Not enough annotation/selection workers assigned");
+                for(Task t : tasks){
+                    if(t.getType().equals(Task.ANNOTATION))
+                        annotation++;
+                    if(t.getType().equals(Task.SELECTION))
+                        selection++;
+                }
+                if(!(annotation >= c.getAnnotationReplica() && selection >= c.getSelectionReplica()))
+                    throw new PreconditionFailedException("Not enough annotation/selection workers assigned");
+
                campaignRepository.startCampaign((Master) user, c);
                //inizializza i task
                taskService.initializeTasks(user,c);
@@ -119,7 +137,11 @@ public class CampaignServiceImpl implements CampaignService{
                 else
                     throw new CampaignNotReadyException();
               }catch(NullPointerException e){
+                  e.printStackTrace();
                 throw new CampaignNotFoundException();
+              }catch(CampaignNotReadyException e){
+                  e.printStackTrace();
+                  throw new CampaignNotReadyException();
               }
         }
         else throw new UserNotMasterException();
@@ -135,7 +157,7 @@ public class CampaignServiceImpl implements CampaignService{
              else
                  throw new CampaignNotStartedException();
             }catch(NullPointerException e){
-                throw new CampaignNotFoundException();
+                throw new PreconditionFailedException();
             }
 
         }
@@ -148,6 +170,8 @@ public class CampaignServiceImpl implements CampaignService{
         public ImageStatistics getCampaignImageStatistics(User u, Long campaignId){
          if(u instanceof Master){
              Campaign c = campaignRepository.getCampaignDetails(campaignId, (Master)u);
+             if(c == null)
+                 throw new CampaignNotFoundException();
              if(c.getStatus().equals("ended")){
                  
                  try{

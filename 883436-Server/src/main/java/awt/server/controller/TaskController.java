@@ -24,6 +24,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -92,6 +93,7 @@ public class TaskController {
     }
     
        @RequestMapping(value = "/api/task/{taskId}/session", method = RequestMethod.POST)
+       @Transactional
     public ResponseEntity getTaskSession(
             @RequestHeader("Authorization") String APIToken,
             @PathVariable("taskId") Long taskId

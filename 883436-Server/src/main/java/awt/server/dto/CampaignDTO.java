@@ -14,21 +14,21 @@ import awt.server.model.Campaign;
 
 //ATTENTO: INVIERAI UNA List<CampaignDTO> automaticamente convertita in array
 public class CampaignDTO {
-    private Long id;
+    private String id;
     private String name,
                    status;
 
-    public CampaignDTO(Long id, String name, String status) {
+    public CampaignDTO(String id, String name, String status) {
         this.id = id;
         this.name = name;
         this.status = status;
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -49,7 +49,7 @@ public class CampaignDTO {
     }
     
     public static CampaignDTO fromCampaignToCampaignDTO(Campaign c){
-        return new CampaignDTO(c.getId(),c.getName(),c.getStatus());
+        return new CampaignDTO("/api/campaign/"+c.getId(),c.getName(),c.getStatus());
     }
     
 }

@@ -9,8 +9,10 @@ import awt.server.dto.ErrorDTO;
 import awt.server.dto.WorkerDTO;
 import awt.server.dto.WorkerInfosDTO;
 import awt.server.dto.WorkersDTO;
+import awt.server.exceptions.CampaignNotFoundException;
+import awt.server.exceptions.CampaignNotReadyException;
 import awt.server.exceptions.UserNotMasterException;
-import awt.server.model.Master;
+import awt.server.exceptions.WorkerNotFound;
 import awt.server.model.User;
 import awt.server.service.CampaignService;
 import awt.server.service.UserService;
@@ -57,6 +59,11 @@ public class WorkerController {
         }catch(IOException | URISyntaxException |UserNotMasterException e)
         {
              return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
+        }catch(CampaignNotFoundException|WorkerNotFound e){
+             return ResponseEntity.status(404).body(new ErrorDTO(e.getMessage()));
+        }catch(Exception e){
+             return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
+
         }
 
     }
@@ -77,6 +84,8 @@ public class WorkerController {
         }catch(IOException | URISyntaxException |UserNotMasterException e)
         {
              return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
+             }catch(CampaignNotFoundException|WorkerNotFound e){
+             return ResponseEntity.status(404).body(new ErrorDTO(e.getMessage()));
         }catch(Exception e){
              return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
 
@@ -100,6 +109,13 @@ public class WorkerController {
         }catch(IOException | URISyntaxException |UserNotMasterException e)
         {
              return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
+        }catch(CampaignNotReadyException e){
+            return ResponseEntity.status(412).body(new ErrorDTO(e.getMessage()));
+            }catch(CampaignNotFoundException|WorkerNotFound e){
+             return ResponseEntity.status(404).body(new ErrorDTO(e.getMessage()));
+        }catch(Exception e){
+             return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
+
         }
 
     }
@@ -119,6 +135,13 @@ public class WorkerController {
         }catch(IOException | URISyntaxException |UserNotMasterException e)
         {
              return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
+        }catch(CampaignNotReadyException e){
+            return ResponseEntity.status(412).body(new ErrorDTO(e.getMessage()));
+            }catch(CampaignNotFoundException|WorkerNotFound e){
+             return ResponseEntity.status(404).body(new ErrorDTO(e.getMessage()));
+        }catch(Exception e){
+             return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
+
         }
 
     }
@@ -137,6 +160,13 @@ public class WorkerController {
         }catch(IOException | URISyntaxException |UserNotMasterException e)
         {
              return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
+        }catch(CampaignNotReadyException e){
+            return ResponseEntity.status(412).body(new ErrorDTO(e.getMessage()));
+            }catch(CampaignNotFoundException|WorkerNotFound e){
+             return ResponseEntity.status(404).body(new ErrorDTO(e.getMessage()));
+        }catch(Exception e){
+             return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
+
         }
 
     }
@@ -156,6 +186,13 @@ public class WorkerController {
         }catch(IOException | URISyntaxException |UserNotMasterException e)
         {
              return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
+        } catch(CampaignNotReadyException e){
+            return ResponseEntity.status(412).body(new ErrorDTO(e.getMessage()));
+            }catch(CampaignNotFoundException|WorkerNotFound e){
+             return ResponseEntity.status(404).body(new ErrorDTO(e.getMessage()));
+        }catch(Exception e){
+             return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
+
         }
 
     }

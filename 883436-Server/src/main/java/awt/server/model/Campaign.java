@@ -3,8 +3,8 @@
  */
 package awt.server.model;
 
-import awt.server.model.convenience.CampaignStatistics;
 import awt.server.dto.NewCampaignDTO;
+import awt.server.model.convenience.NewCampaign;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Entity;
@@ -12,9 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -97,6 +95,15 @@ public class Campaign {
         this.master = m;
     }
 
+      public Campaign(NewCampaign c, String status, Master m) {
+        this.name = c.getName();
+        this.status = status;
+        this.selectionReplica = c.getSelection_replica();
+        this.threshold = c.getThreshold();
+        this.annotationReplica = c.getAnnotation_replica();
+        this.annotationSize = c.getAnnotation_size();
+        this.master = m;
+    }
     public Long getId() {
         return id;
     }

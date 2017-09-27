@@ -6,14 +6,14 @@
 package awt.server.respository;
 
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
  * @author Utente
  */
-
 @Repository
-public interface MasterRepository {
-    
+public interface InvalidTokenRepository {
+    public void loginToken(String username);
+    public boolean isTokenInvalid(String token);
+    public void logoutToken(String token,String username);
 }

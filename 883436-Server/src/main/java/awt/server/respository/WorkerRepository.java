@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Utente
  */
 @Repository
-@Transactional
+
 public interface WorkerRepository {
     public List<Worker> getWorkers();
     public Worker getWorkerInfo(Long id);

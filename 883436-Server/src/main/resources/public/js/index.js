@@ -1127,7 +1127,7 @@ exports.register = function () {
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 
 },{"./template.html":23}],23:[function(require,module,exports){
-module.exports = "<nav-bar params = \"repositories: repositories\"></nav-bar>\r\n<div class=\"container\" style = \"margin: auto\">\r\n    <div class=\"row\" >\r\n        <div class = \"col-sm-2\"></div>\r\n        <div class=\"col-sm-8\">\r\n            <h1 style = \"padding-bottom:1em; text-align: center\">Fill in Your Credentials to Log-in</h1>\r\n            <div class=\"alert alert-danger alert-dismissable fade in\" data-bind = \"visible: shouldShowMessage\">\r\n                <a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a>\r\n                <strong>Warning!</strong><span data-bind = \"text:errorMessage\"></span>\r\n            </div>\r\n            <form data-bind=\"submit: login\" class=\"form-horizontal\">\r\n                <div class=\"form-group\">\r\n                    <label class=\"control-label col-sm-2\" for = \"username\">Username:</label>\r\n                    <div class=\"col-sm-10\">\r\n                        <input type=\"text\" class=\"form-control\" id = \"username\" placeholder=\"Enter your Username\" required data-bind = \"textInput: username\">\r\n                    </div>\r\n                </div>\r\n                <div class=\"form-group\">\r\n                    <label class=\"control-label col-sm-2\" for=\"pwd1\">Password:</label>\r\n                    <div class=\"col-sm-10\">\r\n                        <input type=\"password\" class=\"form-control\" id=\"pwd1\" placeholder=\"Enter password\" required data-bind = \"textInput: password\">\r\n                    </div>\r\n                </div>\r\n                <div class=\"form-group\">\r\n                    <div class=\"col-sm-offset-2 col-sm-10\">\r\n                        <button type=\"submit\" class=\"btn btn-primary\">Login</button>\r\n                    </div>\r\n                </div>\r\n            </form>\r\n        </div>\r\n        <div class = \"col-sm-2\"></div>\r\n    </div>\r\n</div>\r\n";
+module.exports = "<nav-bar params = \"repositories: repositories\"></nav-bar>\r\n<div class=\"container\" style = \"margin: auto\">\r\n    <div class=\"row\" >\r\n        <div class = \"col-sm-2\"></div>\r\n        <div class=\"col-sm-8\">\r\n            <h1 style = \"padding-bottom:1em; text-align: center\">Fill in Your Credentials to Log-in</h1>\r\n            <div class=\"alert alert-danger alert-dismissable fade in\" data-bind = \"visible: shouldShowMessage\">\r\n                <a href=\"#\" class=\"close\" data-dismiss=\"alert\" aria-label=\"close\">&times;</a>\r\n                <strong>Warning!</strong><span data-bind = \"text:errorMessage\"></span>\r\n            </div>\r\n            <form data-bind=\"submit: login\" class=\"form-horizontal\">\r\n                <div class=\"form-group\">\r\n                    <label class=\"control-label col-sm-2\" for = \"username\">Username:</label>\r\n                    <div class=\"col-sm-10\">\r\n                        <input type=\"text\" class=\"form-control\" id = \"username\" placeholder=\"Enter your Username\" required  data-bind = \"textInput: username\">\r\n                    </div>\r\n                </div>\r\n                <div class=\"form-group\">\r\n                    <label class=\"control-label col-sm-2\" for=\"pwd1\">Password:</label>\r\n                    <div class=\"col-sm-10\">\r\n                        <input type=\"password\" class=\"form-control\" id=\"pwd1\" placeholder=\"Enter password\" required data-bind = \"textInput: password\">\r\n                    </div>\r\n                </div>\r\n                <div class=\"form-group\">\r\n                    <div class=\"col-sm-offset-2 col-sm-10\">\r\n                        <button type=\"submit\" class=\"btn btn-primary\">Login</button>\r\n                    </div>\r\n                </div>\r\n            </form>\r\n        </div>\r\n        <div class = \"col-sm-2\"></div>\r\n    </div>\r\n</div>\r\n";
 
 },{}],24:[function(require,module,exports){
 (function (global){
@@ -1317,6 +1317,9 @@ function ViewModel(ctx) {
             }).catch(function (e) {
                 self.alertMessages.removeAll();
                 var tempErr = [];
+                if(e.errors.error.username === undefined && e.errors.error.password === undefined)
+                    tempErr.push(e.errors.error);
+                else
                 for(var i in e.errors.error) {
                     tempErr.push(" "+i +": " +e.errors.error[i]);
                 }
@@ -1478,6 +1481,8 @@ function ViewModel(ctx) {
             if(e.jqXHR.status == 404 && ctx.repositories.status.getCurrentTask().type == "selection"){
                 self.nextTaskAvailable(false);
             }else if (e.jqXHR.status == 404 && ctx.repositories.status.getCurrentTask().type == "annotation"){
+                self.annotationEnabled(false);
+            }else if (e.jqXHR.status == 410 && ctx.repositories.status.getCurrentTask().type == "annotation"){
                 self.annotationEnabled(false);
             }
             //alert("getNextTask" + e);
@@ -3433,7 +3438,7 @@ Repository.prototype.getCampaignInfo = function (id,apitoken){
 
     return new Promise(function (resolve, reject) {
         $.ajax({
-            url: self._server + '/api/campaign/'+ id,
+            url: self._server + id,
             type: 'GET',
             headers:{
                 'Authorization': apitoken

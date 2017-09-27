@@ -179,6 +179,25 @@ public class TaskServiceImpl implements TaskService {
     
     @Override
     public void beforeLogoutCleaning(User user){
+        closeWorkingSession(user);
+        /*if(user instanceof Worker){
+            List<Task> tasks = taskRepository.getTasksForWorker((Worker) user);
+             if(tasks != null){
+                for(Task t:tasks){
+                    if(t.getCampaign().getStatus().equals(Campaign.STARTED)){
+                    
+                        taskRepository.closeWorkingSession(t.getId());
+                    }
+                }
+             }
+               //recupera i task, vedi quelli relativi alle campagne ancora aperte e che hanno aperto la sessione di lavoro, settagli la sessione a closed
+            }
+            else 
+                 throw new UserNotWorkerException();*/
+    }
+    
+     @Override
+    public void closeWorkingSession(User user){
         if(user instanceof Worker){
             List<Task> tasks = taskRepository.getTasksForWorker((Worker) user);
              if(tasks != null){

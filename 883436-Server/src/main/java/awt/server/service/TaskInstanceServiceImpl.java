@@ -108,7 +108,7 @@ public class TaskInstanceServiceImpl implements TaskInstanceService {
                                         temp.add(ati);
                             }else{
                                 taskRepository.closeWorkingSession(taskId);
-                                throw new  NoMoreTaskInstancesException();
+                                throw new  RuntimeException("Annotation tasks not available at the moment");
                             }
                         }
                     } else{
