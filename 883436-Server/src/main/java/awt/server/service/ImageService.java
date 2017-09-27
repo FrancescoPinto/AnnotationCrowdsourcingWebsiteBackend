@@ -21,7 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
  * @author Utente
  */
 @Service
-@Transactional
 public interface ImageService {
     public Image store(MultipartFile file, User u, Long campaignId);
     public Resource loadFile(String filename);

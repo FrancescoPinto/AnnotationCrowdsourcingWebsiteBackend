@@ -26,16 +26,18 @@ import awt.server.respository.CampaignRepository;
 import awt.server.respository.SelectionTaskInstanceRepository;
 import awt.server.respository.TaskRepository;
 import awt.server.respository.WorkerRepository;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
  * @author Utente
  */
-@Component
+@Service
 @Transactional
 public class CampaignServiceImpl implements CampaignService{
     @Autowired
@@ -59,6 +61,8 @@ public class CampaignServiceImpl implements CampaignService{
     @Autowired
     ImageService imageService;
     
+    @Autowired
+    UserService userService;
     
     @Override
     public List<Campaign> getMasterCampaigns(User user) throws UserNotMasterException{
@@ -94,17 +98,23 @@ public class CampaignServiceImpl implements CampaignService{
     }
     
     @Override
-    public void editCampaign(User user, Long campaignId, String name, int selectRepl, int thr, int annRepl, int annSize){
-        if(user instanceof Master){
-            Campaign c = campaignRepository.getCampaignDetails(campaignId, (Master) user);
+    public void editCampaign(String APIToken, Long campaignId, String name, int selectRepl, int thr, int annRepl, int annSize){
+            
+        try{
+            User authUser = userService.getUser(APIToken);
+            if(!(authUser instanceof Master))
+               throw new UserNotMasterException();
+            Campaign c = campaignRepository.getCampaignDetails(campaignId, (Master) authUser);
             if(c == null)
                 throw new CampaignNotFoundException();
             else if(c.getStatus().equals("ready"))
-                campaignRepository.editCampaign((Master) user,c,name, selectRepl, thr, annRepl, annSize);
+                campaignRepository.editCampaign((Master) authUser,c,name, selectRepl, thr, annRepl, annSize);
             else
                 throw new CampaignNotReadyException();
+        }catch(IOException |URISyntaxException e){
+                throw new RuntimeException(e.getMessage());
         }
-        else throw new UserNotMasterException();
+      
     }
 
    

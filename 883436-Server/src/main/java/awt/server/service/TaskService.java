@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Utente
  */
 @Service
-@Transactional
 public interface TaskService {
     public List<TaskSimplified> getTasksofStartedCampaigns(User u);
     public TaskInfos getTaskInfo(User user,Long taskId);

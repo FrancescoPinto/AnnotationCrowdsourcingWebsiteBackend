@@ -3219,7 +3219,7 @@ Repository.prototype.submitAnnotation = function(apiToken,sessionUrl,skyline){
     var self = this;
     return new Promise(function (resolve, reject) {
         $.ajax({
-            url: self._server + sessionUrl + "/annotation",
+            url: self._server + sessionUrl,// + "/annotation",
             type: 'PUT',
             headers:{
                 'Authorization': apiToken,
@@ -3247,7 +3247,7 @@ Repository.prototype.submitSelection = function(apiToken,sessionUrl,accepted) {
     return new Promise(function (resolve, reject) {
         //var acc = new String(accepted);
         $.ajax({
-            url: self._server + sessionUrl+"/selection",
+            url: self._server + sessionUrl,//+"/selection",
             type: 'PUT',
             headers: {
                 'Authorization': apiToken,

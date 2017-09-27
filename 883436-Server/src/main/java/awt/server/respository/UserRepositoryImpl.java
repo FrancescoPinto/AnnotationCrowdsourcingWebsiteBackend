@@ -25,7 +25,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class UserRepositoryImpl implements UserRepository{
     @PersistenceContext
-    private EntityManager em;
+    EntityManager em;
     
     public void registerUser(User user){
         if(user instanceof Master)

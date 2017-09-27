@@ -15,9 +15,9 @@ import awt.server.dto.LoginDetailsDTO;
 import awt.server.dto.TokenDTO;
 import awt.server.exceptions.FailedToLoginException;
 import awt.server.model.User;
+import awt.server.service.UserService;
 import awt.server.service.auth.JwtService;
 import awt.server.service.auth.LoginService;
-import awt.server.service.UserService;
 import java.util.List;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +38,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @RestController
 public class AuthenticationController {
 
+    @Autowired
     private final LoginService loginService;
+    @Autowired
     private final JwtService jwtService;
+    
     private List<String> tempTokens;
     
 

@@ -19,14 +19,14 @@ import awt.server.respository.WorkerRepository;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
  * @author Utente
  */
-@Component
+@Service
 @Transactional
 public class WorkerServiceImpl implements WorkerService{
     

@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
  *
  * @author Utente
  */
+@Service
 public interface UserService {
    public void registerUser(User user);
    public void editUserDetails(User user, String fullname, String password);

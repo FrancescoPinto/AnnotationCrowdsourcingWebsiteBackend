@@ -7,15 +7,14 @@ package awt.server.service;
 
 import awt.server.model.User;
 import awt.server.model.convenience.TaskInstance;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author Utente
  */
-@Component
-@Transactional
+@Service
+
 public interface TaskInstanceService {
      public TaskInstance getNextTaskInstance(User u, Long taskId);
     

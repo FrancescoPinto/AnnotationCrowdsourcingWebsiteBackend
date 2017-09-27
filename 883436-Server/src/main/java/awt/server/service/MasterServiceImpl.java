@@ -5,7 +5,7 @@
  */
 package awt.server.service;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -13,8 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Utente
  */
 
-@Component
+@Service
 @Transactional
-public class MasterServiceImpl {
+public class MasterServiceImpl{
     
 }

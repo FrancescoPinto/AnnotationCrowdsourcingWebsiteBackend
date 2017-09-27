@@ -1,29 +1,26 @@
-package awt.server.auth;
+package awt.server.auth.model;
 
-import awt.server.model.User;
+import awt.server.auth.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.Collection;
-import java.util.Collections;
 
-public class JwtAuthenticatedProfile implements Authentication {
+public class JwtAuthToken implements Authentication {
+    private final String token;
 
-    private final User user;
-
-    public JwtAuthenticatedProfile(User user) {
-        this.user = user;
+    public JwtAuthToken(String token) {
+        this.token = token;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+        return null;
     }
 
     @Override
     public Object getCredentials() {
-        return null;
+        return token;
     }
 
     @Override
@@ -38,7 +35,7 @@ public class JwtAuthenticatedProfile implements Authentication {
 
     @Override
     public boolean isAuthenticated() {
-        return true;
+        return false;
     }
 
     @Override
@@ -48,6 +45,6 @@ public class JwtAuthenticatedProfile implements Authentication {
 
     @Override
     public String getName() {
-        return user.getUsername();
+        return null;
     }
 }

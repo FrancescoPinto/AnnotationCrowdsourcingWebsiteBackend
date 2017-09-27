@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 
 @Repository
+@Transactional
 public interface CampaignRepository {
     public List<Campaign> getMasterCampaigns(Master master);
     public Campaign createCampaign(Master user,NewCampaign campaign);

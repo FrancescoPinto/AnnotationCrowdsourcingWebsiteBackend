@@ -8,15 +8,13 @@ package awt.server.service;
 import awt.server.model.User;
 import awt.server.model.convenience.Worker;
 import java.util.List;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author Utente
  */
-@Component
-@Transactional
+@Service
 public interface WorkerService {
      public List<Worker> getWorkersForCampaign(User u, Long campaignId);
     public Worker getWorkerInfo(User user, Long workerId, Long campaignId);

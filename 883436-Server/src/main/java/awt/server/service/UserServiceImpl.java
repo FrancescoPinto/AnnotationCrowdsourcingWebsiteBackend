@@ -5,22 +5,22 @@
  */
 package awt.server.service;
 
-import awt.server.exceptions.UserCreationException;
 import awt.server.service.auth.JwtService;
+import awt.server.exceptions.UserCreationException;
 import awt.server.exceptions.UserNotLogged;
 import awt.server.model.User;
 import awt.server.respository.UserRepository;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
  * @author Utente
  */
-@Component
+@Service
 @Transactional
 public class UserServiceImpl implements UserService{
      @Autowired

@@ -1,5 +1,6 @@
-package awt.server.auth;
+package awt.server.auth.model;
 
+import awt.server.auth.*;
 import lombok.Data;
 
 @Data

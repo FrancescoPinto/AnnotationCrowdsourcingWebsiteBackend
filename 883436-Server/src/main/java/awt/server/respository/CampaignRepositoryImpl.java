@@ -15,16 +15,16 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
 /**
  *
  * @author Utente
  */
-@Transactional
 @Repository
+@Transactional
 public class CampaignRepositoryImpl implements CampaignRepository {
-     @PersistenceContext
-    private EntityManager em;
+    
+    @PersistenceContext
+    EntityManager em;
      
      private static final String STARTED = "started", READY = "ready", ENDED = "ended";
      
@@ -59,16 +59,21 @@ public class CampaignRepositoryImpl implements CampaignRepository {
      }
      
      @Override
+   
      public void editCampaign(Master master, Campaign c, String name, int selectRepl, int thr, int annRepl, int annSize){
         // Campaign c = em.find(Campaign.class, campaignId);
          if(c == null)
              throw new CampaignNotFoundException();
          else{
+           
+             if(em.contains(c))
+                 System.out.println("CONTIENE LA CAMPAGNA, OK");
              c.setName(name);
              c.setAnnotationReplica(annRepl);
              c.setSelectionReplica(selectRepl);
              c.setThreshold(thr);
              c.setAnnotationSize(annSize);
+             System.out.println("AnnotationSize" + c.getAnnotationSize()+ " "+ "name"+c.getName());
          }
      }
      

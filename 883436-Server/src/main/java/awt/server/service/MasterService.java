@@ -5,15 +5,13 @@
  */
 package awt.server.service;
 
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author Utente
  */
-@Component
-@Transactional
+@Service
 public interface MasterService {
     
 }

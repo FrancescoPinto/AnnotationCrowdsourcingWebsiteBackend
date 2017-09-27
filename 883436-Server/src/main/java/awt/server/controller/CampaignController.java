@@ -51,6 +51,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Utente
  */
 @RestController
+
 public class CampaignController {
     @Autowired
     CampaignService campaignService;
@@ -85,7 +86,6 @@ public class CampaignController {
     }
     
     @RequestMapping(value = "/api/campaign", method = RequestMethod.POST, consumes = "application/json")
-    @Transactional
     public ResponseEntity createCampaign(@RequestHeader("Authorization") String APIToken, @RequestBody  NewCampaignDTO newCampaign){
        
         Set<ConstraintViolation<NewCampaignDTO>> constraintViolations = validator.validate( newCampaign );
@@ -163,7 +163,8 @@ public class CampaignController {
 
     }
     
-       @RequestMapping(value = "/api/campaign/{id}", method = RequestMethod.PUT, consumes = "application/json")
+    @RequestMapping(value = "/api/campaign/{id}", method = RequestMethod.PUT, consumes = "application/json")
+       
     public ResponseEntity editCampaign(
             @RequestHeader("Authorization") String APIToken,
             @RequestBody  EditCampaignDTO newInfo,
@@ -171,25 +172,29 @@ public class CampaignController {
         Set<ConstraintViolation<EditCampaignDTO>> constraintViolations = validator.validate( newInfo );
         if(constraintViolations.isEmpty()){
             try{
-
-                    User authUser = userService.getUser(APIToken);
-                     if(!(authUser instanceof Master))
-                        throw new UserNotMasterException();
-                    campaignService.editCampaign((Master) authUser,id,newInfo.getName(),newInfo.getSelection_replica(), newInfo.getThreshold(), newInfo.getAnnotation_replica(), newInfo.getAnnotation_size() );
+  
+                    campaignService.editCampaign(APIToken,id,newInfo.getName(),newInfo.getSelection_replica(), newInfo.getThreshold(), newInfo.getAnnotation_replica(), newInfo.getAnnotation_size());
                     return ResponseEntity.ok().body(null);
 
+            }catch(UserNotMasterException e)
+            {                e.printStackTrace();
 
-            }catch(IOException | URISyntaxException |UserNotMasterException e)
-            {
                  return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
             }catch(CampaignNotFoundException e){
+                                e.printStackTrace();
+
                 return ResponseEntity.status(404).body(new ErrorDTO(e.getMessage()));
             }catch(CampaignNotReadyException e){
+                                e.printStackTrace();
+
                 return ResponseEntity.status(412).body(new ErrorDTO(e.getMessage()));
             }catch(Exception e){
+                e.printStackTrace();
                 return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
             }
-       }else{
+      
+        
+        }else{
            ErrorMapDTO temp = new ErrorMapDTO();
             for(ConstraintViolation<EditCampaignDTO> cv: constraintViolations){
                 temp.addError(((PathImpl)cv.getPropertyPath()).getLeafNode().getName(), cv.getMessage());

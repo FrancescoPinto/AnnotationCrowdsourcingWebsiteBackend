@@ -1,10 +1,13 @@
 package awt.server.auth;
 
 
+import awt.server.auth.model.JwtAuthToken;
+import awt.server.auth.model.JwtAuthenticatedProfile;
 import awt.server.exceptions.JwtAuthenticationException;
 import awt.server.exceptions.UserNotLogged;
 import awt.server.model.User;
 import awt.server.service.auth.JwtService;
+import awt.server.service.auth.JwtServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class JwtAuthenticationProvider implements AuthenticationProvider {
+    @Autowired
     private final JwtService jwtService;
 
     @SuppressWarnings("unused")

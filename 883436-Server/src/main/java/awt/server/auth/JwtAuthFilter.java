@@ -1,5 +1,6 @@
 package awt.server.auth;
 
+import awt.server.auth.model.JwtAuthToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
