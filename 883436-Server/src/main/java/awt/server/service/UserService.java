@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 @Service
 public interface UserService {
    public void registerUser(User user);
-   public void editUserDetails(User user, String fullname, String password);
+   public void editUserDetails(String APIToken, String fullname, String password)throws IOException,URISyntaxException;
    public User findByUsername(String username);
     public User getUser(String APIToken) throws UserNotLogged,IOException,URISyntaxException;
 }

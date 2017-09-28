@@ -66,7 +66,7 @@ public class TaskInstanceController {
                         User authUser = userService.getUser(APIToken);
       
                        // TaskInstanceDTO taskInstance = taskService.getNextTaskInstance(authUser,taskId);  //DA SOSTITUIRE CON QUALCOSA DI VERO
-                         String workingSession = taskService.getTaskWorkingSession(authUser,taskId);  //DA SOSTITUIRE CON QUALCOSA DI VERO
+                         String workingSession = taskService.getTaskWorkingSession(APIToken,taskId);  //DA SOSTITUIRE CON QUALCOSA DI VERO
                         
                         switch(workingSession){
                             case Task.OPENED:
@@ -83,7 +83,7 @@ public class TaskInstanceController {
                 }catch(NoMoreTaskInstancesException|TaskNotFoundException e){
                     try{
                     User authUser = userService.getUser(APIToken);
-                    taskService.closeWorkingSession(authUser);
+                    taskService.closeWorkingSession(APIToken);
                     return ResponseEntity.status(404).build();
                     } catch(IOException | URISyntaxException |UserNotWorkerException ex)
                     {
@@ -131,7 +131,7 @@ public class TaskInstanceController {
                                User authUser = userService.getUser(APIToken);
 
                               // TaskInstanceDTO taskInstance = taskService.getNextTaskInstance(authUser,taskId);  //DA SOSTITUIRE CON QUALCOSA DI VERO
-                                String workingSession = taskService.getTaskWorkingSession(authUser,taskId);  //DA SOSTITUIRE CON QUALCOSA DI VERO
+                                String workingSession = taskService.getTaskWorkingSession(APIToken,taskId);  //DA SOSTITUIRE CON QUALCOSA DI VERO
 
                                switch(workingSession){
                                    case Task.OPENED: 
@@ -160,7 +160,7 @@ public class TaskInstanceController {
             try{
                         User authUser = userService.getUser(APIToken);
                
-                         String workingSession = taskService.getTaskWorkingSession(authUser,taskId);  //DA SOSTITUIRE CON QUALCOSA DI VERO
+                         String workingSession = taskService.getTaskWorkingSession(APIToken,taskId);  //DA SOSTITUIRE CON QUALCOSA DI VERO
                         switch(workingSession){
                             case Task.OPENED: 
                                 if(tra != null){

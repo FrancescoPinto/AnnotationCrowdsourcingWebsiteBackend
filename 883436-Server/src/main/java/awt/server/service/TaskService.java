@@ -10,9 +10,10 @@ import awt.server.model.User;
 import awt.server.model.convenience.TaskInfos;
 import awt.server.model.convenience.TaskSimplified;
 import awt.server.model.convenience.TaskStatistics;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -20,14 +21,14 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public interface TaskService {
-    public List<TaskSimplified> getTasksofStartedCampaigns(User u);
-    public TaskInfos getTaskInfo(User user,Long taskId);
-    public String startWorkingSession(User u, Long taskId);  
-    public String getTaskWorkingSession(User u, Long taskId);
+    public List<TaskSimplified> getTasksofStartedCampaigns(String APIToken)throws IOException,URISyntaxException;
+    public TaskInfos getTaskInfo(String APIToken,Long taskId) throws IOException,URISyntaxException;
+    public String startWorkingSession(String APIToken, Long taskId)throws IOException,URISyntaxException;  
+    public String getTaskWorkingSession(String APIToken, Long taskId)throws IOException,URISyntaxException;
     
    
-    public TaskStatistics getTaskStatistics(User u, Long taskId);
-    public void initializeTasks(User m,Campaign c);
-    public void beforeLogoutCleaning(User u);
-    public void closeWorkingSession(User u);
+    public TaskStatistics getTaskStatistics(String APIToken, Long taskId)throws IOException,URISyntaxException;
+    public void initializeTasks(String APIToken,Campaign c)throws IOException,URISyntaxException;
+    public void beforeLogoutCleaning(String APIToken)throws IOException,URISyntaxException;
+    public void closeWorkingSession(String APIToken)throws IOException,URISyntaxException;
 }

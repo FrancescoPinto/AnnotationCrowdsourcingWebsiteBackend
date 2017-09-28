@@ -16,10 +16,13 @@ import awt.server.model.Worker;
 import awt.server.respository.CampaignRepository;
 import awt.server.respository.TaskRepository;
 import awt.server.respository.WorkerRepository;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -27,7 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Utente
  */
 @Service
-@Transactional
+@Transactional(propagation=Propagation.REQUIRED)
 public class WorkerServiceImpl implements WorkerService{
     
            @Autowired
@@ -43,12 +46,16 @@ public class WorkerServiceImpl implements WorkerService{
     @Autowired
     WorkerRepository workerRepository;
     
+    @Autowired
+    UserService userService;
+    
      @Override
-        public List<awt.server.model.convenience.Worker> getWorkersForCampaign(User user, Long campaignId){
+        public List<awt.server.model.convenience.Worker> getWorkersForCampaign(String APIToken, Long campaignId) throws IOException, URISyntaxException{
+             User user = userService.getUser(APIToken);
         if(user instanceof Master){
             List<Worker> workers = workerRepository.getWorkers();
             List<awt.server.model.convenience.Worker> workerResult = new ArrayList<>();
-            campaignService.getCampaignDetails(campaignId,user);
+            campaignService.getCampaignDetails(campaignId,APIToken);
             if(workers != null){
                 for(Worker w : workers){
                         boolean workerIsSelector = false;
@@ -73,9 +80,11 @@ public class WorkerServiceImpl implements WorkerService{
     }
 
     @Override
-        public awt.server.model.convenience.Worker getWorkerInfo(User user, Long workerId, Long campaignId){
+        public awt.server.model.convenience.Worker getWorkerInfo(String APIToken, Long workerId, Long campaignId)throws IOException, URISyntaxException{
+       
+            User user = userService.getUser(APIToken);
         if(user instanceof Master){
-             campaignService.getCampaignDetails(campaignId,user);
+             campaignService.getCampaignDetails(campaignId,APIToken);
             Worker worker = workerRepository.getWorkerInfo(workerId);
             if(worker == null)
                 throw new WorkerNotFound();
@@ -99,8 +108,10 @@ public class WorkerServiceImpl implements WorkerService{
         
         
     @Override
-    public void enableWorkerForSelectionForCampaign(User user,Long workerId,Long campaignId){
-         if(user instanceof Master){
+    public void enableWorkerForSelectionForCampaign(String APIToken,Long workerId,Long campaignId)throws IOException, URISyntaxException{
+        User user = userService.getUser(APIToken);
+ 
+        if(user instanceof Master){
              
              //TODO: IMPEDIRE LA CHIAMATA DI QUESTI METODI SU CAMPAGNE GIA' AVVIATE O TERMINATE
              //DOMANDA: LA LOGICA PER CUI NON CI DEVONO ESSERE DUPLICATI NON DOVREBBE ESSERE GESTITA QUI INVECE CHE NEL REPOSITORY???
@@ -121,7 +132,9 @@ public class WorkerServiceImpl implements WorkerService{
         
     }
     @Override
-    public void disableWorkerForSelectionForCampaign(User user,Long workerId,Long campaignId){
+    public void disableWorkerForSelectionForCampaign(String APIToken,Long workerId,Long campaignId)throws IOException, URISyntaxException{
+                        User user = userService.getUser(APIToken);
+
          if(user instanceof Master){
            
                //TODO: IMPEDIRE LA CHIAMATA DI QUESTI METODI SU CAMPAGNE GIA' AVVIATE
@@ -138,8 +151,10 @@ public class WorkerServiceImpl implements WorkerService{
         
     } 
     @Override
-    public void enableWorkerForAnnotationForCampaign(User user,Long workerId,Long campaignId){
-         if(user instanceof Master){
+    public void enableWorkerForAnnotationForCampaign(String APIToken,Long workerId,Long campaignId)throws IOException, URISyntaxException{
+                                User user = userService.getUser(APIToken);
+ 
+        if(user instanceof Master){
             Worker w = workerRepository.getWorkerById(workerId);
             Campaign c = campaignRepository.getCampaignDetails(campaignId, (Master) user);
                       if(w == null)
@@ -153,8 +168,10 @@ public class WorkerServiceImpl implements WorkerService{
         
     }
     @Override
-    public void disableWorkerForAnnotationForCampaign(User user,Long workerId,Long campaignId){
-         if(user instanceof Master){
+    public void disableWorkerForAnnotationForCampaign(String APIToken,Long workerId,Long campaignId)throws IOException, URISyntaxException{
+                                User user = userService.getUser(APIToken);
+ 
+        if(user instanceof Master){
               Worker w = workerRepository.getWorkerById(workerId);
             Campaign c = campaignRepository.getCampaignDetails(campaignId, (Master) user);
                       if(w == null)

@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -32,7 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 
 @Service
-@Transactional
+@Transactional(propagation=Propagation.REQUIRED)
 public class TaskInstanceServiceImpl implements TaskInstanceService {
     
        @Autowired
@@ -111,7 +112,7 @@ public class TaskInstanceServiceImpl implements TaskInstanceService {
                                 throw new  RuntimeException("Annotation tasks not available at the moment");
                             }
                         }
-                    } else{
+                    } else{ 
                         taskRepository.closeWorkingSession(taskId);
                         throw new NoMoreTaskInstancesException();
                     }

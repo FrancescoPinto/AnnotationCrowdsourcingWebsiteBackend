@@ -19,9 +19,11 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Utente
  */
 @Repository
+
+@Transactional
 public class WorkerRepositoryImpl implements WorkerRepository {
     @PersistenceContext
-    EntityManager em;
+    private EntityManager em;
     
     @Override
      public List<Worker> getWorkers(){

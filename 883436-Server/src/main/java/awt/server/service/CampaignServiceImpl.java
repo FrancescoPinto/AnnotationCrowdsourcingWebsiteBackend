@@ -31,6 +31,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -38,7 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Utente
  */
 @Service
-@Transactional
+@Transactional(propagation=Propagation.REQUIRED)
 public class CampaignServiceImpl implements CampaignService{
     @Autowired
     CampaignRepository campaignRepository;
@@ -65,7 +66,8 @@ public class CampaignServiceImpl implements CampaignService{
     UserService userService;
     
     @Override
-    public List<Campaign> getMasterCampaigns(User user) throws UserNotMasterException{
+    public List<Campaign> getMasterCampaigns(String APIToken) throws IOException,URISyntaxException{
+        User user = userService.getUser(APIToken);
         if(user instanceof Master){
             List<Campaign> temp = campaignRepository.getMasterCampaigns((Master) user);
             if(temp.isEmpty())
@@ -77,17 +79,21 @@ public class CampaignServiceImpl implements CampaignService{
     }
     
     @Override
-    public Campaign createCampaign(User user,NewCampaign campaign){
-        if(user instanceof Master)
-            return campaignRepository.createCampaign((Master) user,campaign);
+    public Campaign createCampaign(String APIToken,NewCampaign campaign) throws IOException,URISyntaxException{
+         User authUser = userService.getUser(APIToken);        
+            if(!(authUser instanceof Master))
+                throw new UserNotMasterException();
+        if(authUser instanceof Master)
+            return campaignRepository.createCampaign((Master) authUser,campaign);
          else throw new UserNotMasterException();
     }
     
     @Override
-    public Campaign getCampaignDetails(Long campaignId,User user){
-         if(user instanceof Master){
+    public Campaign getCampaignDetails(Long campaignId,String APIToken) throws IOException,URISyntaxException{
+         User authUser = userService.getUser(APIToken);
+         if(authUser instanceof Master){
         
-            Campaign c =  campaignRepository.getCampaignDetails(campaignId,(Master) user);
+            Campaign c =  campaignRepository.getCampaignDetails(campaignId,(Master) authUser);
             if(c == null)
                 throw new CampaignNotFoundException();
             else
@@ -98,9 +104,8 @@ public class CampaignServiceImpl implements CampaignService{
     }
     
     @Override
-    public void editCampaign(String APIToken, Long campaignId, String name, int selectRepl, int thr, int annRepl, int annSize){
-            
-        try{
+    public void editCampaign(String APIToken, Long campaignId, String name, int selectRepl, int thr, int annRepl, int annSize)throws IOException, URISyntaxException{
+           
             User authUser = userService.getUser(APIToken);
             if(!(authUser instanceof Master))
                throw new UserNotMasterException();
@@ -111,19 +116,18 @@ public class CampaignServiceImpl implements CampaignService{
                 campaignRepository.editCampaign((Master) authUser,c,name, selectRepl, thr, annRepl, annSize);
             else
                 throw new CampaignNotReadyException();
-        }catch(IOException |URISyntaxException e){
-                throw new RuntimeException(e.getMessage());
-        }
+      
       
     }
 
    
     
     @Override
-    public void startCampaign(User user,Long campaignId){
-        if(user instanceof Master){
+    public void startCampaign(String APIToken,Long campaignId)throws IOException, URISyntaxException{
+         User authUser = userService.getUser(APIToken);
+        if(authUser instanceof Master){
             try{
-                Campaign c = campaignRepository.getCampaignDetails(campaignId, (Master) user);
+                Campaign c = campaignRepository.getCampaignDetails(campaignId, (Master) authUser);
                 if(c.getStatus().equals("ready")){
                //TODO: ASSICURARE LA LOGICA DI BUSINESS CORRETTA  (AVVIA CAMPAGNE CHE ESISTONO)
                 List<Task> tasks = taskRepository.getTasksForCampaign(c.getId());
@@ -140,9 +144,9 @@ public class CampaignServiceImpl implements CampaignService{
                 if(!(annotation >= c.getAnnotationReplica() && selection >= c.getSelectionReplica()))
                     throw new PreconditionFailedException("Not enough annotation/selection workers assigned");
 
-               campaignRepository.startCampaign((Master) user, c);
+               campaignRepository.startCampaign((Master) authUser, c);
                //inizializza i task
-               taskService.initializeTasks(user,c);
+               taskService.initializeTasks(APIToken,c);
                 }
                 else
                     throw new CampaignNotReadyException();
@@ -157,13 +161,14 @@ public class CampaignServiceImpl implements CampaignService{
         else throw new UserNotMasterException();
     }
     @Override
-    public void terminateCampaign(User user,Long campaignId){
-        if(user instanceof Master){
+    public void terminateCampaign(String APIToken,Long campaignId)throws IOException, URISyntaxException{
+        User authUser = userService.getUser(APIToken);
+        if(authUser instanceof Master){
             try{
-             Campaign c = campaignRepository.getCampaignDetails(campaignId, (Master) user);
+             Campaign c = campaignRepository.getCampaignDetails(campaignId, (Master) authUser);
              if(c.getStatus().equals("started"))
              //TODO: ASSICURARE LA LOGICA DI BUSINESS CORRETTA  (TERMINA CAMPAGNE CHE SONO GIA' INIZIATE!!!)
-             campaignRepository.terminateCampaign((Master) user, c);
+             campaignRepository.terminateCampaign((Master) authUser, c);
              else
                  throw new CampaignNotStartedException();
             }catch(NullPointerException e){
@@ -176,8 +181,9 @@ public class CampaignServiceImpl implements CampaignService{
     
    
   
-           @Override
-        public ImageStatistics getCampaignImageStatistics(User u, Long campaignId){
+       @Override
+        public ImageStatistics getCampaignImageStatistics(String APIToken, Long campaignId)throws IOException, URISyntaxException{
+            User u = userService.getUser(APIToken);
          if(u instanceof Master){
              Campaign c = campaignRepository.getCampaignDetails(campaignId, (Master)u);
              if(c == null)
@@ -207,7 +213,7 @@ public class CampaignServiceImpl implements CampaignService{
                     }*/
 
                     int numImg = 0;
-                    List<Image> i = imageService.getCampaignImages((Master)u, campaignId);
+                    List<Image> i = imageService.getCampaignImages(APIToken, campaignId);
                     if(i != null)
                         numImg = i.size();
 

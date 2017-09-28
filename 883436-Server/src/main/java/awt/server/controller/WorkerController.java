@@ -49,10 +49,7 @@ public class WorkerController {
             @RequestHeader("Authorization") String APIToken,
             @PathVariable("id") Long id){
         try{
-            
-                User authUser = userService.getUser(APIToken);
-              
-                List<awt.server.model.convenience.Worker> workers = workerService.getWorkersForCampaign(authUser, id);         
+                List<awt.server.model.convenience.Worker> workers = workerService.getWorkersForCampaign(APIToken, id);         
                 return ResponseEntity.ok().body(new WorkersDTO(workers));
                
         
@@ -76,8 +73,7 @@ public class WorkerController {
             @PathVariable("workerId") Long workerId){
         try{
             
-                User authUser = userService.getUser(APIToken);
-                awt.server.model.convenience.Worker w = workerService.getWorkerInfo(authUser, workerId, campaignId);         
+                awt.server.model.convenience.Worker w = workerService.getWorkerInfo(APIToken, workerId, campaignId);         
                 return ResponseEntity.ok().body(new WorkerInfosDTO(new WorkerDTO(w),"/api/campaign/"+campaignId+"/worker/"+workerId+"/selection","/api/campaign/"+campaignId+"/worker/"+workerId+"/annotation"));
           
         
@@ -101,9 +97,8 @@ public class WorkerController {
             @PathVariable("workerId") Long workerId){
         try{
             
-                User authUser = userService.getUser(APIToken);
     
-                workerService.enableWorkerForSelectionForCampaign(authUser, workerId, campaignId);         
+                workerService.enableWorkerForSelectionForCampaign(APIToken, workerId, campaignId);         
                 return ResponseEntity.ok().body(null);
         
         }catch(IOException | URISyntaxException |UserNotMasterException e)
@@ -127,9 +122,8 @@ public class WorkerController {
             @PathVariable("workerId") Long workerId){
         try{
             
-                User authUser = userService.getUser(APIToken);
         
-                workerService.disableWorkerForSelectionForCampaign(authUser, workerId, campaignId);         
+                workerService.disableWorkerForSelectionForCampaign(APIToken, workerId, campaignId);         
                 return ResponseEntity.ok().body(null);
                  
         }catch(IOException | URISyntaxException |UserNotMasterException e)
@@ -153,8 +147,7 @@ public class WorkerController {
             @PathVariable("workerId") Long workerId){
         try{
             
-                User authUser = userService.getUser(APIToken);
-                workerService.enableWorkerForAnnotationForCampaign(authUser, workerId, campaignId);         
+                workerService.enableWorkerForAnnotationForCampaign(APIToken, workerId, campaignId);         
                 return ResponseEntity.ok().body(null);
        
         }catch(IOException | URISyntaxException |UserNotMasterException e)
@@ -178,9 +171,8 @@ public class WorkerController {
             @PathVariable("workerId") Long workerId){
         try{
             
-                User authUser = userService.getUser(APIToken);
      
-                workerService.disableWorkerForAnnotationForCampaign(authUser, workerId, campaignId);         
+                workerService.disableWorkerForAnnotationForCampaign(APIToken, workerId, campaignId);         
                 return ResponseEntity.ok().body(null);
         
         }catch(IOException | URISyntaxException |UserNotMasterException e)

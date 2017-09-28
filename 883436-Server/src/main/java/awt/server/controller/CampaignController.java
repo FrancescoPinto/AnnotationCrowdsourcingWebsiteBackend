@@ -20,12 +20,9 @@ import awt.server.exceptions.CampaignsNotFoundException;
 import awt.server.exceptions.PreconditionFailedException;
 import awt.server.exceptions.UserNotMasterException;
 import awt.server.model.Campaign;
-import awt.server.model.Master;
-import awt.server.model.User;
 import awt.server.model.convenience.ImageStatistics;
 import awt.server.model.convenience.NewCampaign;
 import awt.server.service.CampaignService;
-import awt.server.service.UserService;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -38,13 +35,11 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import awt.server.service.ImageService;
 import java.net.URI;
 import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import org.hibernate.validator.internal.engine.path.PathImpl;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -55,21 +50,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class CampaignController {
     @Autowired
     CampaignService campaignService;
-    
+ 
     @Autowired
-    ImageService imageStorageService;
-    
-    @Autowired
-    UserService userService;
-    
-    @Autowired
-    private Validator validator;
+    Validator validator;
     
     @RequestMapping(value = "/api/campaign", method = RequestMethod.GET)
     public ResponseEntity getMasterCampaigns(@RequestHeader("Authorization") String APIToken){
         try{
-                User authUser = userService.getUser(APIToken); 
-                List<Campaign> temp = campaignService.getMasterCampaigns(authUser);
+                 
+                List<Campaign> temp = campaignService.getMasterCampaigns(APIToken);
                 List<CampaignDTO> tempDTO = new ArrayList<>();
                 for(Campaign c: temp){
                     tempDTO.add(CampaignDTO.fromCampaignToCampaignDTO(c));
@@ -79,7 +68,8 @@ public class CampaignController {
         }catch(IOException | URISyntaxException |UserNotMasterException e){
             return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
         }catch(CampaignsNotFoundException e){
-            return ResponseEntity.ok().body("{\"campaigns\":[]}");        }catch(Exception e){
+            return ResponseEntity.ok().body("{\"campaigns\":[]}");        
+        }catch(Exception e){
             return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
         }
 
@@ -92,11 +82,9 @@ public class CampaignController {
         if(constraintViolations.isEmpty()){
                 try{
 
-                        User authUser = userService.getUser(APIToken);        
-                        if(!(authUser instanceof Master))
-                            throw new UserNotMasterException();
+                       
                         NewCampaign temp = new NewCampaign(newCampaign);
-                        Campaign campaign = campaignService.createCampaign(authUser, temp);
+                        Campaign campaign = campaignService.createCampaign(APIToken, temp);
                         //return ResponseEntity.ok().header("Location", "/api/campaign/"+campaign.getId()).body(null);
                         URI location = new URI("/api/campaign/"+campaign.getId());
                         return ResponseEntity.created(location).build();
@@ -147,9 +135,8 @@ public class CampaignController {
     public ResponseEntity getCampaignDetails(@PathVariable("id") Long id,@RequestHeader("Authorization") String APIToken){
         try{
             
-                User authUser = userService.getUser(APIToken);
-                Campaign campaign = campaignService.getCampaignDetails(id, authUser);
-                System.out.println(campaign.getId());
+               
+                Campaign campaign = campaignService.getCampaignDetails(id, APIToken);
                 return ResponseEntity.ok().body(CampaignInfoDTO.fromCampaignToCampaignInfoDTO(campaign));
      
         }catch(IOException | URISyntaxException |UserNotMasterException e)
@@ -209,15 +196,14 @@ public class CampaignController {
     // /api/campaign/{id-Campaign}/execution per start/terminate
     
      @RequestMapping(value = "/api/campaign/{campaignId}/execution", method = RequestMethod.POST)
-     @Transactional
     public ResponseEntity startCampaign(
             @RequestHeader("Authorization") String APIToken,
             @PathVariable("campaignId") Long campaignId
             ){
         try{
             
-                User authUser = userService.getUser(APIToken);
-                campaignService.startCampaign(authUser, campaignId);         
+               
+                campaignService.startCampaign(APIToken, campaignId);         
                 return ResponseEntity.ok().body(null);                 
         
         }catch(IOException | URISyntaxException |UserNotMasterException e)
@@ -234,15 +220,13 @@ public class CampaignController {
     }
     
       @RequestMapping(value = "/api/campaign/{campaignId}/execution", method = RequestMethod.DELETE)
-      @Transactional
     public ResponseEntity terminateCampaign(
             @RequestHeader("Authorization") String APIToken,
             @PathVariable("campaignId") Long campaignId
             ){
         try{
             
-                User authUser = userService.getUser(APIToken);
-                campaignService.terminateCampaign(authUser, campaignId);         
+                campaignService.terminateCampaign(APIToken, campaignId);         
                 return ResponseEntity.ok().body(null);
                            
         }catch(IOException | URISyntaxException |UserNotMasterException e)
@@ -266,13 +250,11 @@ public class CampaignController {
   
             ){
         try{
-            
-                User authUser = userService.getUser(APIToken);
-                ImageStatistics i = campaignService.getCampaignImageStatistics(authUser, campaignId);    
+
+                ImageStatistics i = campaignService.getCampaignImageStatistics(APIToken, campaignId);    
                 ImageStatisticsDTO isDTO = new ImageStatisticsDTO(i);
                 return ResponseEntity.ok().body(isDTO);
 
-        
         }catch(IOException | URISyntaxException |UserNotMasterException e)
         {
              return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));

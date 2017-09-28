@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class CampaignRepositoryImpl implements CampaignRepository {
     
     @PersistenceContext
-    EntityManager em;
+    private EntityManager em;
      
      private static final String STARTED = "started", READY = "ready", ENDED = "ended";
      

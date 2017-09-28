@@ -6,16 +6,17 @@ import awt.server.exceptions.FailedToLoginException;
 import awt.server.model.User;
 import awt.server.model.Worker;
 import awt.server.respository.InvalidTokenRepository;
-import awt.server.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import awt.server.service.auth.ProfileService;
 import awt.server.service.TaskService;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-
+@Transactional(propagation=Propagation.REQUIRED)
 public class LoginServiceImpl implements LoginService {
 
     @Autowired
@@ -53,11 +54,11 @@ public class LoginServiceImpl implements LoginService {
             return null; 
     }
     
-    public void logout(User u, String apitoken){
+    public void logout(User u, String apitoken) throws IOException,URISyntaxException{
        
         jwtService.logoutToken(apitoken,u.getUsername());
         if(u instanceof Worker){
-            taskService.beforeLogoutCleaning(u);
+            taskService.beforeLogoutCleaning(apitoken);
         }
     }
     

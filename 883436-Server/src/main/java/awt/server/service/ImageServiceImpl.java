@@ -22,12 +22,15 @@ import awt.server.respository.ImageRepository;
 import awt.server.respository.SelectionTaskInstanceRepository;
 import awt.server.respository.TaskRepository;
 import awt.server.respository.WorkerRepository;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,7 +39,7 @@ import org.springframework.web.multipart.MultipartFile;
  * @author Utente
  */
 @Service
-@Transactional
+@Transactional(propagation=Propagation.REQUIRED)
 public class ImageServiceImpl implements ImageService {
     @Autowired
     ImageRepository imageRepository;
@@ -59,8 +62,14 @@ public class ImageServiceImpl implements ImageService {
     @Autowired
     TaskService taskService;
     
+    @Autowired
+    UserService userService;
+    
     @Override
-      public Image store(MultipartFile file, User u, Long campaignId){
+      public Image store(MultipartFile file, String APIToken, Long campaignId) throws IOException, URISyntaxException{
+          
+           User u = userService.getUser(APIToken);
+
           if(u instanceof Master){
           Campaign c = campaignRepository.getCampaignDetails(campaignId, (Master) u);
           if(c == null)
@@ -95,7 +104,9 @@ public class ImageServiceImpl implements ImageService {
     }
     
     @Override
-    public void deleteImage(User u, Long campaignId,Long imageId){
+    public void deleteImage(String APIToken, Long campaignId,Long imageId)throws IOException, URISyntaxException{
+                        User u = userService.getUser(APIToken);
+
           if(u instanceof Master){
               Campaign c = campaignRepository.getCampaignDetails(campaignId, (Master) u);
                if(c == null)
@@ -109,7 +120,9 @@ public class ImageServiceImpl implements ImageService {
     } 
     
     @Override
-    public Image getImageInfo(User u, Long campaignId,Long imageId){
+    public Image getImageInfo(String APIToken, Long campaignId,Long imageId)throws IOException, URISyntaxException{
+                        User u = userService.getUser(APIToken);
+
         if(u instanceof Master){
           return imageRepository.getImage(campaignId,imageId, u.getId());
           }
@@ -117,7 +130,9 @@ public class ImageServiceImpl implements ImageService {
     }
     
        @Override
-    public List<Image> getCampaignImages(User user, Long campaignId){
+    public List<Image> getCampaignImages(String APIToken, Long campaignId)throws IOException, URISyntaxException{
+                        User user = userService.getUser(APIToken);
+
         if(user instanceof Master){
              List<Image> imgs= imageRepository.getCampaignImages((Master) user,campaignId);
              return imgs;        
@@ -126,7 +141,9 @@ public class ImageServiceImpl implements ImageService {
     }      
     
        @Override
-    public ImageStatisticsDetails getImageStatisticsDetails(User u, Long campaignId, Long imageId){
+    public ImageStatisticsDetails getImageStatisticsDetails(String APIToken, Long campaignId, Long imageId)throws IOException, URISyntaxException{
+                        User u = userService.getUser(APIToken);
+
          if(u instanceof Master){
              Campaign c = campaignRepository.getCampaignDetails(campaignId, (Master)u);
              if(c == null)
@@ -175,6 +192,7 @@ public class ImageServiceImpl implements ImageService {
     }
         @Override
         public List<Image> getSelectedImages(Campaign c){
+
             List<Image> images = c.getImages();
             List<Image> selectedImages = new ArrayList<>();
             for(Image i: images){

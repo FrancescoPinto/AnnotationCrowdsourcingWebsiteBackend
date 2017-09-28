@@ -7,6 +7,8 @@ package awt.server.service;
 
 import awt.server.model.User;
 import awt.server.model.convenience.Worker;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -16,10 +18,10 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public interface WorkerService {
-     public List<Worker> getWorkersForCampaign(User u, Long campaignId);
-    public Worker getWorkerInfo(User user, Long workerId, Long campaignId);
-    public void enableWorkerForSelectionForCampaign(User u,Long workerId,Long campaignId);      
-    public void disableWorkerForSelectionForCampaign(User u,Long workerId,Long campaignId);  
-    public void enableWorkerForAnnotationForCampaign(User u,Long workerId,Long campaignId);  
-    public void disableWorkerForAnnotationForCampaign(User u,Long workerId,Long campaignId);  
+     public List<Worker> getWorkersForCampaign(String APIToken, Long campaignId) throws IOException, URISyntaxException;
+    public Worker getWorkerInfo(String APIToken, Long workerId, Long campaignId) throws IOException, URISyntaxException;
+    public void enableWorkerForSelectionForCampaign(String APIToken,Long workerId,Long campaignId)throws IOException, URISyntaxException;      
+    public void disableWorkerForSelectionForCampaign(String APIToken,Long workerId,Long campaignId)throws IOException, URISyntaxException;  
+    public void enableWorkerForAnnotationForCampaign(String APIToken,Long workerId,Long campaignId)throws IOException, URISyntaxException;  
+    public void disableWorkerForAnnotationForCampaign(String APIToken,Long workerId,Long campaignId)throws IOException, URISyntaxException;  
 }

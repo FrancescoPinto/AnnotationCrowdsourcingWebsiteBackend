@@ -98,12 +98,11 @@ public class ImageController {
             ){
         try{
             
-                User authUser = userService.getUser(APIToken);
-               // if(authUser instanceof Master){
+                              // if(authUser instanceof Master){
                    // if(!uploadedFile.getFile().isEmpty()){
                    if(!file.isEmpty()){
                         //Image i = imageStorageService.store(uploadedFile.getFile(),authUser, campaignId); 
-                        Image i = imageService.store(file,authUser, campaignId); 
+                        Image i = imageService.store(file,APIToken, campaignId); 
                         //return ResponseEntity.ok().header("Location", i.getCanonical()).body(null);
                           URI location = new URI("/api/campaign/"+campaignId+"/image/"+i.getId());
                 return ResponseEntity.created(location).build();
@@ -130,10 +129,9 @@ public class ImageController {
             ){
         try{
             
-                User authUser = userService.getUser(APIToken);
                 
                     System.out.println("Cerco di cancellare immagine "+imageId);
-                    imageService.deleteImage(authUser, campaignId,imageId);                    
+                    imageService.deleteImage(APIToken, campaignId,imageId);                    
                     return ResponseEntity.ok().body(null);
          
         }catch(IOException | URISyntaxException |UserNotMasterException e)
@@ -155,8 +153,7 @@ public class ImageController {
             ){
         try{
             
-                User authUser = userService.getUser(APIToken);
-                Image i = imageService.getImageInfo(authUser, campaignId,imageId);    
+                Image i = imageService.getImageInfo(APIToken, campaignId,imageId);    
                 return ResponseEntity.ok().body(new ImageInfosDTO("/api/campaign/"+campaignId+"/image/"+i.getId(),i.getCanonical(),"/api/campaign/"+campaignId+"/image/"+i.getId()+"/statistics"));
 
         }catch(IOException | URISyntaxException |UserNotMasterException e){
@@ -177,9 +174,8 @@ public class ImageController {
             ){
         try{
             
-                User authUser = userService.getUser(APIToken);
                 
-                ImageStatisticsDetails i = imageService.getImageStatisticsDetails(authUser, campaignId,imageId);    
+                ImageStatisticsDetails i = imageService.getImageStatisticsDetails(APIToken, campaignId,imageId);    
                 return ResponseEntity.ok().body(new ImageStatisticsDetailsDTO(i));
 
         }catch(IOException | URISyntaxException |UserNotMasterException e)
@@ -199,9 +195,8 @@ public class ImageController {
             @PathVariable("campaignId") Long campaignId
             ){
         try{
-            
-                User authUser = userService.getUser(APIToken);
-                List<Image> imgs = imageService.getCampaignImages(authUser, campaignId);    
+           
+                List<Image> imgs = imageService.getCampaignImages(APIToken, campaignId);    
                 List<ImageDTO> result = new ArrayList<>();
                 if(imgs.isEmpty())
                     return ResponseEntity.ok().body("{\"images\":[]}");

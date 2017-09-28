@@ -23,6 +23,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,12 +32,14 @@ import org.springframework.web.multipart.MultipartFile;
  * @author Utente
  */
 @Repository
+
+@Transactional
 public class ImageRepositoryImpl implements ImageRepository {
     
     private final Path rootLocation = Paths.get("C:"+File.separator +"AWTServer"+File.separator+"image"+File.separator);
     
     @PersistenceContext 
-    EntityManager em;
+    private EntityManager em;
     
     @Override
     public Image store(MultipartFile file, Master m, Campaign c){

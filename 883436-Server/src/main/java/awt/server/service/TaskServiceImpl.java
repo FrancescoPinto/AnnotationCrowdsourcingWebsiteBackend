@@ -24,10 +24,13 @@ import awt.server.respository.CampaignRepository;
 import awt.server.respository.ImageRepository;
 import awt.server.respository.SelectionTaskInstanceRepository;
 import awt.server.respository.TaskRepository;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -35,7 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Utente
  */
 @Service
-@Transactional
+@Transactional(propagation=Propagation.REQUIRED)
 public class TaskServiceImpl implements TaskService {
     @Autowired
     TaskRepository taskRepository;
@@ -54,10 +57,14 @@ public class TaskServiceImpl implements TaskService {
     
     @Autowired
     ImageRepository imageRepository;
+    
+    @Autowired
+    UserService userService;
 
     
     @Override
-    public List<TaskSimplified> getTasksofStartedCampaigns(User user){
+    public List<TaskSimplified> getTasksofStartedCampaigns(String APIToken) throws IOException, URISyntaxException{
+         User user = userService.getUser(APIToken); 
          if(user instanceof Worker){
             List<Task> tl = taskRepository.getTasksForWorker((Worker) user);
             List<TaskSimplified> temp = new ArrayList<>();
@@ -76,8 +83,10 @@ public class TaskServiceImpl implements TaskService {
     }
     
     @Override
-     public TaskInfos getTaskInfo(User user, Long taskId){
-          if(user instanceof Worker){
+     public TaskInfos getTaskInfo(String APIToken, Long taskId)throws IOException, URISyntaxException{
+                  User user = userService.getUser(APIToken); 
+ 
+         if(user instanceof Worker){
             Task t = taskRepository.getTaskInfos(taskId);
             
           //  il problema è che lui ha due serie di id diversi per i diversi tipi di task ... ma la api mi passa solo l'id del task..."
@@ -93,7 +102,9 @@ public class TaskServiceImpl implements TaskService {
      }
      
      @Override
-     public String startWorkingSession(User u,Long taskId){
+     public String startWorkingSession(String APIToken,Long taskId)throws IOException, URISyntaxException{
+                  User u = userService.getUser(APIToken); 
+
           if(u instanceof Worker){
              return taskRepository.startWorkingSession(taskId);           
         }
@@ -103,7 +114,9 @@ public class TaskServiceImpl implements TaskService {
      }
      
      @Override
-     public String getTaskWorkingSession(User u, Long taskId){
+     public String getTaskWorkingSession(String APIToken, Long taskId)throws IOException, URISyntaxException{
+                  User u = userService.getUser(APIToken); 
+
          if(u instanceof Worker){
              return taskRepository.getTaskWorkingSession(taskId);           
         }
@@ -114,7 +127,9 @@ public class TaskServiceImpl implements TaskService {
     
     
     @Override
-    public TaskStatistics getTaskStatistics(User u, Long taskId){
+    public TaskStatistics getTaskStatistics(String APIToken, Long taskId) throws IOException, URISyntaxException{
+                 User u = userService.getUser(APIToken); 
+
         if(u instanceof Worker){
             Task t = taskRepository.getTaskInfos(taskId);
             if(t == null)
@@ -152,7 +167,9 @@ public class TaskServiceImpl implements TaskService {
     }
     
     @Override
-    public void initializeTasks(User m,Campaign c){
+    public void initializeTasks(String APIToken,Campaign c)throws IOException, URISyntaxException{
+                 User m = userService.getUser(APIToken); 
+
         if(m instanceof Master){
         List<Task> tasks = taskRepository.getTasksForCampaign(c.getId());
         if(tasks.isEmpty())
@@ -180,8 +197,8 @@ public class TaskServiceImpl implements TaskService {
     }
     
     @Override
-    public void beforeLogoutCleaning(User user){
-        closeWorkingSession(user);
+    public void beforeLogoutCleaning(String APIToken)throws IOException, URISyntaxException{
+        closeWorkingSession(APIToken);
         /*if(user instanceof Worker){
             List<Task> tasks = taskRepository.getTasksForWorker((Worker) user);
              if(tasks != null){
@@ -199,7 +216,9 @@ public class TaskServiceImpl implements TaskService {
     }
     
      @Override
-    public void closeWorkingSession(User user){
+    public void closeWorkingSession(String APIToken)throws IOException, URISyntaxException{
+                 User user = userService.getUser(APIToken); 
+
         if(user instanceof Worker){
             List<Task> tasks = taskRepository.getTasksForWorker((Worker) user);
              if(tasks != null){

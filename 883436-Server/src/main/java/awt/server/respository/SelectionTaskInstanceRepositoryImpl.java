@@ -14,16 +14,19 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
  * @author Utente
  */
 @Repository
+
+@Transactional
 public class SelectionTaskInstanceRepositoryImpl implements SelectionTaskInstanceRepository {
     
     @PersistenceContext
-    EntityManager em;
+    private EntityManager em;
     
     @Override
         public List<SelectionTaskInstance> getSelectionTaskInstancesForImageOfCampaign(Long imageId){

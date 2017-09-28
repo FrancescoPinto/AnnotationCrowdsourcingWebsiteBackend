@@ -17,15 +17,18 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import static org.apache.tomcat.jni.User.username;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
  * @author Utente
  */
 @Repository
+
+@Transactional
 public class UserRepositoryImpl implements UserRepository{
     @PersistenceContext
-    EntityManager em;
+    private EntityManager em;
     
     public void registerUser(User user){
         if(user instanceof Master)

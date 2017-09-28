@@ -27,6 +27,7 @@ import javax.validation.Validator;
 import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,6 +39,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author Utente
  */
 @RestController
+
 public class UserController {
     /*ATTENTO ATTENTO ATTENTO SE APRI IL DOCUMENTO EXPLANAITION DI JWT-DEMO (che dovrai 
     ricopiare in questo progetto per intero ... con opportune modifiche) capisci 
@@ -121,8 +123,7 @@ public class UserController {
          Set<ConstraintViolation<EditUserDetailsDTO>> constraintViolations = validator.validate( edit );
         if(constraintViolations.isEmpty()){
         try{
-                User authUser = userService.getUser(APIToken);
-                userService.editUserDetails(authUser, edit.getFullname(),edit.getPassword());
+                userService.editUserDetails(APIToken, edit.getFullname(),edit.getPassword());
                 return ResponseEntity.ok().body(null);
         }catch(IOException | URISyntaxException e)
         {

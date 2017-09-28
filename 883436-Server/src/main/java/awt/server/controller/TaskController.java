@@ -50,8 +50,8 @@ public class TaskController {
             ){
         try{
             
-                User authUser = userService.getUser(APIToken);
-                List<TaskSimplified> tasks = taskService.getTasksofStartedCampaigns(authUser);  
+               
+                List<TaskSimplified> tasks = taskService.getTasksofStartedCampaigns(APIToken);  
                     if(tasks == null){
                         return ResponseEntity.ok().body("{\"tasks\":[]}");
                     }else
@@ -75,8 +75,7 @@ public class TaskController {
     
             try{
 
-                        User authUser = userService.getUser(APIToken); 
-                        TaskInfos ti = taskService.getTaskInfo(authUser,taskId);  
+                        TaskInfos ti = taskService.getTaskInfo(APIToken,taskId);  
                         TaskInfosDTO t = new TaskInfosDTO(ti);
                         return ResponseEntity.ok().body(t);
                       
@@ -101,9 +100,9 @@ public class TaskController {
     
             try{
 
-                        User authUser = userService.getUser(APIToken);
+               
                       
-                        String workingSession = taskService.startWorkingSession(authUser,taskId);  //DA SOSTITUIRE CON QUALCOSA DI VERO
+                        String workingSession = taskService.startWorkingSession(APIToken,taskId);  //DA SOSTITUIRE CON QUALCOSA DI VERO
                         
                         switch(workingSession){
                             case Task.OPENED: 
@@ -139,8 +138,7 @@ public class TaskController {
                        //#accepted //only selection
                        //#rejected //only selection
                        //#annotated //only annotation
-                        User authUser = userService.getUser(APIToken);
-                        TaskStatistics ts = taskService.getTaskStatistics(authUser, taskId);
+                        TaskStatistics ts = taskService.getTaskStatistics(APIToken, taskId);
                         TaskStatisticsDTO t = new TaskStatisticsDTO(ts);       
                         return ResponseEntity.ok().body(t);
                         

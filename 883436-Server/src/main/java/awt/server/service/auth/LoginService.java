@@ -7,6 +7,8 @@ package awt.server.service.auth;
 
 import awt.server.dto.LoginDetailsDTO;
 import awt.server.model.User;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import org.springframework.stereotype.Service;
 
 /**
@@ -16,6 +18,6 @@ import org.springframework.stereotype.Service;
 @Service
 public interface LoginService {
     public User login(LoginDetailsDTO credentials); 
-    public void logout(User u, String apitoken);   
+    public void logout(User u, String apitoken)throws IOException,URISyntaxException;   
     public void loginToken(String username);
 }

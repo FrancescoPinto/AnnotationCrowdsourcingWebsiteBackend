@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -21,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Utente
  */
 @Service
-@Transactional
+@Transactional(propagation=Propagation.REQUIRED)
 public class UserServiceImpl implements UserService{
      @Autowired
     private UserRepository userRepository;
@@ -32,14 +33,15 @@ public class UserServiceImpl implements UserService{
     
      @Override
     public void registerUser(User user){ 
-         User temp = findByUsername(user.getUsername());
+         User temp = userRepository.findByUsername(user.getUsername());
         if(temp == null){
         userRepository.registerUser(user);
         }else throw new UserCreationException();
     }
     
     @Override
-    public void editUserDetails(User user,String fullname, String password) {
+    public void editUserDetails(String APIToken,String fullname, String password) throws IOException,URISyntaxException{
+       User user = getUser(APIToken);
         userRepository.editUserInfo(user,fullname,password);
     }
     

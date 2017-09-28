@@ -17,10 +17,11 @@ import static java.time.ZoneOffset.UTC;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-
+@Transactional(propagation=Propagation.REQUIRED)
 public class JwtServiceImpl implements JwtService {
     private static final String ISSUER = "in.sdqali.jwt";
     public static final String USERNAME = "username";
