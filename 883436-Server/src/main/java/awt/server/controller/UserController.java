@@ -51,10 +51,6 @@ public class UserController {
     l'accesso al metodo')))*/
     @Autowired
     private UserService userService;
-    
-    @Autowired
-    private JwtService jwt;
-    
         
     @Autowired
     private Validator validator;

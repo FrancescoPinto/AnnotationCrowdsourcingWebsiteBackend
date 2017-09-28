@@ -41,8 +41,6 @@ public class TaskController {
     @Autowired
     TaskService taskService;
     
-      @Autowired
-      UserService userService;
     
       @RequestMapping(value = "/api/task", method = RequestMethod.GET)
     public ResponseEntity getTasks(

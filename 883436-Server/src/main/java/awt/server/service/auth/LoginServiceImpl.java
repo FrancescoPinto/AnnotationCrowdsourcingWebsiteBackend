@@ -9,6 +9,7 @@ import awt.server.respository.InvalidTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import awt.server.service.TaskService;
+import awt.server.service.UserService;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -20,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class LoginServiceImpl implements LoginService {
 
     @Autowired
-    private ProfileService profileService;
+    private UserService userService;
 
     @Autowired
     private TaskService taskService;
@@ -42,26 +43,32 @@ public class LoginServiceImpl implements LoginService {
         this.profileService = profileService;
     }*/
 
-    public User login(LoginDetailsDTO credentials) {
-        User temp =  profileService.get(credentials.getUsername());
+    @Override
+    public String login(LoginDetailsDTO credentials) throws IOException,URISyntaxException{
+        User temp =  userService.findByUsername(credentials.getUsername());
                 
         if(temp == null)
             throw new FailedToLoginException("Wrong username and/or password");
         
+        loginToken(temp.getUsername());
+        
         if(temp.getPassword().equals(credentials.getPassword()))
-            return temp;
+            return jwtService.tokenFor(temp);
         else
             return null; 
+
     }
     
-    public void logout(User u, String apitoken) throws IOException,URISyntaxException{
-       
+    @Override
+    public void logout(String apitoken) throws IOException,URISyntaxException{
+       User u = userService.getUser(apitoken);
         jwtService.logoutToken(apitoken,u.getUsername());
         if(u instanceof Worker){
             taskService.beforeLogoutCleaning(apitoken);
         }
     }
     
+    @Override
      public void loginToken(String username){
        
        invalidTokenRepository.loginToken(username);

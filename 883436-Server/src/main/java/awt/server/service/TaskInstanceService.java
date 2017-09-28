@@ -7,6 +7,8 @@ package awt.server.service;
 
 import awt.server.model.User;
 import awt.server.model.convenience.TaskInstance;
+import java.io.IOException;
+import java.net.URISyntaxException;
 import org.springframework.stereotype.Service;
 
 /**
@@ -16,8 +18,8 @@ import org.springframework.stereotype.Service;
 @Service
 
 public interface TaskInstanceService {
-     public TaskInstance getNextTaskInstance(User u, Long taskId);
+     public TaskInstance getNextTaskInstance(String APIToken, Long taskId) throws IOException, URISyntaxException;
     
-    public void setCurrentInstanceResult(User u, Long taskId, String skyline);
-    public void setCurrentInstanceResult(User u, Long taskId, Boolean accepted);
+    public void setCurrentInstanceResult(String APIToken, Long taskId, String skyline) throws IOException, URISyntaxException;
+    public void setCurrentInstanceResult(String APIToken, Long taskId, Boolean accepted) throws IOException, URISyntaxException;
 }

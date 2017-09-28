@@ -54,11 +54,6 @@ public class ImageController {
     @Autowired
     ImageService imageService;
 
-      @Autowired
-    CampaignService campaignService;
-
-    @Autowired
-    UserService userService;
     
     /*@RequestMapping(value = "/sid",// method = RequestMethod.GET,
             produces = MediaType.IMAGE_JPEG_VALUE)

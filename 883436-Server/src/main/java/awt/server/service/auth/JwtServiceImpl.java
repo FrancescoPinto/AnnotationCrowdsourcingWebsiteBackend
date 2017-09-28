@@ -3,9 +3,9 @@ package awt.server.service.auth;
 
 
 import awt.server.auth.SecretKeyProvider;
-import awt.server.auth.SecretKeyProviderImpl;
 import awt.server.model.User;
 import awt.server.respository.InvalidTokenRepository;
+import awt.server.service.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -29,7 +29,7 @@ public class JwtServiceImpl implements JwtService {
     private SecretKeyProvider secretKeyProvider;
     
     @Autowired
-    private ProfileService profileService;
+    private UserService userService;
 
     @Autowired
     InvalidTokenRepository invalidTokenRepository;
@@ -66,7 +66,7 @@ public class JwtServiceImpl implements JwtService {
             return null;
         byte[] secretKey = secretKeyProvider.getKey();
         Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
-        return profileService.get(claims.getBody().getSubject().toString());
+        return userService.findByUsername(claims.getBody().getSubject().toString());
     }
     @Override
     public void logoutToken(String token, String username) {

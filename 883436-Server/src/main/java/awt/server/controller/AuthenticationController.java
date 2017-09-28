@@ -73,35 +73,22 @@ public class AuthenticationController {
         
         Set<ConstraintViolation<LoginDetailsDTO>> constraintViolations = validator.validate( credentials );
         if(constraintViolations.isEmpty()){
-            User temp = loginService.login(credentials);
-            if (temp == null)
-                throw new FailedToLoginException("Wrong username and/or password");
-            else
+
                 try{
-                    String token = jwtService.tokenFor(temp);
-                    loginService.loginToken(temp.getUsername());
+                        String token = loginService.login(credentials);
                         response.setHeader("Authorization", token);
                         return  ResponseEntity.ok().body(new TokenDTO(token));
                // }catch (FailedToLoginException e){
                  //   throw new RuntimeException(e);
-
                 }catch(Exception e){
                     return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
                         //return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage())); 
                }
         }else{
-            //ErrorListDTO e = new ErrorListDTO();
-           /* String username = null;
-            String password = null;
-       */
-           //Map<String,String> temp = new HashMap<String,String>();
+
            ErrorMapDTO temp = new ErrorMapDTO();
             for(ConstraintViolation<LoginDetailsDTO> cv: constraintViolations){
                 temp.addError(((PathImpl)cv.getPropertyPath()).getLeafNode().getName(), cv.getMessage());
-               /* if(((PathImpl)cv.getPropertyPath()).getLeafNode().getName().equals("username"))
-                    username = cv.getMessage();
-                 if(((PathImpl)cv.getPropertyPath()).getLeafNode().getName().equals("password"))
-                    password = cv.getMessage();*/
             }
             return ResponseEntity.badRequest().body(temp);
         }
@@ -112,8 +99,8 @@ public class AuthenticationController {
            method = RequestMethod.DELETE)
     public ResponseEntity logout(@RequestHeader("Authorization") String APIToken) {
             try{
-                    User temp = userService.getUser(APIToken);
-                    loginService.logout(temp, APIToken);
+                    
+                    loginService.logout(APIToken);
                     return  ResponseEntity.ok().body(null);
                  }catch(Exception e){
                         throw new RuntimeException(e);

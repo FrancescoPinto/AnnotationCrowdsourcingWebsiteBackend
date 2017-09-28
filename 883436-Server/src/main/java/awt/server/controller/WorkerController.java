@@ -36,12 +36,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class WorkerController {
     
     @Autowired
-    CampaignService campaignService;
-    
-    @Autowired
-    UserService userService;
-    
-    @Autowired
     WorkerService workerService;
     
           @RequestMapping(value = "/api/campaign/{id}/worker", method = RequestMethod.GET)

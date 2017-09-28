@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package awt.server.service.auth;
+
 
 import awt.server.model.User;
 import org.springframework.stereotype.Service;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
  * @author Utente
  */
 
-@Service
+
 public interface ProfileService {
      public User get(String username);
 }

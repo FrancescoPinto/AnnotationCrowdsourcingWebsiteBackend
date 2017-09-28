@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public interface LoginService {
-    public User login(LoginDetailsDTO credentials); 
-    public void logout(User u, String apitoken)throws IOException,URISyntaxException;   
+    public String login(LoginDetailsDTO credentials)throws IOException,URISyntaxException; 
+    public void logout(String apitoken)throws IOException,URISyntaxException;   
     public void loginToken(String username);
 }

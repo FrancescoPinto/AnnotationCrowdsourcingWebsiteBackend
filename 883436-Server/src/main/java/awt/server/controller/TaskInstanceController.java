@@ -6,10 +6,11 @@
 package awt.server.controller;
 
 import awt.server.dto.ErrorDTO;
-import awt.server.dto.ErrorMapDTO;
 import awt.server.dto.TaskInstanceDTO;
 import awt.server.dto.TaskResultAnnotationDTO;
 import awt.server.dto.TaskResultSelectionDTO;
+import awt.server.exceptions.FinishedWorkingSessionException;
+import awt.server.exceptions.IllegalStateOfWorkingSession;
 import awt.server.exceptions.NoMoreTaskInstancesException;
 import awt.server.exceptions.TaskNotFoundException;
 import awt.server.exceptions.UserNotWorkerException;
@@ -22,12 +23,9 @@ import awt.server.service.UserService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Set;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
-import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -63,43 +61,28 @@ public class TaskInstanceController {
     
             try{
 
-                        User authUser = userService.getUser(APIToken);
-      
-                       // TaskInstanceDTO taskInstance = taskService.getNextTaskInstance(authUser,taskId);  //DA SOSTITUIRE CON QUALCOSA DI VERO
-                         String workingSession = taskService.getTaskWorkingSession(APIToken,taskId);  //DA SOSTITUIRE CON QUALCOSA DI VERO
-                        
-                        switch(workingSession){
-                            case Task.OPENED:
-                                TaskInstance ti = taskInstanceService.getNextTaskInstance(authUser,taskId);
-                                return ResponseEntity.ok().body(new TaskInstanceDTO(ti));
-                            case Task.CLOSED: 
-                                return ResponseEntity.status(410).build();
-                            case Task.FINISHED: 
-                                return ResponseEntity.notFound().build();
-                            default: return ResponseEntity.badRequest().build();
-                        }
-
-
+                    TaskInstance ti = taskInstanceService.getNextTaskInstance(APIToken,taskId);
+                    return ResponseEntity.ok().body(new TaskInstanceDTO(ti));
+              
                 }catch(NoMoreTaskInstancesException|TaskNotFoundException e){
-                    try{
-                    User authUser = userService.getUser(APIToken);
-                    taskService.closeWorkingSession(APIToken);
-                    return ResponseEntity.status(404).build();
-                    } catch(IOException | URISyntaxException |UserNotWorkerException ex)
-                    {
-                     return ResponseEntity.badRequest().body(new ErrorDTO(ex.getMessage()));
-                    }catch(RuntimeException ex)
-                    {
-                     return ResponseEntity.status(410).body(new ErrorDTO(ex.getMessage()));
-                    }
+                        try{
+                            //  User authUser = userService.getUser(APIToken);
+                              taskService.closeWorkingSession(APIToken);
+                              return ResponseEntity.status(404).build();
+                        } catch(IOException | URISyntaxException |UserNotWorkerException ex)
+                        {
+                         return ResponseEntity.badRequest().body(new ErrorDTO(ex.getMessage()));
+                        }catch(RuntimeException ex)
+                        {
+                         return ResponseEntity.status(410).body(new ErrorDTO(ex.getMessage()));
+                        }
                 }
-                catch(IOException | URISyntaxException |UserNotWorkerException e)
+                catch(IOException | URISyntaxException |UserNotWorkerException|FinishedWorkingSessionException|IllegalStateOfWorkingSession e)
                 {
                      return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
-                }catch(RuntimeException ex)
-                    {
+                }catch(RuntimeException ex){
                      return ResponseEntity.status(410).body(new ErrorDTO(ex.getMessage()));
-                    }
+                }
     
     }
     
@@ -124,65 +107,35 @@ public class TaskInstanceController {
             ResponseEntity.badRequest().body(null);
         }
  
- 
-        if(trs != null){
-                   try{
-
-                               User authUser = userService.getUser(APIToken);
-
-                              // TaskInstanceDTO taskInstance = taskService.getNextTaskInstance(authUser,taskId);  //DA SOSTITUIRE CON QUALCOSA DI VERO
-                                String workingSession = taskService.getTaskWorkingSession(APIToken,taskId);  //DA SOSTITUIRE CON QUALCOSA DI VERO
-
-                               switch(workingSession){
-                                   case Task.OPENED: 
-                                       if(trs != null){
-                                            taskInstanceService.setCurrentInstanceResult(authUser,taskId, trs.getAccepted());
-                                            return ResponseEntity.ok().body(null);
-                                       }else return ResponseEntity.badRequest().build();
-                                   case Task.CLOSED: 
-                                       return ResponseEntity.status(410).build();
-                                   case Task.FINISHED: 
-                                       return ResponseEntity.notFound().build();
-                                   default: return ResponseEntity.badRequest().build();
-                               }
-
-
-
-                       }catch(IOException | URISyntaxException |UserNotWorkerException e)
-                       {
-                            return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
-                       }catch(TaskNotFoundException e){
-                           return ResponseEntity.notFound().build();
-                       }
+            if(trs != null){
+                try{
+                        taskInstanceService.setCurrentInstanceResult(APIToken,taskId, trs.getAccepted());
+                        return ResponseEntity.ok().body(null);
+                   }catch(IOException | URISyntaxException |UserNotWorkerException|FinishedWorkingSessionException|IllegalStateOfWorkingSession e){
+                        return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
+                    }catch(TaskNotFoundException e){
+                       return ResponseEntity.notFound().build();
+                    }catch(RuntimeException ex){
+                         return ResponseEntity.status(410).body(new ErrorDTO(ex.getMessage()));
+                    }
 
              
         }else if (tra != null){
             try{
-                        User authUser = userService.getUser(APIToken);
-               
-                         String workingSession = taskService.getTaskWorkingSession(APIToken,taskId);  //DA SOSTITUIRE CON QUALCOSA DI VERO
-                        switch(workingSession){
-                            case Task.OPENED: 
-                                if(tra != null){
-                                     taskInstanceService.setCurrentInstanceResult(authUser,taskId,tra.getSkyline());//.getSkyline());
-                                     return ResponseEntity.ok().body(null);
-                                }else return ResponseEntity.badRequest().build();
-                            case Task.CLOSED: 
-                                return ResponseEntity.status(410).build();
-                            case Task.FINISHED: 
-                                return ResponseEntity.notFound().build();
-                            default: return ResponseEntity.badRequest().build();
-                        }
- 
-                  
-                }catch(IOException | URISyntaxException |UserNotWorkerException e)
+                             
+                taskInstanceService.setCurrentInstanceResult(APIToken,taskId,tra.getSkyline());//.getSkyline());
+                return ResponseEntity.ok().body(null);
+
+                }catch(IOException | URISyntaxException |UserNotWorkerException|FinishedWorkingSessionException|IllegalStateOfWorkingSession e)
                 {
                      return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
                 }catch(TaskNotFoundException e){
                     return ResponseEntity.notFound().build();
+                }catch(RuntimeException ex){
+                    return ResponseEntity.status(410).body(new ErrorDTO(ex.getMessage()));
                 }
            
-    }else return  ResponseEntity.badRequest().build();
+    }else return ResponseEntity.badRequest().build();
     
     
     /* @RequestMapping(value = "/api/task/{taskId}/session/annotation", method = RequestMethod.PUT)//, consumes = "application/json")
