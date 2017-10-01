@@ -39,29 +39,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class AuthenticationController {
 
     @Autowired
-    private final LoginService loginService;
+    private LoginService loginService;
     @Autowired
-    private final JwtService jwtService;
-    
-    private List<String> tempTokens;
-    
-
-    @Autowired
-    UserService userService;
+    private JwtService jwtService; 
     
    @Autowired
     private Validator validator;
     
-    @SuppressWarnings("unused")
-    public AuthenticationController() {
-        this(null, null);
-    }
-
-    @Autowired
-    public AuthenticationController(LoginService loginService, JwtService jwtService) {
-        this.loginService = loginService;
-        this.jwtService = jwtService;
-    }
 
    @RequestMapping(path = "/api/auth",
            method = RequestMethod.POST,
@@ -76,6 +60,9 @@ public class AuthenticationController {
 
                 try{
                         String token = loginService.login(credentials);
+                        if (token == null)
+                            throw new FailedToLoginException("Wrong username and/or password");
+
                         response.setHeader("Authorization", token);
                         return  ResponseEntity.ok().body(new TokenDTO(token));
                // }catch (FailedToLoginException e){

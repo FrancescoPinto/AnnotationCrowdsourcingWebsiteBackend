@@ -30,6 +30,7 @@ public class UserRepositoryImpl implements UserRepository{
     @PersistenceContext
     private EntityManager em;
     
+    @Override
     public void registerUser(User user){
         if(user instanceof Master)
             em.persist((Master) user);
@@ -38,6 +39,7 @@ public class UserRepositoryImpl implements UserRepository{
         
     }
     
+    @Override
     public User findByUsername(String username){
         Query q1 = em.createNamedQuery("findMasterByUsername");
         q1.setParameter(1,username);
@@ -54,7 +56,7 @@ public class UserRepositoryImpl implements UserRepository{
         else
             return result1.get(0);
     }
-    
+    @Override
     public void editUserInfo(User user, String fullname, String password) throws ProfileNotFoundException{
         User temp;
         if(user instanceof Master){

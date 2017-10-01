@@ -50,10 +50,14 @@ public class LoginServiceImpl implements LoginService {
         if(temp == null)
             throw new FailedToLoginException("Wrong username and/or password");
         
-        loginToken(temp.getUsername());
         
-        if(temp.getPassword().equals(credentials.getPassword()))
+        
+        if(temp.getPassword().equals(credentials.getPassword())){
+            System.out.println("Sto per chiamare il loginToken");
+            loginToken(temp.getUsername());
+            System.out.println("Sto per creare il token");
             return jwtService.tokenFor(temp);
+        }
         else
             return null; 
 

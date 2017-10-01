@@ -19,6 +19,7 @@ public class JwtAuthFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest servletRequest = (HttpServletRequest) request;
         String authorization = servletRequest.getHeader("Authorization");
+        System.out.println(authorization);
         if (authorization != null) {
             JwtAuthToken token = new JwtAuthToken(authorization.replaceAll("APIToken ", "")); //estrae solo l'APITOken (rimpiazza il prefix con stringa vuota!
             SecurityContextHolder.getContext().setAuthentication(token);
