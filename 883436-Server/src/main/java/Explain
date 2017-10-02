@@ -1,0 +1,24 @@
+SECURITY
+SecurityConfig:
+- configures the AuthenticationProvider
+- sets which paths can be accessed freely and which paths must be filtered (on
+those paths sets the AuthenticationFilter) and imposes that in case of security
+exceptions, the configured AuthenticationProvider should be used, furthermore
+establishes the AuthenticationProvider (the class that checks authentication!)
+
+JwtAuthentication provider chiama il verify di jwtService and returns the authenticated
+profile (if succeeds) 
+
+Login
+LoginService first checks the user password in the DB (invoking user service to retrieve the user), 
+then uses JwtService to generate a token. The token is generated using a secret key (provided by 
+the secretKeyProvider) and expires after a fixed amount of time, is generated based on a secret, 
+an issuer and with an algorithm using a secret key.
+
+Authentication at each request:
+The JwtAuthFilter takes the incoming request, extracts the Authorization header,
+creates a JwtAuthToken object containing it, sets the SecurityContextHolder context with
+ the auth token then filters the request. <- presumo sia passato poi al JwtAuthentication provider in qualche modo
+
+JwtAuthenticationEntryPoint handles unauthorized requests, sending back an error message
+

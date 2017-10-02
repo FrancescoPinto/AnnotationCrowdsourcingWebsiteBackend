@@ -25,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Repository
 
-@Transactional
 public class UserRepositoryImpl implements UserRepository{
     @PersistenceContext
     private EntityManager em;

@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
  * @author Utente
  */
 @Repository
-@Transactional
 public class AnnotationTaskInstanceRepositoryImpl implements AnnotationTaskInstanceRepository {
     
     @PersistenceContext

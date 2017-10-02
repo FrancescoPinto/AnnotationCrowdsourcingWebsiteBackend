@@ -1480,6 +1480,8 @@ function ViewModel(ctx) {
                 alert(e);
             if(e.jqXHR.status == 404 && ctx.repositories.status.getCurrentTask().type == "selection"){
                 self.nextTaskAvailable(false);
+            }else if (e.jqXHR.status == 410 && ctx.repositories.status.getCurrentTask().type == "selection"){
+                self.nextTaskAvailable(false); 
             }else if (e.jqXHR.status == 404 && ctx.repositories.status.getCurrentTask().type == "annotation"){
                 self.annotationEnabled(false);
             }else if (e.jqXHR.status == 410 && ctx.repositories.status.getCurrentTask().type == "annotation"){

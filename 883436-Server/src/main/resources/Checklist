@@ -1,20 +1,24 @@
 
+COSE ANCORA DA AGGIUSTARE:
+se il formato è totalmente sballato ritorna un canonico messaggio d'errore, non il messaggio {error:...}
+
+
 E666 -> codice errore tipico ritorna l'errore in format [{"error":"..."}] e non {errror:...} oppure {error:{username:...,password:...}}
 
 CONTROLLATO CON POSTMAN!!!
 ancora da controllare col client web
 
 POST /api/user per master
-OK con contenuto valido
-OK con utente già creato
-E666 con dati invalidi (ma reagisce correttamente a type sbagliato, password/username non presenti e campi vuoti) 
+OK OK con contenuto valido
+OK OK con utente già creato
+OK E666 con dati invalidi (ma reagisce correttamente a type sbagliato, password/username non presenti e campi vuoti) 
 In caso di messaggio JSON non parsabile correttamente risponde in bodo bruttino ... (i.e. fa 400 bad request e struttura tipica di errore HTTP con message che spiega)
 il problema di cui sopra credo si possa risolvere semplicemente chiudendo tutto il corpo in un try-catch con Exceptione poi inviando l'errore nel body con ErrorDTO (ha funzionato da altre parti)
 
 POST /api/user per worker
-OK con dati corretti, risposta corretta
-E666 con dati invalidi
-OK con credenziali scorrette ma valide
+OK OK con dati corretti, risposta corretta
+OK E666 con dati invalidi
+OK OK con credenziali scorrette ma valide
 ERRORE con header sbagliato (è ok, però risponde con risposta "http" standard di errore, quindi non letta bene dal client)
 
 GET /api/user/me
@@ -23,41 +27,41 @@ OK con authorization header
 OK con token sbagliato
 
 PUT /api/user/me
-OK con tutti i dati 
-E666 con dati invalidi
+OK OK con tutti i dati 
+OK E666 con dati invalidi
 
 GET /api/campaign
-OK tutto
-ok se provi a usare il token di worker
+OK OK tutto
+OK ok se provi a usare il token di worker
 
 POST /api/campaign
-ok se provi a usare il token di un worker
-ok se dati validi
-E666 se dati invalidi
-ok ritorna il Location header correttamente 
+OK ok se provi a usare il token di un worker
+OK ok se dati validi
+OK E666 se dati invalidi
+OK ok ritorna il Location header correttamente 
 
 GET /api/campaign/{id}
-NI con id di campagna inesistente (fa notfound, ma non dò l'errror come lo vuole il client)
+OK NI con id di campagna inesistente (fa notfound, ma non dò l'errror come lo vuole il client)
 OK se user non è master
 OK se tuttto è a posto
-NI se campagna non esiste o non appartiene all'utente (fa notfound ...)
+OK NI se campagna non esiste o non appartiene all'utente (fa notfound ...)
 
 
 PUT /api/campaign/{id}
-NI con id di campagna inesistente (fa notfound, ma non error: )
+OK NI con id di campagna inesistente (fa notfound, ma non error: )
 ok se user non è master
 ok se la campagna non è in stato readi
 ok se tutto è a posto
-E666 per dati invalidi
+OK E666 per dati invalidi
 
 
 GET /api/campaign/[id]/image
-ok se non ci sono immagini
-ok se ci sono
-BOH se campagna non esiste ritorna immagini vuote, può essere ok
+OK ok se non ci sono immagini
+OK ok se ci sono
+OK? BOH se campagna non esiste ritorna immagini vuote, può essere ok
 
 POST /api/campaign/[id}/image
-NI se non carichi nessuna immagine (fa bad request, però non nella forma che ti serve)
+OK NI se non carichi nessuna immagine (fa bad request, però non nella forma che ti serve)
 OK se la campagna non è in stato ready
 ok se la campagna non esiste
 ok se non è master
@@ -65,26 +69,28 @@ OK ritorna il location
 
 Get localhost:8080/api/campaign/[id]/image/[imageid]
 OK se è tutto a posto
-NI SE NON è DELLA campagna, o se la campagna non esiste, o se non è del master fa solo NotFound
+-------------------> NI SE NON è DELLA campagna, o se la campagna non esiste, o se non è del master fa solo NotFound
 ok se user non è master
 
 DELETE   localhost:8080/api/campaign/[id]/image/[imageid]
 ok, se è tutto ok
-NI se non è della campagna o del mastero non esiste
+--------------------->NI se non è della campagna o del mastero non esiste
 ok se no è master
 
 get localhost:8080/api/campaign/4/image/12/statistics
 OK se non ci sono info (no annotazioni o selezioni fatte)
 OK se ci sono info
-NO se non esiste la campagna o l'immagine
+------------------>NO se non esiste la campagna o l'immagine
 
 Get /api/campaign/[id]/worker
-NI se la campagna non appartiene/non esiste (notfound)
+ok NI se la campagna non appartiene/non esiste (notfound)
 OK se ci sono info e la campagna appartiene al master
 OK se non è master, cerchi worker/campagna che non esiste
 
 GET .../[ID]
-OK ...
+ok OK ...
+ok SE NOT FOUND CAMPAGNA O WORKER o non appartiene
+
 
 POST .../worker/id/selection
 Ok se non esiste

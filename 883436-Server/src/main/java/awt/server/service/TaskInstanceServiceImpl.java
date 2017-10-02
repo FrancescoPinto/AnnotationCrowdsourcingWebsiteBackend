@@ -7,7 +7,10 @@ package awt.server.service;
 
 import awt.server.exceptions.FinishedWorkingSessionException;
 import awt.server.exceptions.IllegalStateOfWorkingSession;
+import awt.server.exceptions.NoMoreAnnotationsPossibleException;
+import awt.server.exceptions.NoMoreImagesToSelectException;
 import awt.server.exceptions.NoMoreTaskInstancesException;
+import awt.server.exceptions.NoSelectedImagesException;
 import awt.server.exceptions.TaskNotFoundException;
 import awt.server.exceptions.UserNotWorkerException;
 import awt.server.model.AnnotationTaskInstance;
@@ -132,7 +135,7 @@ public class TaskInstanceServiceImpl implements TaskInstanceService {
                             if(s == null){
 
                                 taskRepository.closeWorkingSession(taskId);
-                                throw new NoMoreTaskInstancesException();
+                                throw new NoMoreImagesToSelectException();
                             }
                             taskRepository.setCurrentTaskInstance(taskId, s.getId());
                             return new TaskInstance(Task.SELECTION, s.getImage().getCanonical(),null);
@@ -150,15 +153,22 @@ public class TaskInstanceServiceImpl implements TaskInstanceService {
                                                 temp.add(ati);
                                     }else{
                                         taskRepository.closeWorkingSession(taskId);
-                                        throw new  RuntimeException("Annotation tasks not available at the moment");
+                                        throw new  NoSelectedImagesException();
                                     }
                                 }
                             } else{ 
                                 taskRepository.closeWorkingSession(taskId);
                                 throw new NoMoreTaskInstancesException();
                             }
-
-
+                            int countAtisReady = 0;
+                            for(AnnotationTaskInstance ati : atis)
+                                if(!ati.getSkyline().equals(AnnotationTaskInstance.NOTALREADY))
+                                    countAtisReady++;
+                            
+                            if(countAtisReady == imageRepository.getImageCount(t)){
+                                taskRepository.closeWorkingSession(taskId);
+                                throw new NoMoreAnnotationsPossibleException();
+                            }
 
                              if(temp.isEmpty()){
                                 taskRepository.closeWorkingSession(taskId);

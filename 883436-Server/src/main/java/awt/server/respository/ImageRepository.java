@@ -8,6 +8,7 @@ package awt.server.respository;
 import awt.server.model.Campaign;
 import awt.server.model.Image;
 import awt.server.model.Master;
+import awt.server.model.Task;
 import java.util.List;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -34,4 +35,5 @@ public interface ImageRepository {
     public FileSystemResource getFileSystemResource(Long campaignId,Long imageId);
     public void deleteImage(Long campaignId, Long imageId, Long masterId);
     public List<Image> getCampaignImages(Master m, Long campaignId);
+    public int getImageCount(Task t);
 }

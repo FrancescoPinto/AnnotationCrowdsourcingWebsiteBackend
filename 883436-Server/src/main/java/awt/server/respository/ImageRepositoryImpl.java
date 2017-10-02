@@ -9,6 +9,7 @@ import awt.server.exceptions.ImageNotFoundException;
 import awt.server.model.Campaign;
 import awt.server.model.Image;
 import awt.server.model.Master;
+import awt.server.model.Task;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -23,7 +24,6 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,7 +33,6 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @Repository
 
-@Transactional
 public class ImageRepositoryImpl implements ImageRepository {
     
     private final Path rootLocation = Paths.get("C:"+File.separator +"AWTServer"+File.separator+"image"+File.separator);
@@ -179,6 +178,15 @@ public class ImageRepositoryImpl implements ImageRepository {
             return null;
         else
             return imgs;*/
+        
+    }
+    
+    @Override
+    public int getImageCount(Task t){
+        Query q = em.createQuery("select i from Image i where i.campaign.id = ?1");
+        q.setParameter(1,t.getCampaign().getId());
+        List<Image> imgs = q.getResultList();
+        return imgs.size();
         
     }
 }

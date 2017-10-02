@@ -11,11 +11,11 @@ import awt.server.dto.TaskResultAnnotationDTO;
 import awt.server.dto.TaskResultSelectionDTO;
 import awt.server.exceptions.FinishedWorkingSessionException;
 import awt.server.exceptions.IllegalStateOfWorkingSession;
+import awt.server.exceptions.NoMoreImagesToSelectException;
 import awt.server.exceptions.NoMoreTaskInstancesException;
+import awt.server.exceptions.NoSelectedImagesException;
 import awt.server.exceptions.TaskNotFoundException;
 import awt.server.exceptions.UserNotWorkerException;
-import awt.server.model.Task;
-import awt.server.model.User;
 import awt.server.model.convenience.TaskInstance;
 import awt.server.service.TaskInstanceService;
 import awt.server.service.TaskService;
@@ -64,11 +64,11 @@ public class TaskInstanceController {
                     TaskInstance ti = taskInstanceService.getNextTaskInstance(APIToken,taskId);
                     return ResponseEntity.ok().body(new TaskInstanceDTO(ti));
               
-                }catch(NoMoreTaskInstancesException|TaskNotFoundException e){
+                }catch(NoMoreTaskInstancesException|TaskNotFoundException|NoSelectedImagesException e){
                         try{
                             //  User authUser = userService.getUser(APIToken);
                               taskService.closeWorkingSession(APIToken);
-                              return ResponseEntity.status(404).build();
+                              return ResponseEntity.status(404).body(new ErrorDTO(e.getMessage()));
                         } catch(IOException | URISyntaxException |UserNotWorkerException ex)
                         {
                          return ResponseEntity.badRequest().body(new ErrorDTO(ex.getMessage()));

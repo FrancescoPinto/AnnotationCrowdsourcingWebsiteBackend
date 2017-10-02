@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Repository
 
-@Transactional
 public class WorkerRepositoryImpl implements WorkerRepository {
     @PersistenceContext
     private EntityManager em;

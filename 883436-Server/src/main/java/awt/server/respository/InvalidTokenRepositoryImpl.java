@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Repository
 
-@Transactional
 public class InvalidTokenRepositoryImpl implements InvalidTokenRepository {
     @PersistenceContext
     private EntityManager em;
