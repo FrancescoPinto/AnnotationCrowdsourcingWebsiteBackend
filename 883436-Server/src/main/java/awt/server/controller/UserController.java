@@ -72,8 +72,8 @@ public class UserController {
                 }else throw new UserTypeNotValidException();
 
                 return ResponseEntity.ok().body(null);
-            }catch(UserCreationException|UserTypeNotValidException e){
-                   return ResponseEntity.badRequest().body(new ErrorDTO(e.getMessage()));
+            }catch(UserCreationException e){
+                   return ResponseEntity.status(412).body(new ErrorDTO(e.getMessage()));
 
             }
            catch (Exception e){
